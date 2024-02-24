@@ -124,4 +124,24 @@ abstract class BaseDao<T>(
             emit(users)
         }.catch { emit(mutableListOf()) }
 
+    /**
+     * Executes a SQL query with a WHERE clause using the provided query string and parameters.
+     * @param query The SQL query string with placeholders for parameters.
+     * @param params The array of parameter values to be substituted into the query.
+     * @return A flow emitting a list of query results.
+     */
+    suspend fun queryWhere(query: String, params: Array<String>): Flow<List<T>> =
+        flow {
+            val resultList = mutableListOf<T>()
+            val cursor = db.rawQuery("SELECT * FROM $tableName WHERE $query", params)
+            while (cursor.moveToNext()) {
+                resultList.add(cursor.buildEntity())
+            }
+            cursor.close()
+            emit(resultList)
+        }.catch {
+            emit(mutableListOf()) // Emit empty list if an error occurs
+        }
+
+
 }
