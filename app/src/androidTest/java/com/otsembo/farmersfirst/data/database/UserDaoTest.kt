@@ -3,6 +3,7 @@ package com.otsembo.farmersfirst.data.database
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.otsembo.farmersfirst.data.database.dao.UserDao
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.test.runTest
@@ -29,6 +30,7 @@ class UserDaoTest {
 
     @After
     fun tearDown() {
+        dbHelper.refresh(dbHelper.writableDatabase)
         dbHelper.close()
     }
 
