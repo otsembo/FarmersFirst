@@ -47,6 +47,8 @@ class AppDatabaseHelper(
         const val PRODUCT_NAME = "name"
         const val PRODUCT_STOCK = "items_stock"
         const val PRODUCT_PRICE = "unit_price"
+        const val PRODUCT_DESC = "description"
+        const val PRODUCT_IMAGE = "image_url"
 
         const val TABLE_USERS = "users"
         const val USER_ID = "id"
@@ -67,8 +69,10 @@ class AppDatabaseHelper(
             CREATE TABLE IF NOT EXISTS $TABLE_PRODUCTS (
                 $PRODUCT_ID INTEGER PRIMARY KEY AUTOINCREMENT,
                 $PRODUCT_NAME TEXT NOT NULL,
+                $PRODUCT_DESC TEXT NOT NULL,
                 $PRODUCT_STOCK INTEGER NOT NULL,
-                $PRODUCT_PRICE REAL NOT NULL
+                $PRODUCT_PRICE REAL NOT NULL,
+                $PRODUCT_IMAGE TEXT NOT NULL
             )
         """.trimIndent()
 

@@ -48,6 +48,7 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+
 }
 
 dependencies {
@@ -62,7 +63,7 @@ dependencies {
     implementation(libs.material3)
 
     testImplementation(libs.junit)
-    testImplementation(libs.junit.jupiter)
+
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.espresso.core)
     androidTestImplementation(platform(libs.compose.bom))

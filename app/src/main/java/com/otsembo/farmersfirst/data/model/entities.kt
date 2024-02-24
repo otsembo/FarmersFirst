@@ -16,12 +16,16 @@ data class User(
  * @property name The name of the product.
  * @property description The description of the product.
  * @property stock The stock quantity of the product.
+ * @property price The price of an individual product
+ * @property image The image URL of an individual product
  */
 data class Product(
     var id: Int = 0,
     val name: String,
     val description: String,
-    val stock: Float
+    val stock: Int,
+    val price: Float,
+    val image: String,
 )
 
 /**

@@ -1,37 +1,27 @@
-package com.otsembo.farmersfirst.data.database
+package com.otsembo.farmersfirst.data.database.dao
 
-import android.content.Context
-import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.otsembo.farmersfirst.data.database.dao.UserDao
+import com.otsembo.farmersfirst.data.database.DBTest
+import com.otsembo.farmersfirst.data.database.testUser
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.test.runTest
-import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 
 
 @RunWith(AndroidJUnit4::class)
-class UserDaoTest {
+class UserDaoTest: DBTest() {
 
-    private lateinit var dbHelper: AppDatabaseHelper
     private lateinit var userDao: UserDao
 
     private suspend fun addUser() = userDao.create(testUser).first()
 
     @Before
     fun setUp() {
-        val context = ApplicationProvider.getApplicationContext<Context>()
-        dbHelper = AppDatabaseHelper(context, null, "farmers_first_test")
+        initDB()
         userDao = UserDao(dbHelper.writableDatabase)
-    }
-
-    @After
-    fun tearDown() {
-        dbHelper.refresh(dbHelper.writableDatabase)
-        dbHelper.close()
     }
 
     @Test
@@ -47,7 +37,7 @@ class UserDaoTest {
     fun testDeleteUser_SuccessfullyDeletesUserFromDatabase() = runTest {
         val addedUser = addUser()
         addedUser?.let { user ->
-            val deleted = userDao.delete(user).first()
+            val deleted = userDao.delete(user.id).first()
             val results = userDao.find(user.id).first()
             assert(results == null && deleted){ "Could not remove user from database" }
         }
@@ -58,7 +48,7 @@ class UserDaoTest {
         val addedUser = addUser()
         val updatedEmail = "updated@example.com"
         addedUser?.let { user ->
-            val updated = userDao.update(user.copy(email = updatedEmail)).first()
+            val updated = userDao.update(user.copy(email = updatedEmail), user.id).first()
             val results = userDao.find(user.id).first()
             assert( updated != null && results != null && results.email == updatedEmail )
         }
