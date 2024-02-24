@@ -12,6 +12,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.last
+import kotlinx.coroutines.flow.map
 
 /**
  * Interface for the basket repository, defining methods for managing baskets and basket items.
@@ -77,27 +79,28 @@ class BasketRepository(
 
     override suspend fun fetchLatestBasketItems(userId: Int): Flow<AppResource<List<BasketItem>>> =
         dbTransact(flow{
-            basketDao.queryWhere(
+            val basketItems = basketDao.queryWhere(
                 query = """
                 ${AppDatabaseHelper.BASKET_USER} = ? AND 
                 ${AppDatabaseHelper.BASKET_STATUS} = ? 
                 LIMIT 1 ORDER BY ${AppDatabaseHelper.BASKET_ID} DESC
                 """.trimIndent(),
                 params = arrayOf(userId.toString(), "pending")
-            ).collectLatest {
+            )
+            emitAll(basketItems.map {
                 if(it.isEmpty())
-                    emit(emptyList())
-                else{
+                    emptyList()
+                else {
                     val basketId = it.last().id
-                    val basketItems = basketItemDao.queryWhere(
+                    val basketItemsList = basketItemDao.queryWhere(
                         query = """
                             ${AppDatabaseHelper.BASKET_ITEM_BASKET} = ?
                         """.trimIndent(),
                         params = arrayOf("$basketId")
                     )
-                    emitAll(basketItems)
+                    basketItemsList.last()
                 }
-            }
+            })
         })
 
     override suspend fun addItemToBasket(
@@ -106,7 +109,8 @@ class BasketRepository(
         productId: Int,
         qty: Int
     ): Flow<AppResource<List<BasketItem>>> = dbTransact(flow {
-        productDao.find(productId).collectLatest { value: Product? ->
+        val productList = productDao.find(productId)
+        productList.collectLatest { value: Product? ->
             value?.let {
                 basketItemDao.create(
                     item = BasketItem(
@@ -127,10 +131,10 @@ class BasketRepository(
         }
     })
 
-    override suspend fun updateBasketItem(basketItem: BasketItem): Flow<AppResource<BasketItem?>> =
-        dbTransact(basketItemDao.update(basketItem, basketItem.id))
-
     override suspend fun removeItemFromBasket(basketItemId: Int): Flow<AppResource<Boolean>> =
         dbTransact(basketItemDao.delete(basketItemId))
+
+    override suspend fun updateBasketItem(basketItem: BasketItem): Flow<AppResource<BasketItem?>> =
+        dbTransact(basketItemDao.update(basketItem, basketItem.id))
 
 }

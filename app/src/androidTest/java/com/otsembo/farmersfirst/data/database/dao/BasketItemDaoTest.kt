@@ -14,7 +14,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-class BasketItemItemDaoTest: DBTest() {
+class BasketItemDaoTest: DBTest() {
 
     private lateinit var basketItemDao: BasketItemDao
     private lateinit var basketDao: BasketDao
