@@ -23,7 +23,7 @@ abstract class BaseDao<T>(
     /**
      * Abstract method to build an entity from a cursor.
      */
-    abstract fun Cursor.buildEntity(): T
+    abstract suspend fun Cursor.buildEntity(): T
 
     /**
      * Abstract method to get content values from an entity.

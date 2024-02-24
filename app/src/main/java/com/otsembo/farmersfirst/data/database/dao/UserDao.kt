@@ -22,7 +22,7 @@ class UserDao(db: SQLiteDatabase) :
     /**
      * Constructs a User object from the current cursor position.
      */
-    override fun Cursor.buildEntity(): User {
+    override suspend fun Cursor.buildEntity(): User {
         val id = getInt(0)
         val email = getString(1)
         return User(id, email)

@@ -16,7 +16,7 @@ class ProductDao(db: SQLiteDatabase) :
     /**
      * Builds a Product entity from the current cursor position.
      */
-    override fun Cursor.buildEntity(): Product =
+    override suspend fun Cursor.buildEntity(): Product =
         Product(
             id = getInt(0),
             name = getString(1),

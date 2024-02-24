@@ -103,10 +103,10 @@ class AppDatabaseHelper(
             )
         """.trimIndent()
 
-        private val dropProductsTableQuery = "DROP TABLE IF EXISTS $TABLE_PRODUCTS;"
-        private val dropUsersTableQuery = "DROP TABLE IF EXISTS $TABLE_USERS;"
-        private val dropBasketTableQuery = "DROP TABLE IF EXISTS $TABLE_BASKET;"
-        private val dropBasketItemsTableQuery = "DROP TABLE IF EXISTS $TABLE_BASKET_ITEMS;"
+        private const val dropProductsTableQuery = "DROP TABLE IF EXISTS $TABLE_PRODUCTS;"
+        private const val dropUsersTableQuery = "DROP TABLE IF EXISTS $TABLE_USERS;"
+        private const val dropBasketTableQuery = "DROP TABLE IF EXISTS $TABLE_BASKET;"
+        private const val dropBasketItemsTableQuery = "DROP TABLE IF EXISTS $TABLE_BASKET_ITEMS;"
 
 
     }
