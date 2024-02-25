@@ -39,26 +39,34 @@ import androidx.navigation.NavController
 import com.otsembo.farmersfirst.R
 import com.otsembo.farmersfirst.ui.navigation.AppRoutes
 import com.otsembo.farmersfirst.ui.theme.FarmersFirstTheme
-
+/**
+ * Composable function to display the authentication screen.
+ *
+ * @param modifier Modifier for configuring the layout behavior of this component.
+ * @param isWideScreen Boolean indicating whether the screen is wide or not.
+ * @param viewModel ViewModel for managing authentication screen state.
+ * @param navController NavController for navigating between screens.
+ */
 @Composable
 fun AuthScreen(
-    modifier: Modifier =  Modifier,
+    modifier: Modifier = Modifier,
     isWideScreen: Boolean = false,
     viewModel: AuthScreenVM,
     navController: NavController,
 ) {
-
+    // Collecting the authentication UI state from the view model
     val uiState: AuthUiState by viewModel.authUiState.collectAsState()
 
+    // Effect to navigate to the home screen if the user is already signed in
     LaunchedEffect(key1 = uiState, block = {
-        if(uiState.isSignedIn) navController.navigate(AppRoutes.AppHome)
+        if (uiState.isSignedIn) navController.navigate(AppRoutes.AppHome)
     })
 
-
+    // Main container for the authentication screen
     Box(
         modifier = modifier
     ) {
-
+        // Background image
         Image(
             painter = painterResource(id = R.drawable.auth_background),
             contentDescription = "A farmer looking into a tablet",
@@ -67,9 +75,9 @@ fun AuthScreen(
             contentScale = ContentScale.Crop
         )
 
-        
-        if(isWideScreen){
-
+        // Displaying authentication card based on screen width
+        if (isWideScreen) {
+            // Auth card for wide screens
             ElevatedCard(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
@@ -78,13 +86,13 @@ fun AuthScreen(
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 shape = RoundedCornerShape(
                     topStart = dimensionResource(id = R.dimen.banner_card_radius),
-                    bottomStart = dimensionResource(id = R.dimen.banner_card_radius)),
+                    bottomStart = dimensionResource(id = R.dimen.banner_card_radius)
+                ),
             ) {
                 AuthCardUi(isWideScreen, onOAuthSignInRequest = { viewModel.handleAuthActions(AuthActions.RequestSignIn) })
             }
-
         } else {
-
+            // Auth card for other screen sizes
             ElevatedCard(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
@@ -93,24 +101,27 @@ fun AuthScreen(
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 shape = RoundedCornerShape(
                     topStart = dimensionResource(id = R.dimen.banner_card_radius),
-                    topEnd = dimensionResource(id = R.dimen.banner_card_radius)),
+                    topEnd = dimensionResource(id = R.dimen.banner_card_radius)
+                ),
             ) {
-
                 AuthCardUi(isWideScreen, onOAuthSignInRequest = { viewModel.handleAuthActions(AuthActions.RequestSignIn) })
-
             }
-
         }
-
     }
 }
 
+/**
+ * Composable function to display the authentication card UI.
+ *
+ * @param isWideScreen Boolean indicating whether the screen is wide or not.
+ * @param onOAuthSignInRequest Callback for handling OAuth sign-in requests.
+ */
 @Composable
 fun AuthCardUi(
     isWideScreen: Boolean = false,
     onOAuthSignInRequest: () -> Unit = {},
 ) {
-
+    // Column composable for arranging UI elements vertically
     Column {
         Column(
             modifier = Modifier
@@ -118,33 +129,32 @@ fun AuthCardUi(
                 .padding(all = 24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
-
         ) {
-
+            // Title text
             Text(
                 text = "The next generation of farming",
-                style = if(isWideScreen) MaterialTheme.typography.displayMedium else MaterialTheme.typography.headlineMedium,
+                style = if (isWideScreen) MaterialTheme.typography.displayMedium else MaterialTheme.typography.headlineMedium,
                 textAlign = TextAlign.Center,
                 fontWeight = FontWeight.Bold
             )
-
+            // Subtitle text
             Text(
                 modifier = Modifier.padding(top = 4.dp),
                 text = "We are safe heaven for your supplies and agricultural tech.",
-                style = if(isWideScreen) MaterialTheme.typography.headlineSmall else MaterialTheme.typography.bodyLarge,
+                style = if (isWideScreen) MaterialTheme.typography.headlineSmall else MaterialTheme.typography.bodyLarge,
                 textAlign = TextAlign.Center,
                 fontWeight = FontWeight.SemiBold
             )
-
+            // Sign-in button
             ElevatedButton(
                 modifier = Modifier
-                    .padding(top = if(isWideScreen) 40.dp else 20.dp),
+                    .padding(top = if (isWideScreen) 40.dp else 20.dp),
                 onClick = { onOAuthSignInRequest() },
                 colors = ButtonDefaults.buttonColors()
             ) {
-
-                Text(text = "Sign In", style = if(isWideScreen) MaterialTheme.typography.headlineSmall else MaterialTheme.typography.bodyLarge)
-
+                // Button text
+                Text(text = "Sign In", style = if (isWideScreen) MaterialTheme.typography.headlineSmall else MaterialTheme.typography.bodyLarge)
+                // Icon for OAuth sign-in
                 Icon(
                     modifier = Modifier
                         .size(dimensionResource(id = R.dimen.icon_size))
@@ -152,9 +162,7 @@ fun AuthCardUi(
                     painter = painterResource(id = R.drawable.ic_google),
                     contentDescription = "Google Sign In BUTTON"
                 )
-
             }
         }
     }
-
 }

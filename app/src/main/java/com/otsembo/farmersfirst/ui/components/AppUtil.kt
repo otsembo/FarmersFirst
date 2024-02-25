@@ -32,14 +32,22 @@ import androidx.compose.ui.unit.dp
 import com.otsembo.farmersfirst.ui.theme.FarmersFirstTheme
 import kotlinx.coroutines.delay
 
+/**
+ * Composable function to display a loading screen with a circular progress indicator and a text message.
+ *
+ * @param modifier Modifier for configuring the layout behavior of this component.
+ */
 @Composable
 fun LoadingScreen(
     modifier: Modifier = Modifier
 ) {
+    // Mutable state variable to track progress of the loading indicator
     var progress by remember { mutableFloatStateOf(0.0f) }
 
+    // Animatable for dynamically changing the color of the loading indicator
     val animatedColor = remember { Animatable(Color.Blue) }
 
+    // Launch effect to animate the color change of the loading indicator continuously
     LaunchedEffect(Unit) {
         animatedColor.animateTo(
             targetValue = Color.Red,
@@ -50,6 +58,7 @@ fun LoadingScreen(
         )
     }
 
+    // Box composable to contain the loading indicator and text message
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -57,22 +66,25 @@ fun LoadingScreen(
         contentAlignment = Alignment.Center
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            // Circular progress indicator
             CircularProgressIndicator(
                 modifier = Modifier.size(50.dp),
                 progress = { progress },
                 color = animatedColor.value,
                 strokeWidth = 5.dp,
             )
+            // Text message below the loading indicator
             Text(
                 text = "Please wait. Loading ...",
                 style = MaterialTheme.typography.headlineSmall,
                 modifier = Modifier.padding(top = 8.dp),
                 fontWeight = FontWeight.ExtraBold,
                 textAlign = TextAlign.Center
-                )
+            )
         }
     }
 
+    // Launch effect to continuously update the progress of the loading indicator
     LaunchedEffect(Unit) {
         while (true) {
             delay(5)
@@ -84,10 +96,16 @@ fun LoadingScreen(
     }
 }
 
-
+/**
+ * Composable function to display an error screen with an error icon and an error message.
+ *
+ * @param errorMessage The error message to be displayed.
+ */
 @Composable
 fun ErrorScreen(
-    errorMessage: String) {
+    errorMessage: String
+) {
+    // Column composable to display the error icon and message vertically centered
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -95,36 +113,21 @@ fun ErrorScreen(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
+        // Error icon
         Icon(
             imageVector = Icons.Default.ErrorOutline,
             contentDescription = null,
             modifier = Modifier.size(50.dp),
             tint = MaterialTheme.colorScheme.error
         )
-
+        // Error message below the error icon
         Text(
             modifier = Modifier.padding(top = 8.dp),
             text = errorMessage,
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.error,
             fontWeight = FontWeight.SemiBold,
-            textAlign = TextAlign.Center,
+            textAlign = TextAlign.Center
         )
     }
-}
-
-@Preview
-@Composable
-fun ErrorScreenPreview() {
-    FarmersFirstTheme {
-        ErrorScreen(errorMessage = "An error occurred. Please try again.")
-    }
-}
-
-
-@Preview(showSystemUi = true)
-@Composable
-fun LoadingScreenPreview() {
-    LoadingScreen()
 }

@@ -2,6 +2,8 @@ package com.otsembo.farmersfirst.di
 
 import android.database.sqlite.SQLiteDatabase
 import com.otsembo.farmersfirst.data.database.AppDatabaseHelper
+import com.otsembo.farmersfirst.data.database.FarmersDBSeed
+import com.otsembo.farmersfirst.data.database.IFarmersDBSeed
 import com.otsembo.farmersfirst.data.database.dao.BasketDao
 import com.otsembo.farmersfirst.data.database.dao.BasketItemDao
 import com.otsembo.farmersfirst.data.database.dao.ProductDao
@@ -29,7 +31,8 @@ import org.koin.dsl.module
 
 val AppModule = module {
     // database setup
-    single <SQLiteDatabase> { AppDatabaseHelper(context = androidContext()).writableDatabase  }
+    single <AppDatabaseHelper> { AppDatabaseHelper(context = androidContext()) }
+    single <SQLiteDatabase> { get<AppDatabaseHelper>().writableDatabase  }
 
     // DAO setup
     single <UserDao> { UserDao(get()) }
@@ -42,6 +45,7 @@ val AppModule = module {
     single <IAuthRepository> { AuthRepository(activityContext = androidContext(), "", get()) }
     single <IBasketRepository> { BasketRepository(get(), get(), get()) }
     single <IProductRepository> { ProductRepository(get()) }
+    single <IFarmersDBSeed> { FarmersDBSeed(get(), get()) }
 
     // ViewModels
     viewModel <AuthScreenVM> { AuthScreenVM(androidApplication(), get()) }
