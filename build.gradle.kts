@@ -3,5 +3,12 @@
 plugins {
     alias(libs.plugins.androidApplication) apply false
     alias(libs.plugins.kotlinAndroid) apply false
+    id("org.jetbrains.dokka") version "1.9.10"
+}
+tasks.dokkaHtml {
+    outputDirectory.set(projectDir.resolve("documentation/html"))
+}
+subprojects {
+    apply(plugin = "org.jetbrains.dokka")
 }
 true // Needed to make the Suppress annotation work for the plugins block

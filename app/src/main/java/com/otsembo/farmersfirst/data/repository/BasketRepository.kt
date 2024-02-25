@@ -66,6 +66,15 @@ interface IBasketRepository {
     suspend fun updateBasketItem(basketItem: BasketItem): Flow<AppResource<BasketItem?>>
 }
 
+/**
+ * Repository class responsible for handling basket-related operations,
+ * such as creating, updating, and retrieving basket items.
+ * Implements the [IBasketRepository] interface.
+ *
+ * @param productDao The data access object for products.
+ * @param basketDao The data access object for baskets.
+ * @param basketItemDao The data access object for basket items.
+ */
 class BasketRepository(
     private val productDao: ProductDao,
     private val basketDao: BasketDao,
