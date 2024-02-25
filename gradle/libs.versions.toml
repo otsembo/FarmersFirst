@@ -4,6 +4,7 @@ credentials = "1.3.0-alpha01"
 datastore-preferences-core = "1.0.0"
 googleid = "1.1.0"
 junit-jupiter = "5.9.1"
+koin-android = "3.5.3"
 kotlin = "1.9.0"
 core-ktx = "1.12.0"
 junit = "4.13.2"
@@ -25,6 +26,8 @@ junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-test-ext-junit" }
 espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso-core" }
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit-jupiter" }
+koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin-android" }
+koin-test-junit4 = { module = "io.insert-koin:koin-test-junit4", version.ref = "koin-android" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization-json" }
 lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycle-runtime-ktx" }
 activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity-compose" }

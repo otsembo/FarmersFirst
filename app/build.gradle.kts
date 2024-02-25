@@ -72,6 +72,11 @@ dependencies {
 
     implementation(libs.androidx.datastore.preferences.core)
 
+    // Koin for Android
+    implementation(libs.koin.android)
+    // Koin for Tests
+    testImplementation(libs.koin.test.junit4)
+
     testImplementation(libs.junit)
     testImplementation(libs.mockk)
 
