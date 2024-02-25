@@ -1,5 +1,6 @@
 package com.otsembo.farmersfirst.ui.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationRail
 import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.Text
@@ -59,15 +61,19 @@ fun AppNavRail(
     var selectedItem by remember { mutableIntStateOf(0) }
 
     NavigationRail(
-        modifier = modifier.fillMaxHeight()
+        modifier = modifier
+            .fillMaxHeight(),
+        containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+        contentColor = MaterialTheme.colorScheme.onTertiaryContainer
     ) {
         navRailOptions.forEachIndexed { index, option ->
             NavigationRailItem(
+                modifier = Modifier.padding(top = 4.dp),
                 selected = selectedItem == index,
                 onClick = {
                     selectedItem = index
                     option.onClick() },
-                icon = { AppBarIcon(icon = option.icon) },
+                icon = { Icon(imageVector = option.icon,contentDescription = null) },
                 label = { Text(text = option.title) },
                 alwaysShowLabel = false
             )
