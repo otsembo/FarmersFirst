@@ -62,6 +62,11 @@ dependencies {
     implementation(libs.ui.graphics)
     implementation(libs.ui.tooling.preview)
     implementation(libs.material3)
+    implementation(libs.androidx.material.icons.extended)
+
+    implementation(libs.androidx.material3.window.size)
+
+    implementation(libs.androidx.navigation.compose)
 
     implementation(libs.googleid)
     implementation(libs.androidx.credentials)

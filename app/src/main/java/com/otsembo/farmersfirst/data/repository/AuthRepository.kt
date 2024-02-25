@@ -7,13 +7,16 @@ package com.otsembo.farmersfirst.data.repository
  import com.google.android.libraries.identity.googleid.GetGoogleIdOption
  import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
  import com.otsembo.farmersfirst.common.AppResource
+ import com.otsembo.farmersfirst.common.coerceTo
  import com.otsembo.farmersfirst.data.database.AppDatabaseHelper
  import com.otsembo.farmersfirst.data.database.dao.UserDao
  import com.otsembo.farmersfirst.data.model.User
  import kotlinx.coroutines.flow.Flow
  import kotlinx.coroutines.flow.catch
+ import kotlinx.coroutines.flow.emitAll
  import kotlinx.coroutines.flow.flow
  import kotlinx.coroutines.flow.last
+ import kotlinx.coroutines.flow.map
  import java.security.MessageDigest
  import java.util.UUID
 
@@ -34,6 +37,8 @@ interface IAuthRepository {
      * @return A flow of AppResource representing the result of the sign-out operation.
      */
     suspend fun signOutUser(): Flow<AppResource<Boolean>>
+
+    suspend fun checkIfSignedIn(): Flow<AppResource<Boolean>>
 }
 
 
@@ -65,7 +70,7 @@ class AuthRepository (
      * @return A flow of [AppResource] representing the result of the sign-in operation.
      */
     override suspend fun signInUser(googleIdOption: GetGoogleIdOption?): Flow<AppResource<String?>> =
-        flow<AppResource<String?>> {
+        flow {
 
             emit(AppResource.Loading())
 
@@ -86,16 +91,20 @@ class AuthRepository (
             val signInToken = tokenCredential.idToken
 
             userEmail?.let {
-                val user = userDao.queryWhere("email = ?", arrayOf(it)).last()
+                val user = userDao.queryWhere("${AppDatabaseHelper.USER_EMAIL} = ?", arrayOf(it)).last()
                 if(user.isEmpty()){
-                    // no existing user
-                    val createUser = userDao.create(User(id = 0, it)).last()
-                    if(createUser == null){
-                        throw Exception("Could not create your account!")
-                    }else{
-                        emit(AppResource.Success(result = signInToken))
-                    }
+                    // if no existing user, create one then throw exception if error occurs
+                    userDao.create(User(id = 0, it)).last() ?: throw Exception("Could not create your account!")
                 }
+                emitAll(userPrefRepository.addUserToStore(signInToken).map { tokenStoreResult ->
+                    tokenStoreResult.coerceTo { res ->
+                        when(res){
+                            is AppResource.Success -> signInToken
+                            else-> null
+                        }
+                    }
+                })
+
             }
         }.catch { cause: Throwable ->
             if(cause is NoCredentialException)
@@ -118,6 +127,19 @@ class AuthRepository (
             else emit(AppResource.Error("Something went wrong"))
         }.catch { emit(AppResource.Error(it.message ?: "Something went wrong")) }
 
+    override suspend fun checkIfSignedIn(): Flow<AppResource<Boolean>> =
+        flow {
+            emit(AppResource.Loading())
+            emitAll(userPrefRepository.fetchToken().map { res ->
+                res.coerceTo {
+                    when(it){
+                        is AppResource.Error -> false
+                        is AppResource.Loading -> false
+                        is AppResource.Success -> true
+                    }
+                }
+            })
+        }
 
     /**
      * Builds a Google ID option for signing in based on the provided authorized filter.

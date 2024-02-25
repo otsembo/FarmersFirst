@@ -26,3 +26,23 @@ sealed class AppResource<T>(val data: T? = null, private val message: String? = 
      */
     data class Loading<T>(val result: T? = null) : AppResource<T>(result)
 }
+
+
+/**
+ * Extension function for AppResource, used to coerce the type of the resource
+ * @param action The transformation function to be applied to the resource
+ * @return AppResource<T> The coerced resource with type T
+ */
+fun <T, R> AppResource<R>.coerceTo(action: (AppResource<R>) -> T): AppResource<T> {
+    // Check the type of the current AppResource
+    return when (this) {
+        // If the current resource is an error, return a new AppResource.Error with the same error info
+        is AppResource.Error -> AppResource.Error(info = info)
+        // If the current resource is a loading state, return a new AppResource.Loading
+        is AppResource.Loading -> AppResource.Loading()
+        // If the current resource is a success, apply the provided transformation function to it
+        // and wrap the result in a new AppResource.Success of type T
+        is AppResource.Success -> AppResource.Success(result = action(this))
+    }
+}
+

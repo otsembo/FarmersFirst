@@ -14,7 +14,10 @@ import com.otsembo.farmersfirst.data.repository.IProductRepository
 import com.otsembo.farmersfirst.data.repository.IUserPrefRepository
 import com.otsembo.farmersfirst.data.repository.ProductRepository
 import com.otsembo.farmersfirst.data.repository.UserPreferencesRepository
+import com.otsembo.farmersfirst.ui.screens.auth.AuthScreenVM
+import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
+import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.scope.get
 import org.koin.dsl.module
 
@@ -39,5 +42,8 @@ val AppModule = module {
     single <IAuthRepository> { AuthRepository(activityContext = androidContext(), "", get()) }
     single <IBasketRepository> { BasketRepository(get(), get(), get()) }
     single <IProductRepository> { ProductRepository(get()) }
+
+    // ViewModels
+    viewModel <AuthScreenVM> { AuthScreenVM(androidApplication(), get()) }
 
 }
