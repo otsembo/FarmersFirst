@@ -4,8 +4,11 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
@@ -17,9 +20,13 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navigation
 import com.otsembo.farmersfirst.data.repository.AuthRepository
 import com.otsembo.farmersfirst.data.repository.UserPreferencesRepository
 import com.otsembo.farmersfirst.ui.navigation.AppRoutes
@@ -55,8 +62,8 @@ class MainActivity : ComponentActivity() {
                     val windowSize = calculateWindowSizeClass(activity = this)
                     val isWideScreen = windowSize.widthSizeClass >= WindowWidthSizeClass.Medium
 
-                    NavHost(navController = navController, startDestination = AppRoutes.Auth ){
-                        composable(AppRoutes.Auth){
+                    NavHost(navController = navController, startDestination = AppRoutes.AppAuth ){
+                        composable(AppRoutes.AppAuth){
                             AuthScreen(
                                 isWideScreen = isWideScreen,
                                 viewModel = authScreenVM,
@@ -64,8 +71,12 @@ class MainActivity : ComponentActivity() {
                             )
                         }
 
-                        composable(AppRoutes.Products){
-                            ProductsScreen()
+                        navigation(startDestination = AppRoutes.Home.Products, route = AppRoutes.AppHome){
+                            composable(AppRoutes.Home.Products){
+                                ProductsScreen(
+                                    isWideScreen = isWideScreen
+                                )
+                            }
                         }
 
                     }
@@ -73,6 +84,28 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+}
+
+@Composable
+fun HomePage(
+    navController: NavHostController
+) {
+
+    Scaffold(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        paddingValues ->
+
+        NavHost(navController = navController, startDestination = AppRoutes.Home.Products ){
+            composable(AppRoutes.Home.Products){
+                ProductsScreen(modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues))
+            }
+        }
+
+    }
+
 }
 
 @Composable

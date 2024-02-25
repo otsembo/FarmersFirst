@@ -51,7 +51,7 @@ fun AuthScreen(
     val uiState: AuthUiState by viewModel.authUiState.collectAsState()
 
     LaunchedEffect(key1 = uiState, block = {
-        if(uiState.isSignedIn) navController.navigate(AppRoutes.Products)
+        if(uiState.isSignedIn) navController.navigate(AppRoutes.AppHome)
     })
 
 

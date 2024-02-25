@@ -1,7 +1,15 @@
 package com.otsembo.farmersfirst.ui.navigation
 
 object AppRoutes {
-    // definitions
-    val Auth = "auth"
-    val Products = "products"
+    // root pages
+    const val AppAuth = "auth"
+    const val AppHome = "home"
+
+    // sub page navigation
+    object Home {
+        const val Products = "home_products"
+        const val Basket = "home_basket"
+        const val Checkout = "home_checkout"
+    }
+
 }
