@@ -21,6 +21,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -94,6 +95,7 @@ fun AppNavRail(
 @Composable
 fun AppBarIcon(
     icon: ImageVector,
+    tint: Color = Color.Transparent,
     onClick: () -> Unit = {}
 ) {
     Icon(
@@ -101,7 +103,8 @@ fun AppBarIcon(
         contentDescription = "Menu drawer",
         modifier = Modifier
             .size(30.dp)
-            .clickable { onClick() }
+            .clickable { onClick() },
+        tint = if(tint == Color.Transparent) MaterialTheme.colorScheme.surfaceTint else tint
     )
 }
 

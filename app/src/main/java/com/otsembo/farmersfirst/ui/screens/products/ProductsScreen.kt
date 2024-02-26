@@ -1,12 +1,10 @@
 package com.otsembo.farmersfirst.ui.screens.products
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,53 +18,34 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddShoppingCart
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.NotificationImportant
-import androidx.compose.material.icons.filled.SavedSearch
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.ShoppingBasket
 import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CardElevation
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.BlendMode
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Devices
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.otsembo.farmersfirst.R
@@ -79,13 +58,14 @@ import com.otsembo.farmersfirst.ui.components.ErrorScreen
 import com.otsembo.farmersfirst.ui.components.LoadingScreen
 import com.otsembo.farmersfirst.ui.components.NavRailOption
 import com.otsembo.farmersfirst.ui.components.SearchField
-import com.otsembo.farmersfirst.ui.theme.FarmersFirstTheme
+import com.otsembo.farmersfirst.ui.navigation.AppRoutes
 import kotlin.math.roundToInt
 
 @Composable
 fun ProductsScreen(
     modifier: Modifier =  Modifier,
     isWideScreen: Boolean = false,
+    navController: NavHostController,
     viewModel: ProductsScreenVM,
     ) {
 
@@ -172,7 +152,9 @@ fun ProductsScreen(
                             columns = GridCells.Fixed(4),){
                             items(uiState.productsList){
                                 ProductItem(
-                                    product = it
+                                    product = it,
+                                    onClick = { index ->
+                                        navController.navigate(AppRoutes.Home.productDetails(index)) }
                                 )
                             }
                         }
@@ -231,7 +213,7 @@ fun ProductsScreen(
             }
 
             SearchField(
-                label = "Find resources ...",
+                label = "SEARCH",
                 modifier = Modifier.fillMaxWidth(),
                 text = uiState.searchTerm,
                 onTextChange = { text -> viewModel.handleActions(ProductsActions.SearchTermChange(text)) },
@@ -254,12 +236,15 @@ fun ProductsScreen(
                     LazyVerticalGrid(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
-                        columns = GridCells.Fixed(2),){
-
+                        columns = GridCells.Fixed(2),
+                        ){
                         items(uiState.productsList){
-                            ProductItem(product = it)
+                            ProductItem(
+                                product = it,
+                                onClick = { index ->
+                                    navController.navigate(AppRoutes.Home.productDetails(index)) }
+                            )
                         }
-
                     }
                 }
             }
@@ -271,11 +256,13 @@ fun ProductsScreen(
 @Composable
 fun ProductItem(
     product: Product,
+    onClick: (Int) -> Unit = {},
 ) {
 
     ElevatedCard(
         modifier = Modifier
-            .width(200.dp),
+            .width(200.dp)
+            .clickable { onClick(product.id) },
         elevation = CardDefaults.cardElevation(
             defaultElevation = 4.dp,
         ),

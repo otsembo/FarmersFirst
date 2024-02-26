@@ -15,6 +15,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -43,16 +44,16 @@ fun SearchField(
         verticalAlignment = Alignment.CenterVertically
     ) {
 
-        OutlinedTextField(
+        TextField(
             modifier = Modifier
                 .weight(4f),
             value = text,
             onValueChange = { newText -> onTextChange(newText) },
             label = {
-                Text(text = label, style = MaterialTheme.typography.bodyMedium)
+                Text(text = label, style = MaterialTheme.typography.labelLarge)
             },
-            textStyle = MaterialTheme.typography.bodyMedium,
-            shape = RoundedCornerShape(10.dp),
+            textStyle = MaterialTheme.typography.bodySmall,
+            shape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp),
             keyboardActions = KeyboardActions(onDone = { onSubmitSearch(text) }),
             leadingIcon = {
                 Icon(

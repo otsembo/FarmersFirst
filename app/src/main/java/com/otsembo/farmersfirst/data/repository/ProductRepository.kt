@@ -25,6 +25,8 @@ interface IProductRepository {
     suspend fun showAllProducts(): Flow<AppResource<List<Product>>>
 
     suspend fun searchProduct(searchTerm: String): Flow<AppResource<List<Product>>>
+
+    suspend fun find(id: Int): Flow<AppResource<Product?>>
 }
 
 
@@ -43,6 +45,9 @@ class ProductRepository(
                 """
                     ${AppDatabaseHelper.PRODUCT_NAME} LIKE ? OR ${AppDatabaseHelper.PRODUCT_DESC} LIKE ?
                 """.trimIndent(),
-            params = arrayOf("'%$searchTerm%'", "'%$searchTerm%'")
+            params = arrayOf("%$searchTerm%", "%$searchTerm%")
         ))
+
+    override suspend fun find(id: Int): Flow<AppResource<Product?>> =
+        dbTransact(productDao.find(id))
 }

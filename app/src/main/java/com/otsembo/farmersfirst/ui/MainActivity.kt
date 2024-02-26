@@ -4,27 +4,14 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.NavController
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
 import com.otsembo.farmersfirst.data.repository.AuthRepository
@@ -32,7 +19,9 @@ import com.otsembo.farmersfirst.data.repository.UserPreferencesRepository
 import com.otsembo.farmersfirst.ui.navigation.AppRoutes
 import com.otsembo.farmersfirst.ui.screens.auth.AuthScreen
 import com.otsembo.farmersfirst.ui.screens.auth.AuthScreenVM
-import com.otsembo.farmersfirst.ui.screens.auth.AuthUiState
+import com.otsembo.farmersfirst.ui.screens.basket.BasketScreen
+import com.otsembo.farmersfirst.ui.screens.product_details.ProductDetailsScreen
+import com.otsembo.farmersfirst.ui.screens.product_details.ProductDetailsScreenVM
 import com.otsembo.farmersfirst.ui.screens.products.ProductsScreen
 import com.otsembo.farmersfirst.ui.screens.products.ProductsScreenVM
 import com.otsembo.farmersfirst.ui.theme.FarmersFirstTheme
@@ -43,6 +32,7 @@ class MainActivity : ComponentActivity() {
     // inject view models
     private val authScreenVM: AuthScreenVM by inject()
     private val productsScreenVM: ProductsScreenVM by inject()
+    private val productDetailsScreenVM: ProductDetailsScreenVM by inject()
 
     @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,6 +55,7 @@ class MainActivity : ComponentActivity() {
                     val isWideScreen = windowSize.widthSizeClass >= WindowWidthSizeClass.Medium
 
                     NavHost(navController = navController, startDestination = AppRoutes.AppAuth ){
+
                         composable(AppRoutes.AppAuth){
                             AuthScreen(
                                 isWideScreen = isWideScreen,
@@ -74,11 +65,32 @@ class MainActivity : ComponentActivity() {
                         }
 
                         navigation(startDestination = AppRoutes.Home.Products, route = AppRoutes.AppHome){
+
                             composable(AppRoutes.Home.Products){
                                 ProductsScreen(
                                     isWideScreen = isWideScreen,
-                                    viewModel = productsScreenVM
+                                    viewModel = productsScreenVM,
+                                    navController = navController
                                 )
+                            }
+
+                            composable(AppRoutes.Home.ProductDetails){  backStackEntry ->
+
+                                val productId = backStackEntry
+                                    .arguments
+                                    ?.getString(AppRoutes.Home.productId)
+                                    ?.toInt() ?: 0
+
+                                ProductDetailsScreen(
+                                    isWideScreen = isWideScreen,
+                                    viewModel = productDetailsScreenVM,
+                                    navController = navController,
+                                    productId = productId
+                                )
+                            }
+
+                            composable(AppRoutes.Home.Basket){
+                                BasketScreen()
                             }
                         }
 

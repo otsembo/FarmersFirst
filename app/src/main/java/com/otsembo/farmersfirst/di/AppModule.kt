@@ -17,6 +17,7 @@ import com.otsembo.farmersfirst.data.repository.IUserPrefRepository
 import com.otsembo.farmersfirst.data.repository.ProductRepository
 import com.otsembo.farmersfirst.data.repository.UserPreferencesRepository
 import com.otsembo.farmersfirst.ui.screens.auth.AuthScreenVM
+import com.otsembo.farmersfirst.ui.screens.product_details.ProductDetailsScreenVM
 import com.otsembo.farmersfirst.ui.screens.products.ProductsScreenVM
 import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
@@ -51,5 +52,6 @@ val AppModule = module {
     // ViewModels
     viewModel <AuthScreenVM> { AuthScreenVM(androidApplication(), get()) }
     viewModel <ProductsScreenVM> { ProductsScreenVM(get(), get()) }
+    viewModel <ProductDetailsScreenVM> { ProductDetailsScreenVM(get(), get()) }
 
 }

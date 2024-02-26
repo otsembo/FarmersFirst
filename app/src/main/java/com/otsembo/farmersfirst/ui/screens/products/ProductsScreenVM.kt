@@ -3,6 +3,7 @@ package com.otsembo.farmersfirst.ui.screens.products
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.otsembo.farmersfirst.common.AppResource
+import com.otsembo.farmersfirst.common.AppUiState
 import com.otsembo.farmersfirst.data.model.BasketItem
 import com.otsembo.farmersfirst.data.model.Product
 import com.otsembo.farmersfirst.data.repository.IBasketRepository
@@ -64,19 +65,22 @@ class ProductsScreenVM(
 
             ProductsActions.SubmitSearch -> {
                 viewModelScope.launch {
-                    productRepository.searchProduct(_productsUiState.value.searchTerm).collect { res ->
-                        when(res){
-                            is AppResource.Error -> _productsUiState.update {
-                                it.reset().copy(errorOccurred = true, errorMessage = res.info)
-                            }
-                            is AppResource.Loading -> _productsUiState.update {
-                                it.reset().copy(isLoading = true)
-                            }
-                            is AppResource.Success -> _productsUiState.update {
-                                it.reset().copy(productsList = res.data ?: emptyList())
+                    val searchTerm = _productsUiState.value.searchTerm
+                    if(searchTerm.isNotBlank())
+                        productRepository.searchProduct(_productsUiState.value.searchTerm).collect { res ->
+                            when(res){
+                                is AppResource.Error -> _productsUiState.update {
+                                    it.reset().copy(errorOccurred = true, errorMessage = res.info)
+                                }
+                                is AppResource.Loading -> _productsUiState.update {
+                                    it.reset().copy(isLoading = true)
+                                }
+                                is AppResource.Success -> _productsUiState.update {
+                                    it.reset().copy(productsList = res.data ?: emptyList())
+                                }
                             }
                         }
-                    }
+                    else handleActions(ProductsActions.LoadAllProducts)
                 }
             }
 
@@ -112,13 +116,16 @@ sealed class ProductsActions {
 
 data class ProductsUiState(
     val searchTerm: String = "",
-    val isLoading: Boolean = false,
-    val errorOccurred: Boolean =  false,
-    val errorMessage: String = "null",
     val productsList: List<Product> = emptyList(),
-    val basketItems: List<BasketItem> = emptyList()
-){
-    fun reset(): ProductsUiState = ProductsUiState(
-        searchTerm, isLoading = false, errorOccurred = false, errorMessage, productsList, basketItems
-    )
+    val basketItems: List<BasketItem> = emptyList(),
+    val errorOccurred: Boolean = false,
+    val isLoading: Boolean = false,
+    val errorMessage: String = "",
+): AppUiState<ProductsUiState>{
+    override fun reset(): ProductsUiState =
+        ProductsUiState(
+            searchTerm = searchTerm,
+            productsList = productsList,
+            basketItems = basketItems
+        )
 }

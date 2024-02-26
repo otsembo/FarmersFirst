@@ -46,3 +46,19 @@ fun <T, R> AppResource<R>.coerceTo(action: (AppResource<R>) -> T): AppResource<T
     }
 }
 
+/**
+ * Interface representing the UI state of the application.
+ *
+ * @param T The type of the UI state.
+ */
+interface AppUiState<T> {
+    /**
+     * Resets the UI status while keeping valid data already shown.
+     *
+     * @return The updated UI state after reset.
+     */
+    fun reset(): T
+}
+
+
+

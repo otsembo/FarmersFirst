@@ -133,7 +133,6 @@ abstract class BaseDao<T>(
     suspend fun queryWhere(query: String, params: Array<String>): Flow<List<T>> =
         flow {
             val resultList = mutableListOf<T>()
-            println("where: $query, param: ${params.toList()}")
             val cursor = db.rawQuery("SELECT * FROM $tableName WHERE $query", params)
             while (cursor.moveToNext()) {
                 resultList.add(cursor.buildEntity())

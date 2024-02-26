@@ -50,7 +50,7 @@ import com.otsembo.farmersfirst.ui.theme.FarmersFirstTheme
 @Composable
 fun AuthScreen(
     modifier: Modifier = Modifier,
-    isWideScreen: Boolean = false,
+    isWideScreen: Boolean,
     viewModel: AuthScreenVM,
     navController: NavController,
 ) {
@@ -118,7 +118,7 @@ fun AuthScreen(
  */
 @Composable
 fun AuthCardUi(
-    isWideScreen: Boolean = false,
+    isWideScreen: Boolean,
     onOAuthSignInRequest: () -> Unit = {},
 ) {
     // Column composable for arranging UI elements vertically
