@@ -92,7 +92,7 @@ class BasketRepository(
                 query = """
                 ${AppDatabaseHelper.BASKET_USER} = ? AND 
                 ${AppDatabaseHelper.BASKET_STATUS} = ? 
-                LIMIT 1 ORDER BY ${AppDatabaseHelper.BASKET_ID} DESC
+                ORDER BY ${AppDatabaseHelper.BASKET_ID} DESC LIMIT 1
                 """.trimIndent(),
                 params = arrayOf(userId.toString(), "pending")
             )

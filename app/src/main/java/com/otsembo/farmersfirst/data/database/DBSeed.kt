@@ -1,15 +1,8 @@
 package com.otsembo.farmersfirst.data.database
 
-import android.database.sqlite.SQLiteDatabase
 import com.otsembo.farmersfirst.data.database.dao.ProductDao
 import com.otsembo.farmersfirst.data.model.Product
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.conflate
-import kotlinx.coroutines.flow.emitAll
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.withContext
 
 object DBSeed {
 

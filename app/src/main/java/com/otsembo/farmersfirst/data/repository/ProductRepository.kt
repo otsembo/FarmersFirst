@@ -1,6 +1,7 @@
 package com.otsembo.farmersfirst.data.repository
 
 import com.otsembo.farmersfirst.common.AppResource
+import com.otsembo.farmersfirst.data.database.AppDatabaseHelper
 import com.otsembo.farmersfirst.data.database.dao.ProductDao
 import com.otsembo.farmersfirst.data.model.Product
 import kotlinx.coroutines.flow.Flow
@@ -22,6 +23,8 @@ interface IProductRepository {
      * @return A flow of AppResource representing the result of the operation.
      */
     suspend fun showAllProducts(): Flow<AppResource<List<Product>>>
+
+    suspend fun searchProduct(searchTerm: String): Flow<AppResource<List<Product>>>
 }
 
 
@@ -33,4 +36,13 @@ class ProductRepository(
 
     override suspend fun showAllProducts(): Flow<AppResource<List<Product>>> =
         dbTransact(productDao.findAll())
+
+    override suspend fun searchProduct(searchTerm: String): Flow<AppResource<List<Product>>> =
+        dbTransact(
+            productDao.queryWhere(
+                """
+                    ${AppDatabaseHelper.PRODUCT_NAME} LIKE ? OR ${AppDatabaseHelper.PRODUCT_DESC} LIKE ?
+                """.trimIndent(),
+            params = arrayOf("'%$searchTerm%'", "'%$searchTerm%'")
+        ))
 }

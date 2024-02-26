@@ -34,6 +34,7 @@ import com.otsembo.farmersfirst.ui.screens.auth.AuthScreen
 import com.otsembo.farmersfirst.ui.screens.auth.AuthScreenVM
 import com.otsembo.farmersfirst.ui.screens.auth.AuthUiState
 import com.otsembo.farmersfirst.ui.screens.products.ProductsScreen
+import com.otsembo.farmersfirst.ui.screens.products.ProductsScreenVM
 import com.otsembo.farmersfirst.ui.theme.FarmersFirstTheme
 import org.koin.android.ext.android.inject
 
@@ -41,6 +42,7 @@ class MainActivity : ComponentActivity() {
 
     // inject view models
     private val authScreenVM: AuthScreenVM by inject()
+    private val productsScreenVM: ProductsScreenVM by inject()
 
     @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -74,7 +76,8 @@ class MainActivity : ComponentActivity() {
                         navigation(startDestination = AppRoutes.Home.Products, route = AppRoutes.AppHome){
                             composable(AppRoutes.Home.Products){
                                 ProductsScreen(
-                                    isWideScreen = isWideScreen
+                                    isWideScreen = isWideScreen,
+                                    viewModel = productsScreenVM
                                 )
                             }
                         }
@@ -86,40 +89,3 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@Composable
-fun HomePage(
-    navController: NavHostController
-) {
-
-    Scaffold(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        paddingValues ->
-
-        NavHost(navController = navController, startDestination = AppRoutes.Home.Products ){
-            composable(AppRoutes.Home.Products){
-                ProductsScreen(modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues))
-            }
-        }
-
-    }
-
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    FarmersFirstTheme {
-        Greeting("Android")
-    }
-}

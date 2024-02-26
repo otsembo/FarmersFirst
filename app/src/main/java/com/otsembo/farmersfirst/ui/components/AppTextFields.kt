@@ -31,11 +31,10 @@ import com.otsembo.farmersfirst.R
 fun SearchField(
     modifier: Modifier = Modifier,
     label: String,
+    text: String,
     onTextChange: (String) -> Unit = { },
     onSubmitSearch: (String) -> Unit = {}
 ) {
-
-    var textItem by remember { mutableStateOf("") }
 
     Row(
         modifier = modifier
@@ -47,16 +46,14 @@ fun SearchField(
         OutlinedTextField(
             modifier = Modifier
                 .weight(4f),
-            value = textItem,
-            onValueChange = { text ->
-                textItem = text
-                onTextChange(text) },
+            value = text,
+            onValueChange = { newText -> onTextChange(newText) },
             label = {
-                Text(text = label, style = MaterialTheme.typography.bodyLarge)
+                Text(text = label, style = MaterialTheme.typography.bodyMedium)
             },
-            textStyle = MaterialTheme.typography.bodyLarge,
+            textStyle = MaterialTheme.typography.bodyMedium,
             shape = RoundedCornerShape(10.dp),
-            keyboardActions = KeyboardActions(onDone = { onSubmitSearch(textItem) }),
+            keyboardActions = KeyboardActions(onDone = { onSubmitSearch(text) }),
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Default.Search,
@@ -73,7 +70,7 @@ fun SearchField(
                 .weight(1f)
                 .height(TextFieldDefaults.MinHeight - 15.dp),
             shape = RoundedCornerShape(50.dp),
-            onClick = { onSubmitSearch(textItem) },
+            onClick = { onSubmitSearch(text) },
         ) {
 
             Icon(

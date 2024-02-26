@@ -19,6 +19,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
@@ -30,20 +31,24 @@ import com.otsembo.farmersfirst.ui.theme.FarmersFirstTheme
  * @param modifier Modifier to be applied to the app bar.
  * @param startIcon Start icon composable.
  * @param endIcon End icon composable.
+ * @param title Mid AppBar section composable.
  */
 @Composable
 fun AppBar(
     modifier: Modifier = Modifier,
     startIcon: @Composable () -> Unit = {},
     endIcon: @Composable () -> Unit = {},
+    title: @Composable () ->  Unit = {}
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
     ) {
         startIcon()
+        title()
         endIcon()
     }
 }
@@ -73,7 +78,7 @@ fun AppNavRail(
                 onClick = {
                     selectedItem = index
                     option.onClick() },
-                icon = { Icon(imageVector = option.icon,contentDescription = null) },
+                icon = { option.icon() },
                 label = { Text(text = option.title) },
                 alwaysShowLabel = false
             )
@@ -108,6 +113,6 @@ fun AppBarIcon(
  */
 data class NavRailOption(
     val title: String,
-    val icon: ImageVector,
+    val icon: @Composable () -> Unit = {},
     val onClick: () -> Unit = {},
 )

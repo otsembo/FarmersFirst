@@ -43,6 +43,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -54,15 +55,20 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.otsembo.farmersfirst.R
 import com.otsembo.farmersfirst.data.model.Product
 import com.otsembo.farmersfirst.ui.components.AppBar
@@ -74,12 +80,16 @@ import com.otsembo.farmersfirst.ui.components.LoadingScreen
 import com.otsembo.farmersfirst.ui.components.NavRailOption
 import com.otsembo.farmersfirst.ui.components.SearchField
 import com.otsembo.farmersfirst.ui.theme.FarmersFirstTheme
+import kotlin.math.roundToInt
 
 @Composable
 fun ProductsScreen(
     modifier: Modifier =  Modifier,
-    isWideScreen: Boolean = false
+    isWideScreen: Boolean = false,
+    viewModel: ProductsScreenVM,
     ) {
+
+    val uiState: ProductsUiState by viewModel.productsUiState.collectAsState()
 
     if(isWideScreen){
 
@@ -89,8 +99,25 @@ fun ProductsScreen(
 
             AppNavRail(
                 navRailOptions = listOf(
-                    NavRailOption("Home", icon = Icons.Default.Home),
-                    NavRailOption("Basket", icon = Icons.Default.ShoppingBasket)
+                    NavRailOption("Home", icon = { Icon(imageVector = Icons.Default.Home, contentDescription = "Home") }),
+                    NavRailOption("Basket", icon = {
+                        Box(modifier = Modifier){
+                            AppBarIcon(icon = Icons.Default.ShoppingCart)
+                            if(uiState.basketItems.isEmpty()) {
+                                DotWithText(
+                                    modifier = Modifier.align(Alignment.TopEnd),
+                                    "0",
+                                    color = MaterialTheme.colorScheme.error
+                                )
+                            } else {
+                                DotWithText(
+                                    modifier = Modifier.align(Alignment.TopStart),
+                                    text = uiState.basketItems.size.toString(),
+                                    color = MaterialTheme.colorScheme.secondary
+                                )
+                            }
+                        }
+                    })
                 )
             )
 
@@ -101,10 +128,31 @@ fun ProductsScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
                 ) {
 
-                SearchField(
-                    label = "Find resources ...",
-                    modifier = Modifier
-                        .fillMaxWidth(0.5f))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+
+                    Text(
+                        modifier = Modifier
+                            .weight(4f),
+                        text = "FarmersFirst",
+                        style = MaterialTheme.typography.headlineSmall,
+                        letterSpacing = 2.sp,
+                        fontWeight = FontWeight.SemiBold
+                    )
+
+                    SearchField(
+                        label = "Find resources ...",
+                        modifier = Modifier
+                            .weight(6f),
+                        text = uiState.searchTerm,
+                        onTextChange = { text -> viewModel.handleActions(ProductsActions.SearchTermChange(text)) },
+                    )
+                }
+
+
 
                 AppHeading(
                     modifier = Modifier
@@ -112,18 +160,23 @@ fun ProductsScreen(
                         .padding(top = 16.dp, bottom = 8.dp, start = 16.dp),
                     text = "All Items."
                 )
-                
-                ErrorScreen(errorMessage = "You are being hacked")
 
-                LazyVerticalGrid(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                    columns = GridCells.Fixed(4),){
-
-                    items((1..30).toList()){
-                        ProductItem()
+                // conditional rendering
+                when {
+                    uiState.isLoading -> LoadingScreen()
+                    uiState.errorOccurred -> ErrorScreen(errorMessage = uiState.errorMessage)
+                    uiState.productsList.isNotEmpty() -> {
+                        LazyVerticalGrid(
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                            columns = GridCells.Fixed(4),){
+                            items(uiState.productsList){
+                                ProductItem(
+                                    product = it
+                                )
+                            }
+                        }
                     }
-
                 }
 
             }
@@ -142,7 +195,30 @@ fun ProductsScreen(
                     AppBarIcon(icon = Icons.Default.Menu)
                 },
                 endIcon = {
-                    AppBarIcon(icon = Icons.Default.ShoppingCart)
+                    Box(modifier = Modifier){
+                        AppBarIcon(icon = Icons.Default.ShoppingCart)
+                        if(uiState.basketItems.isEmpty()) {
+                            DotWithText(
+                                modifier = Modifier.align(Alignment.TopEnd),
+                                "0",
+                                color = MaterialTheme.colorScheme.error
+                            )
+                        } else {
+                            DotWithText(
+                                modifier = Modifier.align(Alignment.TopStart),
+                                text = uiState.basketItems.size.toString(),
+                                color = MaterialTheme.colorScheme.secondary
+                            )
+                        }
+                    }
+                },
+                title =  {
+                    Text(
+                        text = "FarmersFirst",
+                        style = MaterialTheme.typography.headlineSmall,
+                        letterSpacing = 2.sp,
+                        fontWeight = FontWeight.SemiBold
+                    )
                 }
             )
 
@@ -154,7 +230,14 @@ fun ProductsScreen(
 
             }
 
-            SearchField(label = "Find resources ...", modifier = Modifier.fillMaxWidth())
+            SearchField(
+                label = "Find resources ...",
+                modifier = Modifier.fillMaxWidth(),
+                text = uiState.searchTerm,
+                onTextChange = { text -> viewModel.handleActions(ProductsActions.SearchTermChange(text)) },
+                onSubmitSearch =  { viewModel.handleActions(ProductsActions.SubmitSearch) }
+                )
+
 
 
             AppHeading(
@@ -164,28 +247,30 @@ fun ProductsScreen(
                 text = "All Items."
             )
 
-            LoadingScreen()
+            when {
+                uiState.isLoading -> LoadingScreen()
+                uiState.errorOccurred -> ErrorScreen(errorMessage = uiState.errorMessage)
+                uiState.productsList.isNotEmpty() -> {
+                    LazyVerticalGrid(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        columns = GridCells.Fixed(2),){
 
-            LazyVerticalGrid(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                columns = GridCells.Fixed(2),){
+                        items(uiState.productsList){
+                            ProductItem(product = it)
+                        }
 
-                items((1..30).toList()){
-                    ProductItem()
+                    }
                 }
-
             }
-
         }
     }
 }
 
 
-@Preview
 @Composable
 fun ProductItem(
-    product: Product = Product(0, "Farm supplies", "Something", 20, 12.0f, "")
+    product: Product,
 ) {
 
     ElevatedCard(
@@ -201,14 +286,17 @@ fun ProductItem(
             .fillMaxWidth()
             .height(155.dp)){
 
-            Image(
+            
+            AsyncImage(
                 modifier = Modifier
                     .fillMaxWidth()
                     .fillMaxHeight(),
-                painter = painterResource(id = R.drawable.auth_background),
-                contentDescription = "",
-                colorFilter = ColorFilter.tint(Color(0x69000000), BlendMode.SrcAtop),
-                contentScale = ContentScale.Crop
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(product.image)
+                    .crossfade(true)
+                    .build(), contentDescription = product.name,
+                contentScale = ContentScale.Crop,
+                colorFilter = ColorFilter.tint(Color(0x69000000), BlendMode.SrcAtop)
             )
 
             Icon(
@@ -242,15 +330,27 @@ fun ProductItem(
             verticalAlignment = Alignment.CenterVertically
         ){
 
-            Text(
-                text = "Dulacha",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onPrimaryContainer)
+            Column() {
+
+                Text(
+                    text = product.name,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    fontWeight = FontWeight.SemiBold)
+
+                Text(
+                    text = "${product.stock} items left.",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    fontStyle = FontStyle.Normal,
+                    fontWeight = FontWeight.Light
+                )
+            }
 
             Text(
-                text = "$23.00",
+                text = "$${product.price.roundToInt()}",
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.tertiary,
+                color = MaterialTheme.colorScheme.secondary,
                 fontWeight = FontWeight.ExtraBold
                 )
 
@@ -259,4 +359,25 @@ fun ProductItem(
 
 }
 
+
+@Composable
+fun DotWithText(
+    modifier: Modifier = Modifier,
+    text: String,
+    color: Color,
+    ) {
+        Box(
+            modifier = modifier
+                .size(16.dp)
+                .background(color = color, shape = CircleShape)
+                .padding(1.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = text,
+                color = Color.White,
+                style = MaterialTheme.typography.labelSmall,
+            )
+        }
+}
 
