@@ -47,6 +47,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
@@ -244,51 +245,17 @@ fun ProductDetailsContent(
 
 
         Box(modifier = Modifier.weight(1f)){
-            Row(
-                modifier = Modifier.align(Alignment.TopEnd),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
-            ) {
-                FloatingActionButton(
-                    modifier = Modifier
-                        .width(50.dp),
-                    onClick = { if(cartCount > 1) updateCount(cartCount, false) },
-                    containerColor = MaterialTheme.colorScheme.tertiary
-                ) {
-                    Text(
-                        text = "-",
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.ExtraBold
-                    )
-                }
-
-                TextField(
-                    modifier = Modifier
-                        .width(60.dp),
-                    value = "$cartCount",
-                    onValueChange = {},
-                    textStyle = TextStyle(textAlign = TextAlign.Center),
-                    colors = TextFieldDefaults.colors(
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent,
-                        focusedContainerColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Transparent
-                    )
-                )
-
-                FloatingActionButton(
-                    modifier = Modifier
-                        .width(50.dp),
-                    onClick = {  if(product.stock > cartCount) updateCount(cartCount, true) },
-                    containerColor = MaterialTheme.colorScheme.tertiary
-                ) {
-                    Text(
-                        text = "+",
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.ExtraBold
-                    )
-                }
-            }
+            CartCounter(
+                modifier = Modifier
+                    .align(Alignment.TopEnd),
+                actionModifier = Modifier
+                    .width(50.dp),
+                inputModifier = Modifier
+                    .width(60.dp),
+                updateCount = updateCount,
+                cartCount = cartCount,
+                productStock = product.stock
+            )
         }
     }
 
@@ -329,6 +296,7 @@ fun ProductDetailsContent(
     }
 }
 
+
 @Composable
 fun ProductDetailsAppBar(
     modifier: Modifier = Modifier,
@@ -353,4 +321,55 @@ fun ProductDetailsAppBar(
             )
         }
     )
+}
+
+
+@Composable
+fun CartCounter(
+    modifier: Modifier = Modifier,
+    actionModifier: Modifier = Modifier,
+    inputModifier: Modifier = Modifier,
+    inputShape: Shape = RoundedCornerShape(10.dp),
+    cartCount: Int,
+    productStock: Int,
+    updateCount: (Int, Boolean) -> Unit,
+) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+        FloatingActionButton(
+            modifier = actionModifier,
+            onClick = { if(cartCount > 1) updateCount(cartCount, false) },
+            containerColor = MaterialTheme.colorScheme.tertiary,
+            shape = inputShape,
+        ) {
+            Text(
+                text = "-",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.ExtraBold
+            )
+        }
+
+        Text(
+            modifier = inputModifier,
+            text = "$cartCount",
+            style = MaterialTheme.typography.labelLarge,
+            textAlign = TextAlign.Center
+        )
+
+        FloatingActionButton(
+            modifier = actionModifier,
+            onClick = {  if(productStock > cartCount) updateCount(cartCount, true) },
+            containerColor = MaterialTheme.colorScheme.tertiary,
+            shape = inputShape,
+        ) {
+            Text(
+                text = "+",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.ExtraBold
+            )
+        }
+    }
 }

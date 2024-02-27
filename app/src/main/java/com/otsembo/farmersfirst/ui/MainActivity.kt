@@ -20,6 +20,7 @@ import com.otsembo.farmersfirst.ui.navigation.AppRoutes
 import com.otsembo.farmersfirst.ui.screens.auth.AuthScreen
 import com.otsembo.farmersfirst.ui.screens.auth.AuthScreenVM
 import com.otsembo.farmersfirst.ui.screens.basket.BasketScreen
+import com.otsembo.farmersfirst.ui.screens.basket.BasketScreenVM
 import com.otsembo.farmersfirst.ui.screens.product_details.ProductDetailsScreen
 import com.otsembo.farmersfirst.ui.screens.product_details.ProductDetailsScreenVM
 import com.otsembo.farmersfirst.ui.screens.products.ProductsScreen
@@ -33,6 +34,7 @@ class MainActivity : ComponentActivity() {
     private val authScreenVM: AuthScreenVM by inject()
     private val productsScreenVM: ProductsScreenVM by inject()
     private val productDetailsScreenVM: ProductDetailsScreenVM by inject()
+    private val basketScreenVM: BasketScreenVM by inject()
 
     @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -87,7 +89,10 @@ class MainActivity : ComponentActivity() {
                             }
 
                             composable(AppRoutes.Home.Basket){
-                                BasketScreen()
+                                BasketScreen(
+                                    isWideScreen = isWideScreen,
+                                    viewModel = basketScreenVM,
+                                )
                             }
                         }
 
