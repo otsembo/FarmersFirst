@@ -7,14 +7,17 @@ import com.otsembo.farmersfirst.common.AppUiState
 import com.otsembo.farmersfirst.data.model.Product
 import com.otsembo.farmersfirst.data.repository.IBasketRepository
 import com.otsembo.farmersfirst.data.repository.IProductRepository
+import com.otsembo.farmersfirst.data.repository.IUserPrefRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.last
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class ProductDetailsScreenVM(
     private val productRepository: IProductRepository,
+    private val userPrefRepository: IUserPrefRepository,
     private val basketRepository: IBasketRepository,
 ): ViewModel() {
 
@@ -31,9 +34,10 @@ class ProductDetailsScreenVM(
                     it.reset().copy(cartCount = actions.cartCount)
                 }
             }
+
             is ProductDetailsActions.LoadProduct -> {
                 viewModelScope.launch {
-                    productRepository.find(actions.id).collect { res ->
+                    productRepository.find(actions.productId).collect { res ->
                         _productDetailsUiState.update {
                             when(res){
                                 is AppResource.Error ->
@@ -47,19 +51,68 @@ class ProductDetailsScreenVM(
                     }
                 }
             }
+
+            is ProductDetailsActions.AddToCart -> {
+                viewModelScope.launch {
+                    val userIdRes = userPrefRepository
+                        .fetchId()
+                        .last()
+
+                    val basketRes = basketRepository
+                        .fetchLatestBasket(userId = userIdRes.data ?: 0)
+                        .last()
+
+
+                    when(basketRes){
+                        is AppResource.Success -> {
+                            val basketItems = basketRepository.addItemToBasket(
+                                userIdRes.data ?: 0,
+                                basketRes.result!!,
+                                productId = actions.productInt,
+                                qty = _productDetailsUiState.value.cartCount
+                            ).last()
+
+                                when(basketItems) {
+                                    is AppResource.Error -> _productDetailsUiState.update {
+                                        it.reset()
+                                            .copy(errorOccurred = true, errorMessage = basketItems.info)
+                                    }
+                                    is AppResource.Loading -> _productDetailsUiState.update {
+                                        it.reset()
+                                            .copy(isLoading = true)
+                                    }
+                                    is AppResource.Success -> _productDetailsUiState.update {
+                                        it.reset()
+                                            .copy(
+                                                toastCounter = it.toastCounter + 1,
+                                                toastMessage = "Item added to basket"
+                                            )
+                                    }
+                                }
+                        }
+                        else -> _productDetailsUiState.update {
+                            it.copy(errorOccurred = true, errorMessage = "An unexpected error has occurred")
+                        }
+                    }
+                }
+            }
+
         }
     }
 
 }
 
 sealed class ProductDetailsActions {
-    data class LoadProduct(val id: Int) : ProductDetailsActions()
+    data class LoadProduct(val productId: Int) : ProductDetailsActions()
     data class CartCountChange(val cartCount: Int): ProductDetailsActions()
+    data class AddToCart(val userId: Int, val productInt: Int): ProductDetailsActions()
 }
 
 data class ProductDetailsUiState(
     val cartCount: Int = 1,
     val product: Product? = null,
+    val toastMessage: String = "",
+    var toastCounter: Int = 0,
     val isLoading: Boolean = false,
     val errorOccurred: Boolean = false,
     val errorMessage: String = ""

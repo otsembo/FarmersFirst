@@ -29,7 +29,7 @@ class AuthScreenVM(
 
     init {
         // Checking if the user is signed in when ViewModel is initialized
-        handleAuthActions(AuthActions.CheckIfSignedIn)
+        //handleAuthActions(AuthActions.CheckIfSignedIn)
     }
 
     /**

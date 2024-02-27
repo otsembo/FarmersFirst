@@ -1,5 +1,6 @@
 package com.otsembo.farmersfirst.ui.screens.products
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -30,6 +31,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -69,7 +71,15 @@ fun ProductsScreen(
     viewModel: ProductsScreenVM,
     ) {
 
+    val context = LocalContext.current
     val uiState: ProductsUiState by viewModel.productsUiState.collectAsState()
+
+    LaunchedEffect(key1 = uiState.toastCounter){
+        if(uiState.toastCounter > 0)
+            Toast
+                .makeText(context, uiState.toastMessage, Toast.LENGTH_SHORT)
+                .show()
+    }
 
     if(isWideScreen){
 
@@ -154,7 +164,10 @@ fun ProductsScreen(
                                 ProductItem(
                                     product = it,
                                     onClick = { index ->
-                                        navController.navigate(AppRoutes.Home.productDetails(index)) }
+                                        navController.navigate(AppRoutes.Home.productDetails(index)) },
+                                    onAddToBasket = { productId ->
+                                        viewModel.handleActions(ProductsActions.AddItemToBasket(productId))
+                                    }
                                 )
                             }
                         }
@@ -242,7 +255,10 @@ fun ProductsScreen(
                             ProductItem(
                                 product = it,
                                 onClick = { index ->
-                                    navController.navigate(AppRoutes.Home.productDetails(index)) }
+                                    navController.navigate(AppRoutes.Home.productDetails(index)) },
+                                onAddToBasket = { productId ->
+                                    viewModel.handleActions(ProductsActions.AddItemToBasket(productId))
+                                }
                             )
                         }
                     }
@@ -256,6 +272,7 @@ fun ProductsScreen(
 @Composable
 fun ProductItem(
     product: Product,
+    onAddToBasket: (Int) -> Unit,
     onClick: (Int) -> Unit = {},
 ) {
 
@@ -290,12 +307,14 @@ fun ProductItem(
                 modifier = Modifier
                     .padding(8.dp)
                     .size(dimensionResource(id = R.dimen.icon_size))
+                    .clickable {
+                        onAddToBasket(product.id)
+                    }
                     .align(Alignment.TopEnd)
                     .background(
                         color = MaterialTheme.colorScheme.primaryContainer,
                         shape = CircleShape
                     )
-                    .clickable { }
                     .padding(8.dp)
                 ,
                 imageVector = Icons.Default.AddShoppingCart, contentDescription = "Add to shopping card")

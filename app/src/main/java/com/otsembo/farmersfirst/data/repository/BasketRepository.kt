@@ -1,6 +1,8 @@
 package com.otsembo.farmersfirst.data.repository
 
 import com.otsembo.farmersfirst.common.AppResource
+import com.otsembo.farmersfirst.common.izNull
+import com.otsembo.farmersfirst.common.notNull
 import com.otsembo.farmersfirst.data.database.AppDatabaseHelper
 import com.otsembo.farmersfirst.data.database.dao.BasketDao
 import com.otsembo.farmersfirst.data.database.dao.BasketItemDao
@@ -8,10 +10,12 @@ import com.otsembo.farmersfirst.data.database.dao.ProductDao
 import com.otsembo.farmersfirst.data.model.Basket
 import com.otsembo.farmersfirst.data.model.BasketItem
 import com.otsembo.farmersfirst.data.model.Product
+import com.otsembo.farmersfirst.data.model.User
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.map
 
@@ -40,6 +44,8 @@ interface IBasketRepository {
      * @return A flow of AppResource representing the result of the operation.
      */
     suspend fun fetchLatestBasketItems(userId: Int): Flow<AppResource<List<BasketItem>>>
+
+    suspend fun fetchLatestBasket(userId: Int): Flow<AppResource<Basket?>>
 
     /**
      * Adds an item to the basket for a given user ID.
@@ -86,19 +92,45 @@ class BasketRepository(
     override suspend fun updateBasket(basket: Basket): Flow<AppResource<Basket?>> =
         dbTransact(basketDao.update(basket, basket.id))
 
+    override suspend fun fetchLatestBasket(userId: Int): Flow<AppResource<Basket?>>  =
+        dbTransact(
+            flow {
+                val baskets = basketDao.queryWhere(
+                    query = """
+                    ${AppDatabaseHelper.BASKET_USER} = ? AND 
+                    ${AppDatabaseHelper.BASKET_STATUS} = ? 
+                    ORDER BY ${AppDatabaseHelper.BASKET_ID} DESC LIMIT 1
+                    """.trimIndent(),
+                    params = arrayOf(userId.toString(), AppDatabaseHelper.BasketStatusPending)
+                ).last()
+
+                if(baskets.isEmpty()){
+                    emit(null)
+                } else {
+                    emit(baskets.last())
+                }
+            })
+
     override suspend fun fetchLatestBasketItems(userId: Int): Flow<AppResource<List<BasketItem>>> =
         dbTransact(flow{
-            val basketItems = basketDao.queryWhere(
+            val baskets = basketDao.queryWhere(
                 query = """
                 ${AppDatabaseHelper.BASKET_USER} = ? AND 
                 ${AppDatabaseHelper.BASKET_STATUS} = ? 
                 ORDER BY ${AppDatabaseHelper.BASKET_ID} DESC LIMIT 1
                 """.trimIndent(),
-                params = arrayOf(userId.toString(), "pending")
+                params = arrayOf(userId.toString(), AppDatabaseHelper.BasketStatusPending)
             )
-            emitAll(basketItems.map {
-                if(it.isEmpty())
-                    emptyList()
+            emitAll(baskets.map {
+                if(it.isEmpty()){
+                    createBasket(
+                        basket = Basket(
+                            user = User(userId, email = ""),
+                            status = AppDatabaseHelper.BasketStatusPending
+                        )
+                    ).last()
+                    fetchLatestBasketItems(userId).last().data ?: emptyList()
+                }
                 else {
                     val basketId = it.last().id
                     val basketItemsList = basketItemDao.queryWhere(
@@ -112,33 +144,21 @@ class BasketRepository(
             })
         })
 
-    override suspend fun addItemToBasket(
-        userId: Int,
-        basket: Basket,
-        productId: Int,
-        qty: Int
-    ): Flow<AppResource<List<BasketItem>>> = dbTransact(flow {
-        val productList = productDao.find(productId)
-        productList.collectLatest { value: Product? ->
-            value?.let {
-                basketItemDao.create(
-                    item = BasketItem(
-                        basket = basket,
-                        quantity = qty,
-                        product = it
-                    )
-                ).collectLatest { basketItem ->
-                    if(basketItem != null)
-                        fetchLatestBasketItems(userId).collectLatest { basketItems ->
-                            emit(basketItems.data ?: emptyList())
-                        }
-                    else {
-                        throw Exception("Could not add item to basket")
-                    }
+    override suspend fun addItemToBasket(userId: Int, basket: Basket, productId: Int, qty: Int):
+            Flow<AppResource<List<BasketItem>>> = dbTransact(flow{
+                val product = productDao.find(productId).last()
+                if(product.notNull()) {
+                    val basketItem = basketItemDao
+                        .create(item = BasketItem(0, basket, product!!, qty))
+                        .last()
+                    basketItem ?: throw Exception("Could not add item to basket")
                 }
-            }
-        }
-    })
+                emitAll(
+                    fetchLatestBasketItems(userId).map {
+                        it.data ?: emptyList()
+                    }
+                )
+            })
 
     override suspend fun removeItemFromBasket(basketItemId: Int): Flow<AppResource<Boolean>> =
         dbTransact(basketItemDao.delete(basketItemId))

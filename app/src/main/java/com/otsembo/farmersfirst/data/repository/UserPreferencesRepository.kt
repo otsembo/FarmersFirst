@@ -3,6 +3,7 @@ package com.otsembo.farmersfirst.data.repository
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.otsembo.farmersfirst.common.AppResource
 import kotlinx.coroutines.flow.Flow
@@ -21,7 +22,7 @@ interface IUserPrefRepository {
      * @param token The user token to be added.
      * @return A flow of AppResource indicating the success or failure of the operation.
      */
-    suspend fun addUserToStore(token: String): Flow<AppResource<Boolean>>
+    suspend fun addUserToStore(token: String, userId: Int): Flow<AppResource<Boolean>>
 
     /**
      * Removes the user from the preferences store.
@@ -36,6 +37,9 @@ interface IUserPrefRepository {
      * @return A flow of AppResource containing the user token or an error message.
      */
     suspend fun fetchToken(): Flow<AppResource<String>>
+
+    suspend fun fetchId(): Flow<AppResource<Int>>
+
 }
 
 
@@ -49,10 +53,11 @@ class UserPreferencesRepository(context: Context) : IUserPrefRepository, BasePre
 
     override val dataStore: DataStore<Preferences> = context.buildStore(STORE_NAME)
 
-    override suspend fun addUserToStore(token: String): Flow<AppResource<Boolean>> =
+    override suspend fun addUserToStore(token: String, userId: Int): Flow<AppResource<Boolean>> =
         flow {
             emit(AppResource.Loading())
             addData(userTokenPreferenceKey, token)
+            addData(userIdPreferenceKey, userId)
             emit(AppResource.Success(result = true))
         }.catch { emit(AppResource.Error(info = it.message ?: "An error occurred")) }
 
@@ -61,6 +66,7 @@ class UserPreferencesRepository(context: Context) : IUserPrefRepository, BasePre
         flow {
             emit(AppResource.Loading())
             removeData(userTokenPreferenceKey)
+            removeData(userIdPreferenceKey)
             emit(AppResource.Success(result = true))
         }.catch { emit(AppResource.Error(info = it.message ?: "An error occurred")) }
 
@@ -73,9 +79,18 @@ class UserPreferencesRepository(context: Context) : IUserPrefRepository, BasePre
             else emit(AppResource.Success(result = tokenValue))
         }.catch { emit(AppResource.Error(it.message ?: "Could not retrieve token")) }
 
+    override suspend fun fetchId(): Flow<AppResource<Int>> =
+        flow {
+            emit(AppResource.Loading())
+            val idValue = fetchData(userIdPreferenceKey, default = 0)
+            if(idValue == 0) emit(AppResource.Error(info = "Could not fetch user ID"))
+            else emit(AppResource.Success(result = idValue))
+        }.catch { emit(AppResource.Error(info = it.message ?: "Could not fetch user ID")) }
+
     companion object {
         const val STORE_NAME = "user_data"
         private const val DEFAULT_VALUE = "non_value"
         private val userTokenPreferenceKey = stringPreferencesKey("user_token")
+        private val userIdPreferenceKey = intPreferencesKey("user_id")
     }
 }

@@ -1,5 +1,6 @@
 package com.otsembo.farmersfirst.ui.screens.product_details
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.scrollable
@@ -47,6 +48,7 @@ import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -82,10 +84,16 @@ fun ProductDetailsScreen(
     viewModel: ProductDetailsScreenVM,
     productId: Int,
 ) {
+    val context = LocalContext.current
     val uiState: ProductDetailsUiState by viewModel.productDetailsUiState.collectAsState()
 
     LaunchedEffect(key1 = uiState.isLoading){
-        viewModel.handleActions(ProductDetailsActions.LoadProduct(productId))
+      viewModel.handleActions(ProductDetailsActions.LoadProduct(productId))
+    }
+
+    LaunchedEffect(key1 = uiState.toastCounter){
+        if(uiState.toastCounter > 0)
+            Toast.makeText(context, "Item has been added tp your basket", Toast.LENGTH_SHORT).show()
     }
 
     when {
@@ -130,6 +138,7 @@ fun ProductDetailsScreen(
                         ProductDetailsContent(
                             product = product,
                             cartCount = uiState.cartCount,
+                            onAddToCart = { x, y -> viewModel.handleActions(ProductDetailsActions.AddToCart(x, y)) },
                             updateCount = { currentCount, increase ->
                                 val cartCount = if(increase) currentCount + 1 else currentCount - 1
                                 viewModel.handleActions(ProductDetailsActions.CartCountChange(cartCount))
@@ -176,6 +185,7 @@ fun ProductDetailsScreen(
                         ProductDetailsContent(
                             product = product,
                             cartCount = uiState.cartCount,
+                            onAddToCart = { x, y -> viewModel.handleActions(ProductDetailsActions.AddToCart(x, y)) },
                             updateCount = { currentCount, increase ->
                                 val cartCount = if(increase) currentCount + 1 else currentCount - 1
                                 viewModel.handleActions(ProductDetailsActions.CartCountChange(cartCount))
@@ -197,6 +207,7 @@ fun ProductDetailsContent(
     product: Product,
     cartCount: Int,
     updateCount: (Int, Boolean) -> Unit,
+    onAddToCart: (Int, Int) -> Unit,
 ) {
 
     val inStock = product.stock > 0
@@ -304,7 +315,7 @@ fun ProductDetailsContent(
                 .fillMaxWidth()
                 .align(Alignment.BottomCenter)
                 .padding(horizontal = 16.dp, vertical = 8.dp),
-            onClick = { /*TODO*/ },
+            onClick = { onAddToCart(0, product.id) },
             shape = RoundedCornerShape(10.dp),
             enabled = inStock
         ) {

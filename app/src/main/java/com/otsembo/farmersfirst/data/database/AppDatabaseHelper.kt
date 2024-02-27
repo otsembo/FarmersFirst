@@ -86,6 +86,8 @@ class AppDatabaseHelper(
         const val BASKET_ID = "id"
         const val BASKET_USER = "user_id"
         const val BASKET_STATUS = "status"
+        val BasketStatusPending = "pending"
+        val BasketStatusChecked = "checked"
 
         // Column names for basket items table
         const val BASKET_ITEM_ID = "id"

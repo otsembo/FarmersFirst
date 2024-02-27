@@ -61,4 +61,7 @@ interface AppUiState<T> {
 }
 
 
+fun Any?.izNull(): Boolean = this == null
+fun Any?.notNull(): Boolean = this != null
+
 

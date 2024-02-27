@@ -44,14 +44,14 @@ val AppModule = module {
 
     // Repositories
     single <IUserPrefRepository> { UserPreferencesRepository(context = androidContext()) }
-    single <IAuthRepository> { AuthRepository(activityContext = androidContext(), "", get()) }
+    single <IAuthRepository> { AuthRepository(activityContext = androidContext(), "", get(), get()) }
     single <IBasketRepository> { BasketRepository(get(), get(), get()) }
     single <IProductRepository> { ProductRepository(get()) }
     single <IFarmersDBSeed> { FarmersDBSeed(get(), get()) }
 
     // ViewModels
     viewModel <AuthScreenVM> { AuthScreenVM(androidApplication(), get()) }
-    viewModel <ProductsScreenVM> { ProductsScreenVM(get(), get()) }
-    viewModel <ProductDetailsScreenVM> { ProductDetailsScreenVM(get(), get()) }
+    viewModel <ProductsScreenVM> { ProductsScreenVM(get(), get(), get()) }
+    viewModel <ProductDetailsScreenVM> { ProductDetailsScreenVM(get(), get(), get()) }
 
 }

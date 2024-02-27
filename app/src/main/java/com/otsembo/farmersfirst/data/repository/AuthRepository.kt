@@ -10,6 +10,7 @@ package com.otsembo.farmersfirst.data.repository
  import com.otsembo.farmersfirst.common.coerceTo
  import com.otsembo.farmersfirst.data.database.AppDatabaseHelper
  import com.otsembo.farmersfirst.data.database.dao.UserDao
+ import com.otsembo.farmersfirst.data.model.Basket
  import com.otsembo.farmersfirst.data.model.User
  import kotlinx.coroutines.flow.Flow
  import kotlinx.coroutines.flow.catch
@@ -55,6 +56,7 @@ class AuthRepository (
     private val activityContext: Context,
     private val oAuthClient: String,
     private val userPrefRepository: IUserPrefRepository,
+    private val basketRepository: IBasketRepository,
 
 ): IAuthRepository{
 
@@ -92,11 +94,21 @@ class AuthRepository (
 
             userEmail?.let {
                 val user = userDao.queryWhere("${AppDatabaseHelper.USER_EMAIL} = ?", arrayOf(it)).last()
-                if(user.isEmpty()){
+                val userId: Int = if(user.isEmpty()){
                     // if no existing user, create one then throw exception if error occurs
-                    userDao.create(User(id = 0, it)).last() ?: throw Exception("Could not create your account!")
-                }
-                emitAll(userPrefRepository.addUserToStore(signInToken).map { tokenStoreResult ->
+                    val createdUser = userDao.create(User(id = 0, it)).last() ?: throw Exception("Could not create your account!")
+                    // create their initial basket
+                    basketRepository.createBasket(
+                        Basket(
+                            id = 0,
+                            user = User(id = createdUser.id, email =  ""),
+                            status = AppDatabaseHelper.BasketStatusPending
+                        )
+                    ).last()
+                    createdUser.id
+                } else user.first().id
+
+                emitAll(userPrefRepository.addUserToStore(signInToken, userId).map { tokenStoreResult ->
                     tokenStoreResult.coerceTo { res ->
                         when(res){
                             is AppResource.Success -> signInToken
