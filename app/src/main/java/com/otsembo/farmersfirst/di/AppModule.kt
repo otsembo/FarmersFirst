@@ -19,6 +19,7 @@ import com.otsembo.farmersfirst.data.repository.IProductRepository
 import com.otsembo.farmersfirst.data.repository.IUserPrefRepository
 import com.otsembo.farmersfirst.data.repository.ProductRepository
 import com.otsembo.farmersfirst.data.repository.UserPreferencesRepository
+import com.otsembo.farmersfirst.ui.MainActivityVM
 import com.otsembo.farmersfirst.ui.screens.auth.AuthScreenVM
 import com.otsembo.farmersfirst.ui.screens.basket.BasketScreenVM
 import com.otsembo.farmersfirst.ui.screens.product_details.ProductDetailsScreenVM
@@ -59,5 +60,6 @@ val AppModule = module {
     viewModel <ProductsScreenVM> { ProductsScreenVM(get(), get(), get(), get()) }
     viewModel <ProductDetailsScreenVM> { ProductDetailsScreenVM(get(), get(), get()) }
     viewModel <BasketScreenVM>{ BasketScreenVM(get(), get()) }
+    viewModel <MainActivityVM> { MainActivityVM(get()) }
 
 }
