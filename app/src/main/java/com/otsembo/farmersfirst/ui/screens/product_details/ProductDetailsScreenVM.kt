@@ -123,4 +123,12 @@ data class ProductDetailsUiState(
             cartCount = cartCount,
             product = product
         )
+
+    override fun setError(message: String): ProductDetailsUiState {
+        TODO("Not yet implemented")
+    }
+
+    override fun setLoading(): ProductDetailsUiState {
+        TODO("Not yet implemented")
+    }
 }

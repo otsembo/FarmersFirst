@@ -211,4 +211,12 @@ data class ProductsUiState(
             productsList = productsList,
             basketItems = basketItems
         )
+
+    override fun setError(message: String): ProductsUiState {
+        return reset().copy(errorOccurred = true, errorMessage = message)
+    }
+
+    override fun setLoading(): ProductsUiState {
+        return reset().copy(isLoading = true)
+    }
 }

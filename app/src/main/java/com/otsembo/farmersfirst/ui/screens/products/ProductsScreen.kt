@@ -92,7 +92,7 @@ fun ProductsScreen(
                     NavRailOption("Home", icon = { Icon(imageVector = Icons.Default.Home, contentDescription = "Home") }),
                     NavRailOption("Basket", icon = {
                         Box(modifier = Modifier){
-                            AppBarIcon(icon = Icons.Default.ShoppingCart)
+                            AppBarIcon(icon = Icons.Default.ShoppingCart, onClick = { navController.navigate(AppRoutes.Home.Basket) })
                             if(uiState.basketItems.isEmpty()) {
                                 DotWithText(
                                     modifier = Modifier.align(Alignment.TopEnd),
@@ -191,7 +191,7 @@ fun ProductsScreen(
                 },
                 endIcon = {
                     Box(modifier = Modifier){
-                        AppBarIcon(icon = Icons.Default.ShoppingCart)
+                        AppBarIcon(icon = Icons.Default.ShoppingCart, onClick = { navController.navigate(AppRoutes.Home.Basket) })
                         if(uiState.basketItems.isEmpty()) {
                             DotWithText(
                                 modifier = Modifier.align(Alignment.TopEnd),

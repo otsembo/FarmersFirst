@@ -2,6 +2,7 @@ package com.otsembo.farmersfirst.ui.screens.basket
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -39,6 +40,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.otsembo.farmersfirst.R
 import com.otsembo.farmersfirst.data.database.AppDatabaseHelper
@@ -47,6 +49,7 @@ import com.otsembo.farmersfirst.data.model.BasketItem
 import com.otsembo.farmersfirst.data.model.Product
 import com.otsembo.farmersfirst.data.model.User
 import com.otsembo.farmersfirst.ui.components.AppBar
+import com.otsembo.farmersfirst.ui.components.EmptyEntityMessage
 import com.otsembo.farmersfirst.ui.screens.product_details.CartCounter
 import kotlin.math.roundToInt
 
@@ -55,6 +58,7 @@ fun BasketScreen(
     modifier: Modifier = Modifier,
     isWideScreen: Boolean = false,
     viewModel: BasketScreenVM,
+    navController: NavHostController,
     userId: Int = 0,
 ) {
 
@@ -63,6 +67,8 @@ fun BasketScreen(
     LaunchedEffect(key1 = basketScreenUiState.basketItems){
         viewModel.handleActions(BasketScreenActions.LoadBasketItems(userId))
     }
+
+
 
     Column(
         modifier = modifier
@@ -74,7 +80,8 @@ fun BasketScreen(
             modifier = Modifier.padding(top = 8.dp),
             startIcon = {
                 Icon(
-                   imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    modifier = Modifier.clickable { navController.popBackStack() },
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "Back"
                 )
             },
@@ -83,22 +90,40 @@ fun BasketScreen(
             }
         )
 
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxHeight(0.68f)
-                .fillMaxWidth()
-                .padding(top = 8.dp, bottom = 4.dp)
-                .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(6.dp)
-        ) {
-
-            items(basketScreenUiState.basketItems){
-                BasketItemUi(
-                    basketItem = it
+        when {
+            basketScreenUiState.basketItems.isEmpty() -> {
+                EmptyEntityMessage(
+                    modifier = Modifier
+                        .fillMaxHeight(0.68f)
+                        .fillMaxSize(),
+                    message = "Your cart is currently empty"
                 )
             }
+            else -> {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxHeight(0.68f)
+                        .fillMaxWidth()
+                        .padding(top = 8.dp, bottom = 4.dp)
+                        .padding(horizontal = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
 
+                    items(basketScreenUiState.basketItems){
+                        BasketItemUi(
+                            basketItem = it,
+                            onUpdateItemCount = { direction ->
+                                viewModel.handleActions(BasketScreenActions.UpdateBasketItemCount(
+                                    basketItem = it, direction
+                                ))
+                            }
+                        )
+                    }
+                }
+            }
         }
+
+
 
         ElevatedCard(
             modifier = Modifier
@@ -180,7 +205,8 @@ fun BasketItemUi(
         Basket(0, User(0, ""), AppDatabaseHelper.BasketStatusPending),
         Product(0, "Succulent", "", 13, 120.0f, ""),
         12
-    )
+    ),
+    onUpdateItemCount: (BasketScreenActions.BasketUpdateDirection) -> Unit
 ) {
 
     ElevatedCard(
@@ -244,7 +270,9 @@ fun BasketItemUi(
                     inputShape = RoundedCornerShape(20),
                     cartCount = basketItem.quantity,
                     productStock = basketItem.product.stock,
-                    updateCount = { int,boolean -> }
+                    updateCount = { _, isIncrease ->  onUpdateItemCount(
+                        if (isIncrease) BasketScreenActions.BasketUpdateDirection.UP else BasketScreenActions.BasketUpdateDirection.DOWN
+                    )}
                 )
 
                 Text(

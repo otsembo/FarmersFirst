@@ -31,12 +31,8 @@ class BasketScreenVM(
                         .fetchLatestBasketItems(if(action.userId == 0) fetchUid() else action.userId)
                         .collectLatest { basketItemsRes ->
                             when(basketItemsRes){
-                                is AppResource.Error -> _basketScreenUiState.update {
-                                    it.reset().copy(errorOccurred = true, errorMessage = basketItemsRes.info)
-                                }
-                                is AppResource.Loading -> _basketScreenUiState.update {
-                                    it.reset().copy(isLoading = true)
-                                }
+                                is AppResource.Error -> _basketScreenUiState.update { it.setError(basketItemsRes.info) }
+                                is AppResource.Loading -> _basketScreenUiState.update { it.setLoading() }
                                 is AppResource.Success -> _basketScreenUiState.update {
                                     val aggregatedBasket = aggregateBasketProducts(basketItemsRes.result)
                                     handleActions(BasketScreenActions.CalculateBasketTotals(aggregatedBasket))
@@ -51,6 +47,26 @@ class BasketScreenVM(
                 var totalCost = 0f
                 action.basketItems.forEach { basketItem -> totalCost += (basketItem.product.price * basketItem.quantity) }
                 _basketScreenUiState.update { it.reset().copy(totalBasketCost = totalCost) }
+            }
+
+            is BasketScreenActions.UpdateBasketItemCount -> {
+                viewModelScope.launch {
+                    val updateBasketRes = basketRepository
+                        .updateBasketItem(
+                            action.basketItem.copy(
+                                quantity = if(action.direction == BasketScreenActions.BasketUpdateDirection.UP)
+                                    action.basketItem.quantity + 1
+                                else
+                                    action.basketItem.quantity - 1
+                            )
+                        )
+                        .last()
+                    when(updateBasketRes){
+                        is AppResource.Error -> _basketScreenUiState.update { it.setError(updateBasketRes.info)}
+                        is AppResource.Loading -> _basketScreenUiState.update { it.setLoading() }
+                        is AppResource.Success -> handleActions(BasketScreenActions.LoadBasketItems(userId = 0))
+                    }
+                }
             }
         }
     }
@@ -87,9 +103,22 @@ data class BasketScreenUiState(
             basketItems, totalBasketCost, totalBasketDiscount
         )
     }
+    override fun setError(message: String): BasketScreenUiState {
+        return reset().copy(errorOccurred = true, errorMessage = message)
+    }
+
+    override fun setLoading(): BasketScreenUiState {
+        return reset().copy(isLoading = true)
+    }
 }
 
 sealed class BasketScreenActions {
     data class LoadBasketItems(val userId: Int): BasketScreenActions()
     data class CalculateBasketTotals(val basketItems: List<BasketItem>): BasketScreenActions()
+    data class UpdateBasketItemCount(val basketItem: BasketItem, val direction: BasketUpdateDirection): BasketScreenActions()
+
+    enum class BasketUpdateDirection {
+        UP, DOWN
+    }
+
 }

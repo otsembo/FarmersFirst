@@ -74,7 +74,6 @@ class MainActivity : ComponentActivity() {
                             }
 
                             composable(AppRoutes.Home.ProductDetails){  backStackEntry ->
-
                                 val productId = backStackEntry
                                     .arguments
                                     ?.getString(AppRoutes.Home.productId)
@@ -88,12 +87,29 @@ class MainActivity : ComponentActivity() {
                                 )
                             }
 
-                            composable(AppRoutes.Home.Basket){
+
+                            composable(AppRoutes.Home.Basket) {
                                 BasketScreen(
                                     isWideScreen = isWideScreen,
                                     viewModel = basketScreenVM,
+                                    navController = navController
                                 )
                             }
+
+                            composable(AppRoutes.Home.UserBasket){backStackEntry ->
+                                val userId = backStackEntry
+                                    .arguments
+                                    ?.getString(AppRoutes.Home.userId)
+                                    ?.toInt() ?: 0
+
+                                BasketScreen(
+                                    isWideScreen = isWideScreen,
+                                    viewModel = basketScreenVM,
+                                    navController = navController,
+                                    userId = userId
+                                )
+                            }
+
                         }
 
                     }

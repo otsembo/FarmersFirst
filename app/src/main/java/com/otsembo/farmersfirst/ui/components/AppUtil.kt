@@ -138,6 +138,7 @@ fun ErrorScreen(
 
 @Composable
 fun EmptyEntityMessage(
+    modifier: Modifier = Modifier,
     message: String,
     icon: @Composable () -> Unit  = {
         Icon(
@@ -148,7 +149,7 @@ fun EmptyEntityMessage(
     }
 ) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
