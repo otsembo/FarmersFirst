@@ -8,7 +8,10 @@ import com.otsembo.farmersfirst.data.database.dao.BasketDao
 import com.otsembo.farmersfirst.data.database.dao.BasketItemDao
 import com.otsembo.farmersfirst.data.database.dao.ProductDao
 import com.otsembo.farmersfirst.data.database.dao.UserDao
+import com.otsembo.farmersfirst.data.model.BasketItem
 import com.otsembo.farmersfirst.data.repository.AuthRepository
+import com.otsembo.farmersfirst.data.repository.BaseRecommenderRepository
+import com.otsembo.farmersfirst.data.repository.BasketItemsRecommenderRepository
 import com.otsembo.farmersfirst.data.repository.BasketRepository
 import com.otsembo.farmersfirst.data.repository.IAuthRepository
 import com.otsembo.farmersfirst.data.repository.IBasketRepository
@@ -49,10 +52,11 @@ val AppModule = module {
     single <IBasketRepository> { BasketRepository(get(), get(), get()) }
     single <IProductRepository> { ProductRepository(get()) }
     single <IFarmersDBSeed> { FarmersDBSeed(get(), get()) }
+    factory <BasketItemsRecommenderRepository> { BasketItemsRecommenderRepository(get(), get(), get()) }
 
     // ViewModels
     viewModel <AuthScreenVM> { AuthScreenVM(androidApplication(), get()) }
-    viewModel <ProductsScreenVM> { ProductsScreenVM(get(), get(), get()) }
+    viewModel <ProductsScreenVM> { ProductsScreenVM(get(), get(), get(), get()) }
     viewModel <ProductDetailsScreenVM> { ProductDetailsScreenVM(get(), get(), get()) }
     viewModel <BasketScreenVM>{ BasketScreenVM(get(), get()) }
 

@@ -90,9 +90,9 @@ fun ProductsScreen(
             AppNavRail(
                 navRailOptions = listOf(
                     NavRailOption("Home", icon = { Icon(imageVector = Icons.Default.Home, contentDescription = "Home") }),
-                    NavRailOption("Basket", icon = {
+                    NavRailOption("Basket",  onClick = { navController.navigate(AppRoutes.Home.Basket) }, icon = {
                         Box(modifier = Modifier){
-                            AppBarIcon(icon = Icons.Default.ShoppingCart, onClick = { navController.navigate(AppRoutes.Home.Basket) })
+                            AppBarIcon(icon = Icons.Default.ShoppingCart,)
                             if(uiState.basketItems.isEmpty()) {
                                 DotWithText(
                                     modifier = Modifier.align(Alignment.TopEnd),

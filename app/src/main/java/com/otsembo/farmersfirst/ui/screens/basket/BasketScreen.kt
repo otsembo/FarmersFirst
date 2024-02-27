@@ -23,14 +23,23 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.SheetState
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -53,6 +62,7 @@ import com.otsembo.farmersfirst.ui.components.EmptyEntityMessage
 import com.otsembo.farmersfirst.ui.screens.product_details.CartCounter
 import kotlin.math.roundToInt
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BasketScreen(
     modifier: Modifier = Modifier,
@@ -63,11 +73,12 @@ fun BasketScreen(
 ) {
 
     val basketScreenUiState: BasketScreenUiState by viewModel.basketScreenUiState.collectAsState()
+    val bottomSheetState = rememberModalBottomSheetState()
+    var isRecommenderSheetOpen by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(key1 = basketScreenUiState.basketItems){
         viewModel.handleActions(BasketScreenActions.LoadBasketItems(userId))
     }
-
 
 
     Column(
@@ -188,12 +199,19 @@ fun BasketScreen(
 
             }
 
-
-
         }
 
     }
 
+
+    if(isRecommenderSheetOpen){
+        CheckoutRecommender(
+            modifier = Modifier.fillMaxHeight(0.5f),
+            recommenderSheetState = bottomSheetState,
+            onRecommenderClose = { isRecommenderSheetOpen = false },
+            recommendedBasketItems = basketScreenUiState.recommendedBasketItems,
+        )
+    }
 
 }
 
@@ -336,3 +354,68 @@ fun CheckoutSummary(
         }
     }
 }
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CheckoutRecommender(
+    modifier: Modifier = Modifier,
+    recommenderSheetState: SheetState,
+    recommendedBasketItems: List<BasketItem> = emptyList(),
+    onRecommenderClose: () -> Unit = {}
+) {
+
+    ModalBottomSheet(
+        modifier = modifier,
+        sheetState = recommenderSheetState,
+        onDismissRequest = { onRecommenderClose() },
+        containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+        contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+        dragHandle = {}
+    ) {
+
+        Box(
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxSize()
+        ) {
+            Button(
+                onClick = {  },
+                modifier = Modifier
+                    .align(Alignment.BottomStart),
+                shape = RoundedCornerShape(10.dp)
+            ) {
+                Text(text = "Add to basket", style = MaterialTheme.typography.bodyLarge)
+            }
+
+            OutlinedButton(
+                onClick = { /*TODO*/ },
+                modifier = Modifier
+                    .align(Alignment.BottomEnd),
+                shape = RoundedCornerShape(10.dp)
+            ) {
+                Text(text = "Just Checkout", style = MaterialTheme.typography.bodyLarge)
+            }
+
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                item {
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = "The following items are usually purchased together.",
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.SemiBold,
+                        textAlign = TextAlign.Start
+                    )
+                }
+
+                items(recommendedBasketItems.take(2)) { basketItem ->
+                    BasketItemUi(onUpdateItemCount = { }, basketItem = basketItem)
+                }
+            }
+        }
+    }
+}
+

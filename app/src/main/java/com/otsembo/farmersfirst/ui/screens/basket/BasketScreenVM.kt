@@ -43,11 +43,13 @@ class BasketScreenVM(
                 }
             }
 
+
             is BasketScreenActions.CalculateBasketTotals -> {
                 var totalCost = 0f
                 action.basketItems.forEach { basketItem -> totalCost += (basketItem.product.price * basketItem.quantity) }
                 _basketScreenUiState.update { it.reset().copy(totalBasketCost = totalCost) }
             }
+
 
             is BasketScreenActions.UpdateBasketItemCount -> {
                 viewModelScope.launch {
@@ -68,8 +70,28 @@ class BasketScreenVM(
                     }
                 }
             }
+
+
+            is BasketScreenActions.ToggleRecommendedProducts -> {
+                _basketScreenUiState.update { it.reset().copy( showRecommender = action.show ) }
+            }
+
         }
     }
+
+    /*val items = res.result.map { item -> Pair(item.id, item.name) }
+
+    recommenderRepository.textRecommend("""
+                                    given the following items: $items
+                                    suggest two items for someone who has shopped the following: ${items.last()}.
+                                    provide the answer in this format [id1, id2]
+                                """.trimIndent()).collect {
+        when(it){
+            is AppResource.Error -> println("ProductsRepo (recommender err): ${it.info}")
+            is AppResource.Loading -> println("ProductsRepo (recommender loading):")
+            is AppResource.Success -> println("ProductsRepo suggestions: ${it.result}")
+        }
+    }*/
 
     private suspend fun fetchUid(): Int {
         val uidRes = userPrefRepository.fetchId().last()
@@ -94,13 +116,19 @@ data class BasketScreenUiState(
     val basketItems: List<BasketItem> = emptyList(),
     val totalBasketCost: Float = 0.0f,
     val totalBasketDiscount: Float = 0.0f,
+    val showRecommender: Boolean = false,
+    val recommendedBasketItems: List<BasketItem> = emptyList(),
     val isLoading: Boolean = false,
     val errorOccurred: Boolean = false,
     val errorMessage: String = ""
 ): AppUiState<BasketScreenUiState> {
     override fun reset(): BasketScreenUiState {
         return BasketScreenUiState(
-            basketItems, totalBasketCost, totalBasketDiscount
+            basketItems,
+            totalBasketCost,
+            totalBasketDiscount,
+            showRecommender,
+            recommendedBasketItems
         )
     }
     override fun setError(message: String): BasketScreenUiState {
@@ -116,7 +144,7 @@ sealed class BasketScreenActions {
     data class LoadBasketItems(val userId: Int): BasketScreenActions()
     data class CalculateBasketTotals(val basketItems: List<BasketItem>): BasketScreenActions()
     data class UpdateBasketItemCount(val basketItem: BasketItem, val direction: BasketUpdateDirection): BasketScreenActions()
-
+    data class ToggleRecommendedProducts(val show: Boolean): BasketScreenActions()
     enum class BasketUpdateDirection {
         UP, DOWN
     }

@@ -166,4 +166,8 @@ class BasketRepository(
     override suspend fun updateBasketItem(basketItem: BasketItem): Flow<AppResource<BasketItem?>> =
         dbTransact(basketItemDao.update(basketItem, basketItem.id))
 
+    companion object {
+        const val GEMINI_API_KEY = "AIzaSyBYn-pHVS7V3bAPxxEyVaE-6HtZXU9KWBs"
+    }
+
 }

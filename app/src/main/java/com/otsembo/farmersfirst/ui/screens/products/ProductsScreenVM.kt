@@ -9,6 +9,7 @@ import com.otsembo.farmersfirst.data.model.Basket
 import com.otsembo.farmersfirst.data.model.BasketItem
 import com.otsembo.farmersfirst.data.model.Product
 import com.otsembo.farmersfirst.data.model.User
+import com.otsembo.farmersfirst.data.repository.BasketItemsRecommenderRepository
 import com.otsembo.farmersfirst.data.repository.IBasketRepository
 import com.otsembo.farmersfirst.data.repository.IProductRepository
 import com.otsembo.farmersfirst.data.repository.IUserPrefRepository
@@ -16,6 +17,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.map
@@ -26,6 +28,7 @@ class ProductsScreenVM(
     private val productRepository: IProductRepository,
     private val basketRepository: IBasketRepository,
     private val userPrefRepository: IUserPrefRepository,
+    private val recommenderRepository: BasketItemsRecommenderRepository,
 ): ViewModel() {
 
     private val _productsUiState: MutableStateFlow<ProductsUiState> =

@@ -77,6 +77,8 @@ dependencies {
     // Android 13 and below.
     implementation(libs.androidx.credentials.play.services.auth)
 
+    implementation(libs.generativeai)
+
     implementation(libs.androidx.datastore.preferences.core)
 
     // Koin for Android
