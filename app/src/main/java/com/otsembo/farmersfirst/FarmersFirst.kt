@@ -1,25 +1,21 @@
 package com.otsembo.farmersfirst
 
 import android.app.Application
-import com.otsembo.farmersfirst.data.database.AppDatabaseHelper
-import com.otsembo.farmersfirst.data.database.IFarmersDBSeed
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
+import com.otsembo.farmersfirst.data.work.DbSeedWorker
 import com.otsembo.farmersfirst.di.AppModule
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
+import java.util.concurrent.TimeUnit
 
 class FarmersFirst: Application() {
 
-    private lateinit var dbSeed: IFarmersDBSeed
     override fun onCreate() {
         super.onCreate()
         initDI()
-        val seed: IFarmersDBSeed by inject()
-        dbSeed = seed
         initDB()
     }
 
@@ -31,10 +27,15 @@ class FarmersFirst: Application() {
         }
     }
 
+    // enqueue DB worker
     private fun initDB(){
-        CoroutineScope(Dispatchers.IO).launch {
-            dbSeed.addProducts()
-        }
+        val initDBWorker = PeriodicWorkRequestBuilder<DbSeedWorker>(2, TimeUnit.DAYS)
+            .setInitialDelay(0, TimeUnit.MILLISECONDS)
+            .build()
+
+        WorkManager
+            .getInstance(applicationContext)
+            .enqueueUniquePeriodicWork("dbInit", ExistingPeriodicWorkPolicy.KEEP, initDBWorker)
     }
 
 }

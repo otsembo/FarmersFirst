@@ -80,6 +80,7 @@ dependencies {
     implementation(libs.generativeai)
 
     implementation(libs.androidx.datastore.preferences.core)
+    implementation(libs.androidx.work.runtime.ktx)
 
     // Koin for Android
     implementation(libs.koin.android)
