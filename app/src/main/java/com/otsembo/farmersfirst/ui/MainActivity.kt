@@ -51,6 +51,7 @@ import com.otsembo.farmersfirst.ui.screens.auth.AuthScreen
 import com.otsembo.farmersfirst.ui.screens.auth.AuthScreenVM
 import com.otsembo.farmersfirst.ui.screens.basket.BasketScreen
 import com.otsembo.farmersfirst.ui.screens.basket.BasketScreenVM
+import com.otsembo.farmersfirst.ui.screens.checkout.CheckoutScreen
 import com.otsembo.farmersfirst.ui.screens.product_details.ProductDetailsScreen
 import com.otsembo.farmersfirst.ui.screens.product_details.ProductDetailsScreenVM
 import com.otsembo.farmersfirst.ui.screens.products.ProductsScreen
@@ -266,6 +267,13 @@ class MainActivity : ComponentActivity() {
                         viewModel = basketScreenVM,
                         navController = navController,
                         userId = userId
+                    )
+                }
+
+                // Checkout Screen
+                composable(AppRoutes.Home.Checkout) {
+                    CheckoutScreen(
+                        navController
                     )
                 }
 

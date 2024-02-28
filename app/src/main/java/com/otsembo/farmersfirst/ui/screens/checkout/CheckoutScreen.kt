@@ -25,9 +25,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
+import com.otsembo.farmersfirst.ui.navigation.AppRoutes
 
 @Composable
-fun CheckoutScreen() {
+fun CheckoutScreen(
+    navController: NavHostController,
+) {
     Column(
         modifier = Modifier
             .background(color = MaterialTheme.colorScheme.surface)
@@ -66,7 +71,7 @@ fun CheckoutScreen() {
         )
         Spacer(modifier = Modifier.height(24.dp))
         ElevatedButton(
-            onClick = {  },
+            onClick = { navController.navigate(AppRoutes.AppHome) },
             colors = ButtonDefaults.buttonColors()
         ) {
             Text(text = "Back to Home")
@@ -78,7 +83,7 @@ fun CheckoutScreen() {
 @Preview(showSystemUi = true)
 fun CheckoutScreenPreview() {
     MaterialTheme {
-        CheckoutScreen()
+        CheckoutScreen(rememberNavController())
     }
 }
 

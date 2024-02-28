@@ -59,7 +59,7 @@ val AppModule = module {
     viewModel <AuthScreenVM> { AuthScreenVM(androidApplication(), get()) }
     viewModel <ProductsScreenVM> { ProductsScreenVM(get(), get(), get(), get()) }
     viewModel <ProductDetailsScreenVM> { ProductDetailsScreenVM(get(), get(), get()) }
-    viewModel <BasketScreenVM>{ BasketScreenVM(get(), get()) }
+    viewModel <BasketScreenVM>{ BasketScreenVM(get(), get(), get(), get()) }
     viewModel <MainActivityVM> { MainActivityVM(get()) }
 
 }

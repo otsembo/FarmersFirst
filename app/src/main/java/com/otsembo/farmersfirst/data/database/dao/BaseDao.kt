@@ -81,6 +81,7 @@ abstract class BaseDao<T>(
                 "id = ?",
                 arrayOf(id.toString())
             )
+
             if(updatedRows == 1) emitAll(find(id)) else emit(null)
         }.catch { emit(null) }
 

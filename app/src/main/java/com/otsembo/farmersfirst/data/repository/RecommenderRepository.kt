@@ -33,7 +33,14 @@ class BasketItemsRecommenderRepository(
             val response = recommenderModel.generateContent(input)
             println("RecommenderRepository: ${response.text}")
             if (response.text.notNull()){
-                when(val productsRes = productRepository.showAllProducts().last()){
+                val ids = response
+                    .text
+                    ?.replace("[", "")
+                    ?.replace("]", "")
+                    ?.split(", ")
+                    ?.map { it.toInt() } ?: listOf(1, 7)
+
+                when(val productsRes = productRepository.findProducts(ids.first(), ids.last()).last()){
                     is AppResource.Success -> {
                         val userId = userPrefRepository.fetchId().last().data ?: 0
                         val userBasket = basketRepository
