@@ -14,33 +14,38 @@ import kotlinx.coroutines.flow.flow
 /**
  * Interface defining methods for interacting with user preferences stored in the app.
  */
+/**
+ * Interface for the user preferences repository, defining methods for managing user preferences.
+ */
 interface IUserPrefRepository {
 
     /**
      * Adds the user token to the preferences store.
-     *
      * @param token The user token to be added.
+     * @param userId The ID of the user associated with the token.
      * @return A flow of AppResource indicating the success or failure of the operation.
      */
     suspend fun addUserToStore(token: String, userId: Int): Flow<AppResource<Boolean>>
 
     /**
      * Removes the user from the preferences store.
-     *
      * @return A flow of AppResource indicating the success or failure of the operation.
      */
     suspend fun removeUserFromStore(): Flow<AppResource<Boolean>>
 
     /**
      * Fetches the user token from the preferences store.
-     *
      * @return A flow of AppResource containing the user token or an error message.
      */
     suspend fun fetchToken(): Flow<AppResource<String>>
 
+    /**
+     * Fetches the user ID from the preferences store.
+     * @return A flow of AppResource containing the user ID or an error message.
+     */
     suspend fun fetchId(): Flow<AppResource<Int>>
-
 }
+
 
 
 /**

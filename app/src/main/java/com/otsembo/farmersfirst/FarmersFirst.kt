@@ -11,15 +11,24 @@ import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
 import java.util.concurrent.TimeUnit
 
-class FarmersFirst: Application() {
+/**
+ * Application class for FarmersFirst application.
+ */
+class FarmersFirst : Application() {
 
+    /**
+     * Called when the application is starting.
+     */
     override fun onCreate() {
         super.onCreate()
         initDI()
         initDB()
     }
 
-    private fun initDI(){
+    /**
+     * Initializes the dependency injection framework (Koin).
+     */
+    private fun initDI() {
         startKoin {
             androidLogger()
             androidContext(this@FarmersFirst)
@@ -27,15 +36,15 @@ class FarmersFirst: Application() {
         }
     }
 
-    // enqueue DB worker
-    private fun initDB(){
+    /**
+     * Initializes the database and enqueues a periodic worker for database seeding.
+     */
+    private fun initDB() {
         val initDBWorker = PeriodicWorkRequestBuilder<DbSeedWorker>(2, TimeUnit.DAYS)
             .setInitialDelay(0, TimeUnit.MILLISECONDS)
             .build()
 
-        WorkManager
-            .getInstance(applicationContext)
+        WorkManager.getInstance(applicationContext)
             .enqueueUniquePeriodicWork("dbInit", ExistingPeriodicWorkPolicy.KEEP, initDBWorker)
     }
-
 }

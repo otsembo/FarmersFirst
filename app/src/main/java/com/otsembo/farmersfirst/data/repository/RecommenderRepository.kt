@@ -1,6 +1,7 @@
 package com.otsembo.farmersfirst.data.repository
 
 import com.google.ai.client.generativeai.GenerativeModel
+import com.otsembo.farmersfirst.BuildConfig
 import com.otsembo.farmersfirst.common.AppResource
 import com.otsembo.farmersfirst.common.notNull
 import com.otsembo.farmersfirst.data.database.AppDatabaseHelper
@@ -12,14 +13,30 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.last
 
-abstract class BaseRecommenderRepository <T> {
+/**
+ * Abstract base class for recommender repositories.
+ * @param T The type of recommendation result.
+ */
+abstract class BaseRecommenderRepository<T> {
 
+    /**
+     * Generative model used for recommendations.
+     */
     val recommenderModel = GenerativeModel(
         modelName = "gemini-pro",
-        apiKey = BasketRepository.GEMINI_API_KEY
+        apiKey = BuildConfig.GeminiApiKey
     )
+
+    /**
+     * Makes text-based recommendations using the generative model.
+     * @param input The input text for which recommendations are to be generated.
+     * @return A flow of AppResource representing the result of the recommendation operation.
+     *         The flow emits a value of type T representing the recommended items,
+     *         or an error if the operation fails.
+     */
     abstract suspend fun textRecommend(input: String): Flow<AppResource<T>>
 }
+
 
 class BasketItemsRecommenderRepository(
     private val productRepository: IProductRepository,

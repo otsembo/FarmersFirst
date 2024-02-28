@@ -198,8 +198,6 @@ class MainActivity : ComponentActivity() {
         basketScreenVM: BasketScreenVM
     ) {
 
-        // setup screen states
-        val productsUiState: ProductsUiState by productsScreenVM.productsUiState.collectAsState()
         val scope = rememberCoroutineScope()
 
         // Navigates through different destinations based on the start destination and user actions
@@ -226,7 +224,6 @@ class MainActivity : ComponentActivity() {
                         isWideScreen = isWideScreen,
                         viewModel = productsScreenVM,
                         navController = navController,
-                        uiState = productsUiState
                     )
                 }
 

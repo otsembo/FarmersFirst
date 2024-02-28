@@ -172,19 +172,48 @@ object DBSeed {
 }
 
 
+/**
+ * Interface representing the seeding of products into the FarmersDB database.
+ *
+ * This interface defines a method for adding products to the database asynchronously.
+ */
 interface IFarmersDBSeed {
+
+    /**
+     * Asynchronously adds products to the database.
+     */
     suspend fun addProducts()
 }
 
+/**
+ * Implementation of the [IFarmersDBSeed] interface for seeding products into the FarmersDB database.
+ *
+ * This class initializes the database helper and provides the functionality to add products to the database.
+ *
+ * @param dbHelper The database helper instance for accessing the database.
+ * @param dao The Data Access Object (DAO) for product-related database operations.
+ */
 class FarmersDBSeed(
     dbHelper: AppDatabaseHelper,
     private val dao: ProductDao
 ): IFarmersDBSeed {
 
+    /**
+     * Initializes the FarmersDBSeed instance by refreshing the database.
+     *
+     * @param dbHelper The database helper instance for accessing the database.
+     */
     init {
         dbHelper.refresh(dbHelper.writableDatabase)
     }
+
+    /**
+     * Asynchronously adds products to the database by iterating over the list of products in the [DBSeed.productList].
+     *
+     * This method maps each product in the [DBSeed.productList] to the database DAO's create method and collects the results asynchronously.
+     */
     override suspend fun addProducts() {
+        // Map each product in the DBSeed.productList to the DAO's create method and collect the results asynchronously
         DBSeed.productList.map { dao.create(it) }.forEach { it.collect() }
     }
 }

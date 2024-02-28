@@ -28,6 +28,8 @@ interface IBasketRepository {
      * Creates a new basket in the repository.
      * @param basket The basket to be created.
      * @return A flow of AppResource representing the result of the operation.
+     *         The flow emits a nullable Basket object upon successful creation,
+     *         or null if the operation fails.
      */
     suspend fun createBasket(basket: Basket): Flow<AppResource<Basket?>>
 
@@ -35,6 +37,8 @@ interface IBasketRepository {
      * Updates an existing basket in the repository.
      * @param basket The basket to be updated.
      * @return A flow of AppResource representing the result of the operation.
+     *         The flow emits a nullable Basket object upon successful update,
+     *         or null if the operation fails.
      */
     suspend fun updateBasket(basket: Basket): Flow<AppResource<Basket?>>
 
@@ -42,9 +46,18 @@ interface IBasketRepository {
      * Fetches the latest basket items for a given user ID.
      * @param userId The ID of the user whose basket items are to be fetched.
      * @return A flow of AppResource representing the result of the operation.
+     *         The flow emits a list of BasketItem objects upon successful retrieval,
+     *         or an error if the operation fails.
      */
     suspend fun fetchLatestBasketItems(userId: Int): Flow<AppResource<List<BasketItem>>>
 
+    /**
+     * Fetches the latest basket for a given user ID.
+     * @param userId The ID of the user whose basket is to be fetched.
+     * @return A flow of AppResource representing the result of the operation.
+     *         The flow emits a nullable Basket object upon successful retrieval,
+     *         or null if the operation fails.
+     */
     suspend fun fetchLatestBasket(userId: Int): Flow<AppResource<Basket?>>
 
     /**
@@ -54,6 +67,8 @@ interface IBasketRepository {
      * @param productId The ID of the product to be added to the basket.
      * @param qty The quantity of the product to be added.
      * @return A flow of AppResource representing the result of the operation.
+     *         The flow emits a list of BasketItem objects upon successful addition,
+     *         or an error if the operation fails.
      */
     suspend fun addItemToBasket(userId: Int, basket: Basket, productId: Int, qty: Int): Flow<AppResource<List<BasketItem>>>
 
@@ -61,6 +76,7 @@ interface IBasketRepository {
      * Removes an item from the basket.
      * @param basketItemId The ID of the basket item to be removed.
      * @return A flow of AppResource representing the result of the operation.
+     *         The flow emits a Boolean value indicating whether the removal was successful (true) or not (false).
      */
     suspend fun removeItemFromBasket(basketItemId: Int): Flow<AppResource<Boolean>>
 
@@ -68,9 +84,12 @@ interface IBasketRepository {
      * Updates an existing basket item in the repository.
      * @param basketItem The basket item to be updated.
      * @return A flow of AppResource representing the result of the operation.
+     *         The flow emits a nullable BasketItem object upon successful update,
+     *         or null if the operation fails.
      */
     suspend fun updateBasketItem(basketItem: BasketItem): Flow<AppResource<BasketItem?>>
 }
+
 
 /**
  * Repository class responsible for handling basket-related operations,
@@ -165,9 +184,5 @@ class BasketRepository(
 
     override suspend fun updateBasketItem(basketItem: BasketItem): Flow<AppResource<BasketItem?>> =
         dbTransact(basketItemDao.update(basketItem, basketItem.id))
-
-    companion object {
-        const val GEMINI_API_KEY = "AIzaSyBYn-pHVS7V3bAPxxEyVaE-6HtZXU9KWBs"
-    }
 
 }
