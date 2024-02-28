@@ -7,12 +7,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedButton
@@ -27,18 +24,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Devices
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.otsembo.farmersfirst.R
 import com.otsembo.farmersfirst.ui.navigation.AppRoutes
-import com.otsembo.farmersfirst.ui.theme.FarmersFirstTheme
+
 /**
  * Composable function to display the authentication screen.
  *
@@ -86,10 +80,9 @@ fun AuthScreen(
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 shape = RoundedCornerShape(
                     topStart = dimensionResource(id = R.dimen.banner_card_radius),
-                    bottomStart = dimensionResource(id = R.dimen.banner_card_radius)
                 ),
             ) {
-                AuthCardUi(isWideScreen, onOAuthSignInRequest = { viewModel.handleAuthActions(AuthActions.RequestSignIn) })
+                AuthCardUi(true, onOAuthSignInRequest = { viewModel.handleActions(AuthActions.RequestSignIn) })
             }
         } else {
             // Auth card for other screen sizes
@@ -104,7 +97,7 @@ fun AuthScreen(
                     topEnd = dimensionResource(id = R.dimen.banner_card_radius)
                 ),
             ) {
-                AuthCardUi(isWideScreen, onOAuthSignInRequest = { viewModel.handleAuthActions(AuthActions.RequestSignIn) })
+                AuthCardUi(false, onOAuthSignInRequest = { viewModel.handleActions(AuthActions.RequestSignIn) })
             }
         }
     }
@@ -133,7 +126,7 @@ fun AuthCardUi(
             // Title text
             Text(
                 text = "The next generation of farming",
-                style = if (isWideScreen) MaterialTheme.typography.displayMedium else MaterialTheme.typography.headlineMedium,
+                style = if (isWideScreen) MaterialTheme.typography.headlineLarge else MaterialTheme.typography.headlineMedium,
                 textAlign = TextAlign.Center,
                 fontWeight = FontWeight.Bold
             )
@@ -153,7 +146,7 @@ fun AuthCardUi(
                 colors = ButtonDefaults.buttonColors()
             ) {
                 // Button text
-                Text(text = "Sign In", style = if (isWideScreen) MaterialTheme.typography.headlineSmall else MaterialTheme.typography.bodyLarge)
+                Text(text = "Sign In", style = MaterialTheme.typography.bodyLarge )
                 // Icon for OAuth sign-in
                 Icon(
                     modifier = Modifier

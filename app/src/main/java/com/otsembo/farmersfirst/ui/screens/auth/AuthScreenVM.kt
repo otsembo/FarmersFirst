@@ -8,7 +8,6 @@ import com.otsembo.farmersfirst.data.repository.IAuthRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -25,53 +24,52 @@ class AuthScreenVM(
 
     // Mutable state flow to represent the authentication UI state
     private val _authUiState: MutableStateFlow<AuthUiState> = MutableStateFlow(AuthUiState())
-    val authUiState: StateFlow<AuthUiState> = _authUiState
 
-    init {
-        // Checking if the user is signed in when ViewModel is initialized
-        //handleAuthActions(AuthActions.CheckIfSignedIn)
-    }
+    // State flow to expose the authentication UI state
+    val authUiState: StateFlow<AuthUiState> = _authUiState
 
     /**
      * Function to handle different authentication actions.
      *
      * @param action The authentication action to be handled.
      */
-    fun handleAuthActions(action: AuthActions) {
+    fun handleActions(action: AuthActions) {
         when (action) {
-            AuthActions.RequestSignIn -> {
-                // Performing user sign-in
-                viewModelScope.launch {
-                    authRepository.signInUser().collect { auth ->
-                        when (auth) {
-                            is AppResource.Success -> handleAuthActions(AuthActions.SignInComplete)
-                            else -> _authUiState.update { it.copy(isSignedIn = false) }
-                        }
-                    }
-                }
-            }
-            AuthActions.SignInComplete -> {
-                // Updating UI state after successful sign-in
-                _authUiState.update { it.copy(isSignedIn = true) }
-            }
-            AuthActions.CheckIfSignedIn -> {
-                // Checking if the user is signed in
-                viewModelScope.launch {
-                    authRepository.checkIfSignedIn().collectLatest { isSignedIn ->
-                        when (isSignedIn) {
-                            is AppResource.Success -> handleAuthActions(AuthActions.SignInComplete)
-                            else -> _authUiState.update { it.copy(isSignedIn = false) }
-                        }
-                    }
+            AuthActions.RequestSignIn -> requestSignIn()
+            AuthActions.SignInComplete -> _authUiState.update { it.copy(isSignedIn = true) }
+            AuthActions.CheckIfSignedIn -> checkIfSignedIn()
+        }
+    }
+
+    /**
+     * Requests user sign-in.
+     */
+    private fun requestSignIn() {
+        viewModelScope.launch {
+            authRepository.signInUser().collect { auth ->
+                when (auth) {
+                    is AppResource.Success -> handleActions(AuthActions.SignInComplete)
+                    else -> _authUiState.update { it.copy(isSignedIn = false) }
                 }
             }
         }
     }
 
-    companion object {
-        private const val TAG = "AuthScreenVM"
+    /**
+     * Checks if the user is signed in.
+     */
+    private fun checkIfSignedIn() {
+        viewModelScope.launch {
+            authRepository.checkIfSignedIn().collectLatest { isSignedIn ->
+                when (isSignedIn) {
+                    is AppResource.Success -> handleActions(AuthActions.SignInComplete)
+                    else -> _authUiState.update { it.copy(isSignedIn = false) }
+                }
+            }
+        }
     }
 }
+
 
 /**
  * Data class representing the state of the authentication UI.
