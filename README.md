@@ -2,6 +2,7 @@
 
 FarmersFirst is a mobile application designed to streamline the shopping experience for farmers. It allows farmers to manage their baskets, view product recommendations, and make purchases conveniently. This README provides instructions for setting up and running the application.
 
+You can view the code reference on this [URL](https://farmersfirst.onrender.com/index.html)
 
 ## Features
 
@@ -75,6 +76,7 @@ FarmersFirst is built with the following tools and technologies:
 ## Contributing
 
 Contributions to the FarmersFirst project are welcome! If you find any bugs or have suggestions for improvements, please open an issue or create a pull request on GitHub.
+
 
 ## License
 
