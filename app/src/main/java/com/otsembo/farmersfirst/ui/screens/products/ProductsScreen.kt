@@ -20,8 +20,10 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.AddShoppingCart
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.CardDefaults
@@ -29,11 +31,17 @@ import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.BlendMode
@@ -48,6 +56,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navOptions
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.otsembo.farmersfirst.R
@@ -61,25 +70,36 @@ import com.otsembo.farmersfirst.ui.components.LoadingScreen
 import com.otsembo.farmersfirst.ui.components.NavRailOption
 import com.otsembo.farmersfirst.ui.components.SearchField
 import com.otsembo.farmersfirst.ui.navigation.AppRoutes
+import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
+/**
+ * Composable function for displaying the products screen UI.
+ *
+ * @param modifier Modifier for the root layout.
+ * @param isWideScreen Boolean indicating whether the screen is wide.
+ * @param navController NavHostController for navigation within the app.
+ * @param viewModel ViewModel instance for managing the state of the products screen.
+ */
 @Composable
 fun ProductsScreen(
     modifier: Modifier =  Modifier,
     isWideScreen: Boolean = false,
     navController: NavHostController,
     viewModel: ProductsScreenVM,
+    uiState: ProductsUiState,
     ) {
 
-    val context = LocalContext.current
-    val uiState: ProductsUiState by viewModel.productsUiState.collectAsState()
+    val snackbarHostState by remember { mutableStateOf(SnackbarHostState()) }
+    val scope = rememberCoroutineScope()
 
-    LaunchedEffect(key1 = uiState.toastCounter){
-        if(uiState.toastCounter > 0)
-            Toast
-                .makeText(context, uiState.toastMessage, Toast.LENGTH_SHORT)
-                .show()
+    // TODO: Fix UI render bug
+    LaunchedEffect(key1 = uiState.isSignedIn){
+        if(!uiState.isSignedIn) {
+            navController.navigate(AppRoutes.AppAuth)
+        }
     }
+
 
     if(isWideScreen){
 
@@ -107,7 +127,12 @@ fun ProductsScreen(
                                 )
                             }
                         }
-                    })
+                    }),
+                    NavRailOption( "Logout", onClick = { viewModel.handleActions(ProductsActions.SignOutUser) }, icon = { Icon(
+                        imageVector = Icons.AutoMirrored.Default.Logout,
+                        contentDescription = "Logout"
+                    )})
+
                 )
             )
 
@@ -166,6 +191,7 @@ fun ProductsScreen(
                                     onClick = { index ->
                                         navController.navigate(AppRoutes.Home.productDetails(index)) },
                                     onAddToBasket = { productId ->
+                                        scope.launch { snackbarHostState.showSnackbar("Added ${it.name} to basket") }
                                         viewModel.handleActions(ProductsActions.AddItemToBasket(productId))
                                     }
                                 )
@@ -186,10 +212,12 @@ fun ProductsScreen(
                 .padding(horizontal = 16.dp, vertical = 8.dp)
         ) {
             AppBar(
-                startIcon = {
-                    AppBarIcon(icon = Icons.Default.Menu)
-                },
                 endIcon = {
+                    AppBarIcon(icon = Icons.AutoMirrored.Filled.Logout, onClick = {
+                        viewModel.handleActions(ProductsActions.SignOutUser)
+                    })
+                },
+                startIcon = {
                     Box(modifier = Modifier){
                         AppBarIcon(icon = Icons.Default.ShoppingCart, onClick = { navController.navigate(AppRoutes.Home.Basket) })
                         if(uiState.basketItems.isEmpty()) {
@@ -257,6 +285,7 @@ fun ProductsScreen(
                                 onClick = { index ->
                                     navController.navigate(AppRoutes.Home.productDetails(index)) },
                                 onAddToBasket = { productId ->
+                                    scope.launch { snackbarHostState.showSnackbar("Added ${it.name} to basket") }
                                     viewModel.handleActions(ProductsActions.AddItemToBasket(productId))
                                 }
                             )
@@ -266,9 +295,21 @@ fun ProductsScreen(
             }
         }
     }
+
+    SnackbarHost(
+        snackbarHostState,
+        modifier = Modifier.fillMaxSize()
+    )
+
 }
 
-
+/**
+ * Composable function for rendering a single product item.
+ *
+ * @param product Product object representing the item to be displayed.
+ * @param onAddToBasket Callback function invoked when the "Add to Cart" button is clicked.
+ * @param onClick Callback function invoked when the item is clicked.
+ */
 @Composable
 fun ProductItem(
     product: Product,
@@ -366,6 +407,13 @@ fun ProductItem(
 }
 
 
+/**
+ * Composable function for rendering a circular dot with text inside.
+ *
+ * @param modifier Modifier for the dot.
+ * @param text Text to be displayed inside the dot.
+ * @param color Color of the dot.
+ */
 @Composable
 fun DotWithText(
     modifier: Modifier = Modifier,

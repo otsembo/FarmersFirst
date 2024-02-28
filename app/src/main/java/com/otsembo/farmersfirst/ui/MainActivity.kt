@@ -2,6 +2,7 @@ package com.otsembo.farmersfirst.ui
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -23,6 +24,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -52,6 +54,7 @@ import com.otsembo.farmersfirst.ui.screens.product_details.ProductDetailsScreen
 import com.otsembo.farmersfirst.ui.screens.product_details.ProductDetailsScreenVM
 import com.otsembo.farmersfirst.ui.screens.products.ProductsScreen
 import com.otsembo.farmersfirst.ui.screens.products.ProductsScreenVM
+import com.otsembo.farmersfirst.ui.screens.products.ProductsUiState
 import com.otsembo.farmersfirst.ui.theme.FarmersFirstTheme
 import org.koin.android.ext.android.inject
 
@@ -192,6 +195,11 @@ class MainActivity : ComponentActivity() {
         productDetailsScreenVM: ProductDetailsScreenVM,
         basketScreenVM: BasketScreenVM
     ) {
+
+        // setup screen states
+        val productsUiState: ProductsUiState by productsScreenVM.productsUiState.collectAsState()
+
+
         // Navigates through different destinations based on the start destination and user actions
         NavHost(
             navController = navController,
@@ -215,7 +223,8 @@ class MainActivity : ComponentActivity() {
                     ProductsScreen(
                         isWideScreen = isWideScreen,
                         viewModel = productsScreenVM,
-                        navController = navController
+                        navController = navController,
+                        uiState = productsUiState
                     )
                 }
 
@@ -259,7 +268,6 @@ class MainActivity : ComponentActivity() {
                 }
 
             }
-
         }
 
     }

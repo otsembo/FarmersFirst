@@ -28,25 +28,30 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.unit.dp
 import com.otsembo.farmersfirst.R
 
+/**
+ * Composable function for rendering a search field.
+ *
+ * @param modifier Modifier for the search field.
+ * @param label Label displayed as a hint in the search field.
+ * @param text Current text value of the search field.
+ * @param onTextChange Callback function invoked when the text in the search field changes.
+ * @param onSubmitSearch Callback function invoked when the search is submitted.
+ */
 @Composable
 fun SearchField(
     modifier: Modifier = Modifier,
     label: String,
     text: String,
     onTextChange: (String) -> Unit = { },
-    onSubmitSearch: (String) -> Unit = {}
+    onSubmitSearch: (String) -> Unit = { }
 ) {
-
     Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(TextFieldDefaults.MinHeight),
+        modifier = modifier.fillMaxWidth().height(TextFieldDefaults.MinHeight),
         verticalAlignment = Alignment.CenterVertically
     ) {
-
+        // Search TextField
         TextField(
-            modifier = Modifier
-                .weight(4f),
+            modifier = Modifier.weight(4f),
             value = text,
             onValueChange = { newText -> onTextChange(newText) },
             label = {
@@ -64,23 +69,20 @@ fun SearchField(
             }
         )
 
+        // Search Button
         Button(
-            modifier = Modifier
-                .align(Alignment.CenterVertically)
+            modifier = Modifier.align(Alignment.CenterVertically)
                 .padding(start = 6.dp)
                 .weight(1f)
                 .height(TextFieldDefaults.MinHeight - 15.dp),
-            shape = RoundedCornerShape(50.dp),
+            shape = RoundedCornerShape(10.dp),
             onClick = { onSubmitSearch(text) },
         ) {
-
             Icon(
-                modifier = Modifier
-                    .size(dimensionResource(id = R.dimen.icon_size)),
+                modifier = Modifier.size(dimensionResource(id = R.dimen.icon_size)),
                 imageVector = Icons.Default.SavedSearch,
                 contentDescription = "Search Item"
             )
         }
-
     }
 }
