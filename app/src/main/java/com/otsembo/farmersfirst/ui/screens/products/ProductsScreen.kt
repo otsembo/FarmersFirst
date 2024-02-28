@@ -87,9 +87,9 @@ fun ProductsScreen(
     isWideScreen: Boolean = false,
     navController: NavHostController,
     viewModel: ProductsScreenVM,
-    uiState: ProductsUiState,
     ) {
 
+    val uiState: ProductsUiState by viewModel.productsUiState.collectAsState()
     val snackbarHostState by remember { mutableStateOf(SnackbarHostState()) }
     val scope = rememberCoroutineScope()
 
@@ -98,6 +98,11 @@ fun ProductsScreen(
         if(!uiState.isSignedIn) {
             navController.navigate(AppRoutes.AppAuth)
         }
+    }
+
+    LaunchedEffect(key1 = uiState.basketItems){
+        viewModel.handleActions(ProductsActions.LoadBasketItems)
+        viewModel.handleActions(ProductsActions.LoadAllProducts)
     }
 
 

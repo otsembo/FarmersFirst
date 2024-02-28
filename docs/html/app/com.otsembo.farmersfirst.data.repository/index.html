@@ -1,0 +1,264 @@
+<!doctype html>
+<html class="no-js">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>com.otsembo.farmersfirst.data.repository</title>
+<link href="../../images/logo-icon.svg" rel="icon" type="image/svg">    <script>var pathToRoot = "../../";</script>
+    <script>document.documentElement.classList.replace("no-js","js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async></script>
+<script type="text/javascript" src="../../scripts/sourceset_dependencies.js" async></script>
+<link href="../../styles/style.css" rel="Stylesheet">
+<link href="../../styles/main.css" rel="Stylesheet">
+<link href="../../styles/prism.css" rel="Stylesheet">
+<link href="../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../styles/font-jb-sans-auto.css" rel="Stylesheet">
+<script type="text/javascript" src="../../scripts/clipboard.js" async></script>
+<script type="text/javascript" src="../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
+<body>
+    <div class="root">
+<nav class="navigation" id="navigation-wrapper">
+    <div class="navigation--inner">
+        <div class="navigation-title">
+            <button class="menu-toggle" id="menu-toggle" type="button">toggle menu</button>
+            <div class="library-name">
+<a class="library-name--link" href="../../index.html">
+                            FarmersFirst
+                    </a>            </div>
+            <div class="library-version">
+            </div>
+        </div>
+        <div class="filter-section" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":app:dokkaHtmlPartial/release">androidJvm</button>
+        </div>
+    </div>
+    <div class="navigation-controls">
+        <button class="navigation-controls--btn navigation-controls--theme" id="theme-toggle-button" type="button">switch theme</button>
+        <div class="navigation-controls--btn navigation-controls--search" id="searchBar" role="button">search in API</div>
+    </div>
+</nav>
+        <div id="container">
+            <div class="sidebar" id="leftColumn">
+                <div class="sidebar--inner" id="sideMenu"></div>
+            </div>
+            <div id="main">
+<div class="main-content" data-page-type="package" id="content" pageids="app::com.otsembo.farmersfirst.data.repository////PointingToDeclaration//1711373860">
+  <div class="breadcrumbs"><a href="../index.html">app</a><span class="delimiter">/</span><span class="current">com.otsembo.farmersfirst.data.repository</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span><span>Package-level</span></span> <span><span>declarations</span></span></h1>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="TYPE">Types</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="TYPE">
+        <h2 class="">Types</h2>
+        <div class="table"><a data-name="-217443128%2FClasslikes%2F1711373860" anchor-label="AuthRepository" id="-217443128%2FClasslikes%2F1711373860" data-filterable-set=":app:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":app:dokkaHtmlPartial/release" data-filterable-set=":app:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-auth-repository/index.html"><span>Auth</span><wbr><span><span>Repository</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-217443128%2FClasslikes%2F1711373860"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="-auth-repository/index.html">AuthRepository</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">activityContext<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a><span class="token punctuation">, </span></span><span class="parameter ">oAuthClient<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">userPrefRepository<span class="token operator">: </span><a href="-i-user-pref-repository/index.html">IUserPrefRepository</a><span class="token punctuation">, </span></span><span class="parameter ">basketRepository<span class="token operator">: </span><a href="-i-basket-repository/index.html">IBasketRepository</a></span></span><span class="token punctuation">)</span> : <a href="-i-auth-repository/index.html">IAuthRepository</a></div><div class="brief "><p class="paragraph">Repository class responsible for handling authentication-related operations, such as signing in and signing out users using Google OAuth. Implements the <a href="-i-auth-repository/index.html">IAuthRepository</a> interface.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1350358492%2FClasslikes%2F1711373860" anchor-label="BasePreferenceRepository" id="-1350358492%2FClasslikes%2F1711373860" data-filterable-set=":app:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":app:dokkaHtmlPartial/release" data-filterable-set=":app:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-base-preference-repository/index.html"><span>Base</span><wbr><span>Preference</span><wbr><span><span>Repository</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1350358492%2FClasslikes%2F1711373860"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">class </span><a href="-base-preference-repository/index.html">BasePreferenceRepository</a></div><div class="brief "><p class="paragraph">Abstract base class for implementing preference repositories using Android's DataStore. Provides methods for adding, fetching, and removing data from the DataStore.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="500466470%2FClasslikes%2F1711373860" anchor-label="BaseRecommenderRepository" id="500466470%2FClasslikes%2F1711373860" data-filterable-set=":app:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":app:dokkaHtmlPartial/release" data-filterable-set=":app:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-base-recommender-repository/index.html"><span>Base</span><wbr><span>Recommender</span><wbr><span><span>Repository</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="500466470%2FClasslikes%2F1711373860"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">class </span><a href="-base-recommender-repository/index.html">BaseRecommenderRepository</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="-base-recommender-repository/index.html">T</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Abstract base class for recommender repositories.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1322167553%2FClasslikes%2F1711373860" anchor-label="BaseRepository" id="-1322167553%2FClasslikes%2F1711373860" data-filterable-set=":app:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":app:dokkaHtmlPartial/release" data-filterable-set=":app:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-base-repository/index.html"><span>Base</span><wbr><span><span>Repository</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1322167553%2FClasslikes%2F1711373860"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">class </span><a href="-base-repository/index.html">BaseRepository</a></div><div class="brief "><p class="paragraph">Base repository class for performing database transactions. This class utilizes Kotlin coroutines and flows to handle asynchronous operations.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="114189409%2FClasslikes%2F1711373860" anchor-label="BasketItemsRecommenderRepository" id="114189409%2FClasslikes%2F1711373860" data-filterable-set=":app:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":app:dokkaHtmlPartial/release" data-filterable-set=":app:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-basket-items-recommender-repository/index.html"><span>Basket</span><wbr><span>Items</span><wbr><span>Recommender</span><wbr><span><span>Repository</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="114189409%2FClasslikes%2F1711373860"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="-basket-items-recommender-repository/index.html">BasketItemsRecommenderRepository</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">productRepository<span class="token operator">: </span><a href="-i-product-repository/index.html">IProductRepository</a><span class="token punctuation">, </span></span><span class="parameter ">basketRepository<span class="token operator">: </span><a href="-i-basket-repository/index.html">IBasketRepository</a><span class="token punctuation">, </span></span><span class="parameter ">userPrefRepository<span class="token operator">: </span><a href="-i-user-pref-repository/index.html">IUserPrefRepository</a></span></span><span class="token punctuation">)</span> : <a href="-base-recommender-repository/index.html">BaseRecommenderRepository</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../com.otsembo.farmersfirst.data.model/-basket-item/index.html">BasketItem</a><span class="token operator">&gt;</span><span class="token operator">&gt; </span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="113679786%2FClasslikes%2F1711373860" anchor-label="BasketRepository" id="113679786%2FClasslikes%2F1711373860" data-filterable-set=":app:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":app:dokkaHtmlPartial/release" data-filterable-set=":app:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-basket-repository/index.html"><span>Basket</span><wbr><span><span>Repository</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="113679786%2FClasslikes%2F1711373860"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="-basket-repository/index.html">BasketRepository</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">productDao<span class="token operator">: </span><a href="../com.otsembo.farmersfirst.data.database.dao/-product-dao/index.html">ProductDao</a><span class="token punctuation">, </span></span><span class="parameter ">basketDao<span class="token operator">: </span><a href="../com.otsembo.farmersfirst.data.database.dao/-basket-dao/index.html">BasketDao</a><span class="token punctuation">, </span></span><span class="parameter ">basketItemDao<span class="token operator">: </span><a href="../com.otsembo.farmersfirst.data.database.dao/-basket-item-dao/index.html">BasketItemDao</a></span></span><span class="token punctuation">)</span> : <a href="-base-repository/index.html">BaseRepository</a>, <a href="-i-basket-repository/index.html">IBasketRepository</a></div><div class="brief "><p class="paragraph">Repository class responsible for handling basket-related operations, such as creating, updating, and retrieving basket items. Implements the <a href="-i-basket-repository/index.html">IBasketRepository</a> interface.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-217329043%2FClasslikes%2F1711373860" anchor-label="IAuthRepository" id="-217329043%2FClasslikes%2F1711373860" data-filterable-set=":app:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":app:dokkaHtmlPartial/release" data-filterable-set=":app:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-i-auth-repository/index.html"><span>IAuth</span><wbr><span><span>Repository</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-217329043%2FClasslikes%2F1711373860"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">interface </span><a href="-i-auth-repository/index.html">IAuthRepository</a></div><div class="brief "><p class="paragraph">Interface for the authentication repository, defining methods for signing in and signing out users.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="223315471%2FClasslikes%2F1711373860" anchor-label="IBasketRepository" id="223315471%2FClasslikes%2F1711373860" data-filterable-set=":app:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":app:dokkaHtmlPartial/release" data-filterable-set=":app:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-i-basket-repository/index.html"><span>IBasket</span><wbr><span><span>Repository</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="223315471%2FClasslikes%2F1711373860"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">interface </span><a href="-i-basket-repository/index.html">IBasketRepository</a></div><div class="brief "><p class="paragraph">Interface for the basket repository, defining methods for managing baskets and basket items.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="204428522%2FClasslikes%2F1711373860" anchor-label="IProductRepository" id="204428522%2FClasslikes%2F1711373860" data-filterable-set=":app:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":app:dokkaHtmlPartial/release" data-filterable-set=":app:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-i-product-repository/index.html"><span>IProduct</span><wbr><span><span>Repository</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="204428522%2FClasslikes%2F1711373860"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">interface </span><a href="-i-product-repository/index.html">IProductRepository</a></div><div class="brief "><p class="paragraph">Interface for the product repository, defining methods for managing product data.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="722352839%2FClasslikes%2F1711373860" anchor-label="IUserPrefRepository" id="722352839%2FClasslikes%2F1711373860" data-filterable-set=":app:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":app:dokkaHtmlPartial/release" data-filterable-set=":app:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-i-user-pref-repository/index.html"><span>IUser</span><wbr><span>Pref</span><wbr><span><span>Repository</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="722352839%2FClasslikes%2F1711373860"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">interface </span><a href="-i-user-pref-repository/index.html">IUserPrefRepository</a></div><div class="brief "><p class="paragraph">Interface for the user preferences repository, defining methods for managing user preferences.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1100689583%2FClasslikes%2F1711373860" anchor-label="ProductRepository" id="1100689583%2FClasslikes%2F1711373860" data-filterable-set=":app:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":app:dokkaHtmlPartial/release" data-filterable-set=":app:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-product-repository/index.html"><span>Product</span><wbr><span><span>Repository</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1100689583%2FClasslikes%2F1711373860"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="-product-repository/index.html">ProductRepository</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">productDao<span class="token operator">: </span><a href="../com.otsembo.farmersfirst.data.database.dao/-product-dao/index.html">ProductDao</a></span></span><span class="token punctuation">)</span> : <a href="-base-repository/index.html">BaseRepository</a>, <a href="-i-product-repository/index.html">IProductRepository</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1206009777%2FClasslikes%2F1711373860" anchor-label="UserPreferencesRepository" id="1206009777%2FClasslikes%2F1711373860" data-filterable-set=":app:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":app:dokkaHtmlPartial/release" data-filterable-set=":app:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-user-preferences-repository/index.html"><span>User</span><wbr><span>Preferences</span><wbr><span><span>Repository</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1206009777%2FClasslikes%2F1711373860"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="-user-preferences-repository/index.html">UserPreferencesRepository</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">context<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a></span></span><span class="token punctuation">)</span> : <a href="-base-preference-repository/index.html">BasePreferenceRepository</a>, <a href="-i-user-pref-repository/index.html">IUserPrefRepository</a></div><div class="brief "><p class="paragraph">Repository class for managing user preferences. This class implements the IUserPrefRepository interface and extends the BasePreferenceRepository class.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      <div class="footer">
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2024 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+      </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

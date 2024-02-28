@@ -2,6 +2,8 @@
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.kotlinAndroid)
+    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
+    id("org.jetbrains.dokka")
 }
 
 android {

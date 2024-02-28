@@ -6,6 +6,7 @@ package com.otsembo.farmersfirst.data.repository
  import androidx.credentials.exceptions.NoCredentialException
  import com.google.android.libraries.identity.googleid.GetGoogleIdOption
  import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
+ import com.otsembo.farmersfirst.BuildConfig
  import com.otsembo.farmersfirst.common.AppResource
  import com.otsembo.farmersfirst.common.coerceTo
  import com.otsembo.farmersfirst.data.database.AppDatabaseHelper
@@ -30,17 +31,26 @@ interface IAuthRepository {
      * Signs in the user with the specified Google ID option.
      * @param googleIdOption The optional Google ID option for signing in. Defaults to null.
      * @return A flow of AppResource representing the result of the sign-in operation.
+     *         The flow emits a nullable String which represents the user's unique identifier upon successful sign-in,
+     *         or null if the sign-in operation fails.
      */
     suspend fun signInUser(googleIdOption: GetGoogleIdOption? = null): Flow<AppResource<String?>>
 
     /**
      * Signs out the currently signed-in user.
      * @return A flow of AppResource representing the result of the sign-out operation.
+     *         The flow emits a Boolean value indicating whether the sign-out operation was successful (true) or not (false).
      */
     suspend fun signOutUser(): Flow<AppResource<Boolean>>
 
+    /**
+     * Checks if a user is currently signed in.
+     * @return A flow of AppResource representing the result of the check.
+     *         The flow emits a Boolean value indicating whether a user is currently signed in (true) or not (false).
+     */
     suspend fun checkIfSignedIn(): Flow<AppResource<Boolean>>
 }
+
 
 
 /**
@@ -163,7 +173,7 @@ class AuthRepository (
         GetGoogleIdOption.Builder()
             .setFilterByAuthorizedAccounts(authorizedFilter)
             .setNonce(buildNonce())
-            .setServerClientId(KEY_HERE)
+            .setServerClientId(BuildConfig.googleOAuthKey)
             .build()
 
     /**
@@ -181,8 +191,6 @@ class AuthRepository (
 
     companion object {
         private const val EMAIL_KEY = "com.google.android.libraries.identity.googleid.BUNDLE_KEY_ID"
-        private const val SERVER_CLIENT_KEY = "oauth_client"
-        private const val KEY_HERE = "947093319510-ucujl9r8i6lu33abri6eue7rlp5vgsm3.apps.googleusercontent.com"
     }
 
 }
