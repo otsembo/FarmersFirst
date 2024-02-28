@@ -88,9 +88,8 @@ FarmersFirst uses the following open-source libraries:
 
 - Kotlin Coroutines
 - Koin for Dependency Injection
-- Room Persistence Library
+- SQLite for data storage
 - WorkManager
-- Retrofit for network requests
 
 ## Authors
 
