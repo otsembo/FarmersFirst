@@ -9,10 +9,7 @@ FarmersFirst is a mobile application designed to streamline the shopping experie
 - **Product Recommendations**: The application provides personalized product recommendations based on previous purchases.
 - **Google OAuth 2.0**: Farmers can sign in securely using their Google accounts.
 
-
-<video src="https://youtu.be/Zcivg9hyaYo" width="350"></video>
-
-
+[![Watch the video](https://img.youtube.com/vi/Zcivg9hyaYo/hqdefault.jpg)](https://www.youtube.com/embed/Zcivg9hyaYo)
 
 ## Setup
 
