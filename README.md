@@ -21,13 +21,32 @@ Follow these steps to set up and run the FarmersFirst application:
     git clone https://github.com/otsembo/FarmersFirst.git
     ```
 
-2. **Setup Recommender (To Be Completed)**: [Instructions for setting up the recommender will be provided here.]
+2. **Setup Google OAuth / Gemini**: Follow the instructions in the video to get those setup
 
-3. **Setup Google OAuth (To Be Completed)**: [Instructions for setting up Google OAuth will be provided here.]
+[![Watch the video](https://img.youtube.com/vi/qSsyvJsbymw/hqdefault.jpg)](https://www.youtube.com/embed/qSsyvJsbymw)
 
-4. **Open Project in Android Studio**: Open the FarmersFirst project in Android Studio.
 
-5. **Build and Run**: Build the project and run it on an Android device or emulator.
+
+3. **Open Project in Android Studio**: Open the FarmersFirst project in Android Studio.
+
+4. **Build and Run**: Build the project and run it on an Android device or emulator.
+
+## Additional Setup Instructions
+
+### Gradle Secrets
+
+Before building the project, make sure to set up the following Google Gradle secrets:
+
+- `googleOAuthKey`: [Your Google OAuth Client ID]
+- `GeminiApiKey`: [Your Gemini Api Key]
+
+These secrets should be added to your `local.properties` file in the project root directory.
+
+```gradle
+googleOAuthKey="Client ID here"
+GeminiApiKey="Key Here"
+```
+
 
 ## Usage
 
@@ -79,27 +98,4 @@ FarmersFirst uses the following open-source libraries:
 
 For inquiries or support, please contact [okumu.otsembo@gmail.com](mailto:okumu.otsembo@gmail.com).
 
-## Additional Setup Instructions
-
-### Gradle Secrets
-
-Before building the project, make sure to set up the following Google Gradle secrets:
-
-- `googleOAuthKey`: [Your Google OAuth Client ID]
-- `GeminiApiKey`: [Your Gemini Api Key]
-
-These secrets should be added to your `local.properties` file in the project root directory.
-
-```gradle
-googleOAuthKey="Client ID here"
-GeminiApiKey="Key Here"
-```
-
-### Recommender Setup
-
-[Instructions for setting up the recommender will be provided here.]
-
-### Google OAuth Setup
-
-[Instructions for setting up Google OAuth will be provided here.]
 
