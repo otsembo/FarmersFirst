@@ -30,6 +30,8 @@ import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldColors
@@ -76,7 +78,19 @@ import com.otsembo.farmersfirst.ui.screens.auth.AuthActions
 import com.otsembo.farmersfirst.ui.screens.auth.AuthCardUi
 import com.otsembo.farmersfirst.ui.theme.FarmersFirstTheme
 import com.otsembo.farmersfirst.ui.theme.image_tint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
+/**
+ * Composable function for displaying the product details screen.
+ *
+ * @param modifier Modifier to be applied to the root element.
+ * @param isWideScreen Boolean indicating if the screen is in wide mode.
+ * @param navController NavHostController for navigation within the app.
+ * @param viewModel ProductDetailsScreenVM providing the view model for this screen.
+ * @param productId The ID of the product to display details for.
+ * @param scope CoroutineScope for managing coroutines in this composable.
+ */
 @Composable
 fun ProductDetailsScreen(
     modifier: Modifier = Modifier,
@@ -84,17 +98,14 @@ fun ProductDetailsScreen(
     navController: NavHostController,
     viewModel: ProductDetailsScreenVM,
     productId: Int,
+    scope: CoroutineScope,
 ) {
-    val context = LocalContext.current
+
     val uiState: ProductDetailsUiState by viewModel.productDetailsUiState.collectAsState()
+    val snackbarHostState by remember { mutableStateOf(SnackbarHostState()) }
 
     LaunchedEffect(key1 = uiState.isLoading){
       viewModel.handleActions(ProductDetailsActions.LoadProduct(productId))
-    }
-
-    LaunchedEffect(key1 = uiState.toastCounter){
-        if(uiState.toastCounter > 0)
-            Toast.makeText(context, "Item has been added tp your basket", Toast.LENGTH_SHORT).show()
     }
 
     when {
@@ -139,7 +150,9 @@ fun ProductDetailsScreen(
                         ProductDetailsContent(
                             product = product,
                             cartCount = uiState.cartCount,
-                            onAddToCart = { x, y -> viewModel.handleActions(ProductDetailsActions.AddToCart(x, y)) },
+                            onAddToCart = { x, y ->
+                                scope.launch { snackbarHostState.showSnackbar("Adding ${product.name} to your basket")}
+                                viewModel.handleActions(ProductDetailsActions.AddToCart(x, y)) },
                             updateCount = { currentCount, increase ->
                                 val cartCount = if(increase) currentCount + 1 else currentCount - 1
                                 viewModel.handleActions(ProductDetailsActions.CartCountChange(cartCount))
@@ -186,7 +199,9 @@ fun ProductDetailsScreen(
                         ProductDetailsContent(
                             product = product,
                             cartCount = uiState.cartCount,
-                            onAddToCart = { x, y -> viewModel.handleActions(ProductDetailsActions.AddToCart(x, y)) },
+                            onAddToCart = { x, y ->
+                                scope.launch { snackbarHostState.showSnackbar("Adding ${product.name} to your basket") }
+                                viewModel.handleActions(ProductDetailsActions.AddToCart(x, y)) },
                             updateCount = { currentCount, increase ->
                                 val cartCount = if(increase) currentCount + 1 else currentCount - 1
                                 viewModel.handleActions(ProductDetailsActions.CartCountChange(cartCount))
@@ -198,11 +213,22 @@ fun ProductDetailsScreen(
         }
     }
 
+    SnackbarHost(
+        snackbarHostState,
+        modifier = Modifier.fillMaxSize()
+    )
 
 }
 
 
-
+/**
+ * Composable function for displaying the content of the product details screen.
+ *
+ * @param product The product to display details for.
+ * @param cartCount The current count of items in the cart.
+ * @param updateCount Callback function to update the count of items in the cart.
+ * @param onAddToCart Callback function to add the product to the cart.
+ */
 @Composable
 fun ProductDetailsContent(
     product: Product,
@@ -297,6 +323,12 @@ fun ProductDetailsContent(
 }
 
 
+/**
+ * Composable function for displaying the app bar of the product details screen.
+ *
+ * @param modifier Modifier to be applied to the root element.
+ * @param navController NavHostController for navigation within the app.
+ */
 @Composable
 fun ProductDetailsAppBar(
     modifier: Modifier = Modifier,

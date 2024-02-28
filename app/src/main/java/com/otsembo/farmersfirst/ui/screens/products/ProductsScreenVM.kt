@@ -213,8 +213,6 @@ sealed class ProductsActions {
  * @param searchTerm The current search term.
  * @param productsList The list of products.
  * @param basketItems The list of items in the basket.
- * @param toastMessage The toast message to display.
- * @param toastCounter The counter for toast messages.
  * @param errorOccurred Boolean indicating if an error occurred.
  * @param isLoading Boolean indicating if data is being loaded.
  * @param errorMessage The error message.
@@ -223,8 +221,6 @@ data class ProductsUiState(
     val searchTerm: String = "",
     val productsList: List<Product> = emptyList(),
     val basketItems: List<BasketItem> = emptyList(),
-    val toastMessage: String = "",
-    var toastCounter: Int = 0,
     val isSignedIn: Boolean = true,
     val errorOccurred: Boolean = false,
     val isLoading: Boolean = false,
@@ -236,8 +232,7 @@ data class ProductsUiState(
     override fun reset(): ProductsUiState =
         ProductsUiState(
             searchTerm, productsList,
-            basketItems, toastMessage,
-            toastCounter, isSignedIn
+            basketItems, isSignedIn
         )
 
     /**

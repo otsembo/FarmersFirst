@@ -25,6 +25,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -198,7 +199,7 @@ class MainActivity : ComponentActivity() {
 
         // setup screen states
         val productsUiState: ProductsUiState by productsScreenVM.productsUiState.collectAsState()
-
+        val scope = rememberCoroutineScope()
 
         // Navigates through different destinations based on the start destination and user actions
         NavHost(
@@ -239,7 +240,8 @@ class MainActivity : ComponentActivity() {
                         isWideScreen = isWideScreen,
                         viewModel = productDetailsScreenVM,
                         navController = navController,
-                        productId = productId
+                        productId = productId,
+                        scope = scope,
                     )
                 }
 
