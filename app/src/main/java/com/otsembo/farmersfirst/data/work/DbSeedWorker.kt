@@ -5,7 +5,7 @@ import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.otsembo.farmersfirst.data.database.AppDatabaseHelper
-import com.otsembo.farmersfirst.data.database.FarmersDBSeed
+import com.otsembo.farmersfirst.data.database.ProductsSeed
 import com.otsembo.farmersfirst.data.database.dao.ProductDao
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -30,7 +30,7 @@ class DbSeedWorker(
                 val appDB = AppDatabaseHelper(context)
                 val productDao = ProductDao(appDB.writableDatabase)
 
-                val dbSeeder = FarmersDBSeed(appDB, productDao)
+                val dbSeeder = ProductsSeed(appDB, productDao)
                 dbSeeder.addProducts()
 
                 Result.success()

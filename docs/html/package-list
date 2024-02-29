@@ -16,6 +16,6 @@ com.otsembo.farmersfirst.ui.navigation
 com.otsembo.farmersfirst.ui.screens.auth
 com.otsembo.farmersfirst.ui.screens.basket
 com.otsembo.farmersfirst.ui.screens.checkout
-com.otsembo.farmersfirst.ui.screens.product_details
+com.otsembo.farmersfirst.ui.screens.productDetails
 com.otsembo.farmersfirst.ui.screens.products
 com.otsembo.farmersfirst.ui.theme

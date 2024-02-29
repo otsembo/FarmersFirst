@@ -2,8 +2,8 @@ package com.otsembo.farmersfirst.di
 
 import android.database.sqlite.SQLiteDatabase
 import com.otsembo.farmersfirst.data.database.AppDatabaseHelper
-import com.otsembo.farmersfirst.data.database.FarmersDBSeed
-import com.otsembo.farmersfirst.data.database.IFarmersDBSeed
+import com.otsembo.farmersfirst.data.database.ProductsSeed
+import com.otsembo.farmersfirst.data.database.IProductsSeed
 import com.otsembo.farmersfirst.data.database.dao.BasketDao
 import com.otsembo.farmersfirst.data.database.dao.BasketItemDao
 import com.otsembo.farmersfirst.data.database.dao.ProductDao
@@ -52,7 +52,7 @@ val AppModule =
         }
         single<IBasketRepository> { BasketRepository(get(), get(), get()) }
         single<IProductRepository> { ProductRepository(get()) }
-        single<IFarmersDBSeed> { FarmersDBSeed(get(), get()) }
+        single<IProductsSeed> { ProductsSeed(get(), get()) }
         factory<BasketItemsRecommenderRepository> {
             BasketItemsRecommenderRepository(get(), get(), get())
         }

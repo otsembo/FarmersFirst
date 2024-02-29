@@ -4,7 +4,13 @@ import com.otsembo.farmersfirst.data.database.dao.ProductDao
 import com.otsembo.farmersfirst.data.model.Product
 import kotlinx.coroutines.flow.collect
 
+/**
+ * Object responsible for providing a list of pre-defined Product objects for database seeding or display purposes.
+ */
 object DBSeed {
+    /**
+     * List of pre-defined Product objects.
+     */
     val productList =
         listOf(
             Product(
@@ -175,7 +181,7 @@ object DBSeed {
  *
  * This interface defines a method for adding products to the database asynchronously.
  */
-interface IFarmersDBSeed {
+interface IProductsSeed {
     /**
      * Asynchronously adds products to the database.
      */
@@ -183,17 +189,17 @@ interface IFarmersDBSeed {
 }
 
 /**
- * Implementation of the [IFarmersDBSeed] interface for seeding products into the FarmersDB database.
+ * Implementation of the [IProductsSeed] interface for seeding products into the FarmersDB database.
  *
  * This class initializes the database helper and provides the functionality to add products to the database.
  *
  * @param dbHelper The database helper instance for accessing the database.
  * @param dao The Data Access Object (DAO) for product-related database operations.
  */
-class FarmersDBSeed(
+class ProductsSeed(
     dbHelper: AppDatabaseHelper,
     private val dao: ProductDao,
-) : IFarmersDBSeed {
+) : IProductsSeed {
     /**
      * Initializes the FarmersDBSeed instance by refreshing the database.
      *

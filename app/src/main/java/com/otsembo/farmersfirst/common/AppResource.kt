@@ -62,6 +62,9 @@ interface AppUiState<out T> {
     fun setLoading(): T
 }
 
-fun Any?.izNull(): Boolean = this == null
-
+/**
+ * Extension function to check if an object is not null.
+ *
+ * @return true if the object is not null, false otherwise.
+ */
 fun Any?.notNull(): Boolean = this != null
