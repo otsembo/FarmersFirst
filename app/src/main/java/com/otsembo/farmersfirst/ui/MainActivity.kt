@@ -39,6 +39,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.otsembo.farmersfirst.R
 import com.otsembo.farmersfirst.ui.navigation.AppRoutes
 import com.otsembo.farmersfirst.ui.screens.auth.AuthScreen
@@ -111,6 +115,7 @@ class MainActivity : ComponentActivity() {
                         )
                     } else {
                         MainActivityContent(
+                            uiState.isUserSignedIn,
                             navController,
                             isWideScreen,
                             authScreenVM,
@@ -134,13 +139,17 @@ class MainActivity : ComponentActivity() {
      */
     @Composable
     fun MainActivityLoader(modifier: Modifier = Modifier) {
+
+        val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.farmer))
+        val progress by animateLottieCompositionAsState(composition)
+
         Surface(
             modifier =
                 modifier
                     .fillMaxSize()
                     .zIndex(2f),
             shape = RectangleShape,
-            color = Color(0x80000000),
+            color = Color(0xD2000000),
         ) {
             Column(
                 modifier =
@@ -149,13 +158,13 @@ class MainActivity : ComponentActivity() {
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                CircularProgressIndicator(
-                    modifier =
-                        Modifier
-                            .size(75.dp),
-                    trackColor = MaterialTheme.colorScheme.onPrimary,
-                    strokeCap = StrokeCap.Square,
+
+                LottieAnimation(
+                    composition = composition,
+                    progress = { progress },
+                    modifier = Modifier.size(150.dp)
                 )
+
                 Text(
                     text = stringResource(id = R.string.welcome_quote),
                     style = MaterialTheme.typography.bodyLarge,
@@ -185,6 +194,7 @@ class MainActivity : ComponentActivity() {
      */
     @Composable
     fun MainActivityContent(
+        isSignedIn: Boolean,
         navController: NavHostController,
         isWideScreen: Boolean,
         authScreenVM: AuthScreenVM,
@@ -198,7 +208,7 @@ class MainActivity : ComponentActivity() {
         // Navigates through different destinations based on the start destination and user actions
         NavHost(
             navController = navController,
-            startDestination = AppRoutes.AppAuth,
+            startDestination = if(isSignedIn) AppRoutes.Home.Products else AppRoutes.AppAuth,
         ) {
             // Authentication screen destination
             composable(AppRoutes.AppAuth) {

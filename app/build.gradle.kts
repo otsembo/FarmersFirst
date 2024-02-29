@@ -93,6 +93,8 @@ dependencies {
 
     implementation(libs.generativeai)
 
+    implementation(libs.lottie)
+
     implementation(libs.androidx.datastore.preferences.core)
     implementation(libs.androidx.work.runtime.ktx)
 

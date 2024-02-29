@@ -16,6 +16,7 @@ kotlinx-serialization-json = "1.6.3"
 lifecycle-runtime-ktx = "2.7.0"
 activity-compose = "1.7.0"
 compose-bom = "2023.08.00"
+lottie = "6.3.0"
 material-icons-extended = "1.6.2"
 material3-window-size = "1.2.0"
 mockk = "1.13.9"
@@ -45,6 +46,7 @@ kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serializa
 lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycle-runtime-ktx" }
 activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity-compose" }
 compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
+lottie = { group = "com.airbnb.android", name="lottie-compose", version.ref = "lottie" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 mockk-android = { module = "io.mockk:mockk-android", version.ref = "mockk" }
 secrets-gradle-plugin = { module = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin", version.ref = "secrets-gradle-plugin" }

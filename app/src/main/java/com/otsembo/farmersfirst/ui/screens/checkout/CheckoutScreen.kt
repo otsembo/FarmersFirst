@@ -72,7 +72,7 @@ fun CheckoutScreen(navController: NavHostController) {
         )
         Spacer(modifier = Modifier.height(24.dp))
         ElevatedButton(
-            onClick = { navController.navigate(AppRoutes.AppHome) },
+            onClick = { navController.navigate(AppRoutes.Home.Products) },
             colors = ButtonDefaults.buttonColors(),
         ) {
             Text(text = "Back to Home")

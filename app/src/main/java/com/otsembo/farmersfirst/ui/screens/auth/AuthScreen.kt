@@ -52,7 +52,7 @@ fun AuthScreen(
     val uiState: AuthUiState by viewModel.authUiState.collectAsState()
 
     // Effect to navigate to the home screen if the user is already signed in
-    LaunchedEffect(key1 = uiState, block = {
+    LaunchedEffect(key1 = uiState.isSignedIn, block = {
         if (uiState.isSignedIn) {
             navController.navigate(AppRoutes.Home.Products)
         }
