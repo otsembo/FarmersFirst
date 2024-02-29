@@ -111,13 +111,15 @@ class MainActivity : ComponentActivity() {
                         )
                     } else {
                         MainActivityContent(
-                            uiState.isUserSignedIn,
                             navController,
                             isWideScreen,
                             authScreenVM,
                             productsScreenVM,
                             productDetailsScreenVM,
                             basketScreenVM,
+                            onExitApp = {
+                                finishAndRemoveTask()
+                            }
                         )
                     }
                 }
@@ -173,30 +175,30 @@ class MainActivity : ComponentActivity() {
     /**
      * Composable function to display the main activity content.
      *
-     * @param isSignedIn Boolean indicating if the user is signed in.
      * @param navController NavController for navigation.
      * @param isWideScreen Boolean indicating if the screen is wide.
      * @param authScreenVM ViewModel for authentication screen.
      * @param productsScreenVM ViewModel for products screen.
      * @param productDetailsScreenVM ViewModel for product details screen.
      * @param basketScreenVM ViewModel for basket screen.
+     * @param onExitApp lambda function for handling app signOut
      */
     @Composable
     fun MainActivityContent(
-        isSignedIn: Boolean = false,
         navController: NavHostController,
         isWideScreen: Boolean,
         authScreenVM: AuthScreenVM,
         productsScreenVM: ProductsScreenVM,
         productDetailsScreenVM: ProductDetailsScreenVM,
         basketScreenVM: BasketScreenVM,
+        onExitApp: () -> Unit = { }
     ) {
         val scope = rememberCoroutineScope()
 
         // Navigates through different destinations based on the start destination and user actions
         NavHost(
             navController = navController,
-            startDestination = if (isSignedIn) AppRoutes.AppHome else AppRoutes.AppAuth,
+            startDestination = AppRoutes.AppAuth,
         ) {
             // Authentication screen destination
             composable(AppRoutes.AppAuth) {
@@ -207,65 +209,63 @@ class MainActivity : ComponentActivity() {
                 )
             }
 
-            // Home navigation with sub-destinations
-            navigation(startDestination = AppRoutes.Home.Products, route = AppRoutes.AppHome) {
-                // Products screen destination
-                composable(AppRoutes.Home.Products) {
-                    ProductsScreen(
-                        isWideScreen = isWideScreen,
-                        viewModel = productsScreenVM,
-                        navController = navController,
-                    )
-                }
+            // Products screen destination
+            composable(AppRoutes.Home.Products) {
+                ProductsScreen(
+                    isWideScreen = isWideScreen,
+                    viewModel = productsScreenVM,
+                    navController = navController,
+                    onExitApp = onExitApp
+                )
+            }
 
-                // Product details screen destination
-                composable(AppRoutes.Home.ProductDetails) { backStackEntry ->
-                    val productId =
-                        backStackEntry
-                            .arguments
-                            ?.getString(AppRoutes.Home.productId)
-                            ?.toInt() ?: 0
+            // Product details screen destination
+            composable(AppRoutes.Home.ProductDetails) { backStackEntry ->
+                val productId =
+                    backStackEntry
+                        .arguments
+                        ?.getString(AppRoutes.Home.productId)
+                        ?.toInt() ?: 0
 
-                    ProductDetailsScreen(
-                        isWideScreen = isWideScreen,
-                        viewModel = productDetailsScreenVM,
-                        navController = navController,
-                        productId = productId,
-                        scope = scope,
-                    )
-                }
+                ProductDetailsScreen(
+                    isWideScreen = isWideScreen,
+                    viewModel = productDetailsScreenVM,
+                    navController = navController,
+                    productId = productId,
+                    scope = scope,
+                )
+            }
 
-                // Basket screen destination
-                composable(AppRoutes.Home.Basket) {
-                    BasketScreen(
-                        isWideScreen = isWideScreen,
-                        viewModel = basketScreenVM,
-                        navController = navController,
-                    )
-                }
+            // Basket screen destination
+            composable(AppRoutes.Home.Basket) {
+                BasketScreen(
+                    isWideScreen = isWideScreen,
+                    viewModel = basketScreenVM,
+                    navController = navController,
+                )
+            }
 
-                // User's basket screen destination
-                composable(AppRoutes.Home.UserBasket) { backStackEntry ->
-                    val userId =
-                        backStackEntry
-                            .arguments
-                            ?.getString(AppRoutes.Home.userId)
-                            ?.toInt() ?: 0
+            // User's basket screen destination
+            composable(AppRoutes.Home.UserBasket) { backStackEntry ->
+                val userId =
+                    backStackEntry
+                        .arguments
+                        ?.getString(AppRoutes.Home.userId)
+                        ?.toInt() ?: 0
 
-                    BasketScreen(
-                        isWideScreen = isWideScreen,
-                        viewModel = basketScreenVM,
-                        navController = navController,
-                        userId = userId,
-                    )
-                }
+                BasketScreen(
+                    isWideScreen = isWideScreen,
+                    viewModel = basketScreenVM,
+                    navController = navController,
+                    userId = userId,
+                )
+            }
 
-                // Checkout Screen
-                composable(AppRoutes.Home.Checkout) {
-                    CheckoutScreen(
-                        navController,
-                    )
-                }
+            // Checkout Screen
+            composable(AppRoutes.Home.Checkout) {
+                CheckoutScreen(
+                    navController,
+                )
             }
         }
     }

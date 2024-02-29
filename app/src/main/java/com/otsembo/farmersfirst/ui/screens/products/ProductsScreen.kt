@@ -83,12 +83,13 @@ fun ProductsScreen(
     isWideScreen: Boolean = false,
     navController: NavHostController,
     viewModel: ProductsScreenVM,
+    onExitApp: () -> Unit = { }
 ) {
     val uiState: ProductsUiState by viewModel.productsUiState.collectAsState()
     val snackbarHostState by remember { mutableStateOf(SnackbarHostState()) }
     val scope = rememberCoroutineScope()
 
-    LaunchedEffect(key1 = uiState.isSignedIn) {
+    LaunchedEffect(uiState.isSignedIn) {
         if (!uiState.isSignedIn) {
             navController.popBackStack(AppRoutes.AppAuth, false)
         }
@@ -131,6 +132,7 @@ fun ProductsScreen(
                         }),
                         NavRailOption("Logout", onClick = {
                             viewModel.handleActions(ProductsActions.SignOutUser)
+                            onExitApp()
                         }, icon = {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Default.Logout,
@@ -234,6 +236,7 @@ fun ProductsScreen(
                 endIcon = {
                     AppBarIcon(icon = Icons.AutoMirrored.Filled.Logout, onClick = {
                         viewModel.handleActions(ProductsActions.SignOutUser)
+                        onExitApp()
                     })
                 },
                 startIcon = {
