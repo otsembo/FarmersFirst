@@ -8,8 +8,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.FindInPage
 import androidx.compose.material.icons.filled.SavedSearch
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.TravelExplore
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -62,7 +64,7 @@ fun SearchField(
             keyboardActions = KeyboardActions(onDone = { onSubmitSearch(text) }),
             leadingIcon = {
                 Icon(
-                    imageVector = Icons.Default.Search,
+                    imageVector = Icons.Default.TravelExplore,
                     contentDescription = "Search Icon",
                     modifier = Modifier.size(24.dp)
                 )
@@ -74,13 +76,13 @@ fun SearchField(
             modifier = Modifier.align(Alignment.CenterVertically)
                 .padding(start = 6.dp)
                 .weight(1f)
-                .height(TextFieldDefaults.MinHeight - 15.dp),
+                .height(TextFieldDefaults.MinHeight),
             shape = RoundedCornerShape(10.dp),
             onClick = { onSubmitSearch(text) },
         ) {
             Icon(
                 modifier = Modifier.size(dimensionResource(id = R.dimen.icon_size)),
-                imageVector = Icons.Default.SavedSearch,
+                imageVector = Icons.Default.Search,
                 contentDescription = "Search Item"
             )
         }

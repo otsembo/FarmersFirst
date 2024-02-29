@@ -84,11 +84,19 @@ class ProductsScreenVM(
     private fun searchProduct(){
         viewModelScope.launch {
             val searchTerm = _productsUiState.value.searchTerm
-            if(searchTerm.isNotBlank())
+            if(searchTerm.isNotBlank()) {
                 productRepository
                     .searchProduct(searchTerm)
-                    .collect { res -> res.modelProductsUiState()}
+                    .collect { res -> res.modelProductsUiState() }
+            }
             else fetchAllProducts()
+            _productsUiState.update {
+                it.reset()
+                    .copy(
+                        productsHeading = if(searchTerm.isNotBlank()) " '$searchTerm' items "
+                        else "Best Selling"
+                    )
+            }
         }
     }
 
@@ -227,6 +235,7 @@ sealed class ProductsActions {
  */
 data class ProductsUiState(
     val searchTerm: String = "",
+    val productsHeading: String = "Best Selling",
     val productsList: List<Product> = emptyList(),
     val basketItems: List<BasketItem> = emptyList(),
     val isSignedIn: Boolean = true,
@@ -239,7 +248,7 @@ data class ProductsUiState(
      */
     override fun reset(): ProductsUiState =
         ProductsUiState(
-            searchTerm, productsList,
+            searchTerm, productsHeading, productsList,
             basketItems, isSignedIn
         )
 

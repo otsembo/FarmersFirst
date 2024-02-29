@@ -60,6 +60,7 @@ import com.otsembo.farmersfirst.ui.components.AppBar
 import com.otsembo.farmersfirst.ui.components.AppBarIcon
 import com.otsembo.farmersfirst.ui.components.AppHeading
 import com.otsembo.farmersfirst.ui.components.AppNavRail
+import com.otsembo.farmersfirst.ui.components.EmptyEntityMessage
 import com.otsembo.farmersfirst.ui.components.ErrorScreen
 import com.otsembo.farmersfirst.ui.components.LoadingScreen
 import com.otsembo.farmersfirst.ui.components.NavRailOption
@@ -158,7 +159,7 @@ fun ProductsScreen(
                     )
 
                     SearchField(
-                        label = "Find resources ...",
+                        label = "SEARCH",
                         modifier = Modifier
                             .weight(6f),
                         text = uiState.searchTerm,
@@ -172,14 +173,15 @@ fun ProductsScreen(
                     modifier = Modifier
                         .align(Alignment.Start)
                         .padding(top = 16.dp, bottom = 8.dp, start = 16.dp),
-                    text = "All Items."
+                    text = uiState.productsHeading
                 )
 
                 // conditional rendering
                 when {
                     uiState.isLoading -> LoadingScreen()
                     uiState.errorOccurred -> ErrorScreen(errorMessage = uiState.errorMessage)
-                    uiState.productsList.isNotEmpty() -> {
+                    uiState.productsList.isEmpty() -> EmptyEntityMessage(message = "No items found!")
+                    else -> {
                         LazyVerticalGrid(
                             horizontalArrangement = Arrangement.spacedBy(8.dp),
                             verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -266,13 +268,14 @@ fun ProductsScreen(
                 modifier = Modifier
                     .align(Alignment.Start)
                     .padding(top = 24.dp, bottom = 8.dp, start = 8.dp),
-                text = "All Items."
+                text = uiState.productsHeading
             )
 
             when {
                 uiState.isLoading -> LoadingScreen()
                 uiState.errorOccurred -> ErrorScreen(errorMessage = uiState.errorMessage)
-                uiState.productsList.isNotEmpty() -> {
+                uiState.productsList.isEmpty() -> EmptyEntityMessage(message = "No items found!")
+                else -> {
                     LazyVerticalGrid(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
