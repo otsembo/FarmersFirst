@@ -25,6 +25,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.otsembo.farmersfirst.common.notNull
 import com.otsembo.farmersfirst.ui.theme.FarmersFirstTheme
 
 /**
@@ -96,16 +97,26 @@ fun AppNavRail(
 fun AppBarIcon(
     icon: ImageVector,
     tint: Color = Color.Transparent,
-    onClick: () -> Unit = {}
+    onClick: (() -> Unit)? = null
 ) {
-    Icon(
-        imageVector = icon,
-        contentDescription = "Menu drawer",
-        modifier = Modifier
-            .size(30.dp)
-            .clickable { onClick() },
-        tint = if(tint == Color.Transparent) MaterialTheme.colorScheme.surfaceTint else tint
-    )
+    if(onClick.notNull()){
+        Icon(
+            imageVector = icon,
+            contentDescription = "Menu drawer",
+            modifier = Modifier
+                .size(30.dp)
+                .clickable { onClick!!() },
+            tint = if(tint == Color.Transparent) MaterialTheme.colorScheme.surfaceTint else tint
+        )
+    } else {
+        Icon(
+            imageVector = icon,
+            contentDescription = "Menu drawer",
+            modifier = Modifier
+                .size(30.dp),
+            tint = if(tint == Color.Transparent) MaterialTheme.colorScheme.surfaceTint else tint
+        )
+    }
 }
 
 /**

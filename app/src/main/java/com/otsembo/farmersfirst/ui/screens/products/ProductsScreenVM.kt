@@ -149,12 +149,20 @@ class ProductsScreenVM(
         }
     }
 
+    /**
+     * Signs out the currently signed-in user.
+     * Observes the sign-out operation from the authentication repository and updates the UI state accordingly.
+     */
     private fun signOutUser(){
         viewModelScope.launch {
             authRepository.signOutUser().collect { signOutRes ->
-                if (signOutRes is AppResource.Success){
-                    _productsUiState.update {
-                        it.reset().copy(isSignedIn = false)
+                when(signOutRes){
+                    is AppResource.Error -> _productsUiState.update { it.setError(signOutRes.info) }
+                    is AppResource.Loading -> _productsUiState.update { it.setLoading() }
+                    is AppResource.Success -> {
+                        _productsUiState.update {
+                            it.reset().copy(isSignedIn = false)
+                        }
                     }
                 }
             }

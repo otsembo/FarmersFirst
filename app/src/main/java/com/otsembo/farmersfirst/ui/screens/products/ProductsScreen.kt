@@ -88,10 +88,9 @@ fun ProductsScreen(
     val snackbarHostState by remember { mutableStateOf(SnackbarHostState()) }
     val scope = rememberCoroutineScope()
 
-    // TODO: Fix UI render bug
     LaunchedEffect(key1 = uiState.isSignedIn){
         if(!uiState.isSignedIn) {
-            navController.navigate(AppRoutes.AppAuth)
+            navController.popBackStack(AppRoutes.AppAuth, false)
         }
     }
 
@@ -296,10 +295,16 @@ fun ProductsScreen(
         }
     }
 
-    SnackbarHost(
-        snackbarHostState,
-        modifier = Modifier.fillMaxSize()
-    )
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
+        SnackbarHost(
+            snackbarHostState,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+        )
+    }
 
 }
 
@@ -350,7 +355,7 @@ fun ProductItem(
                     .padding(8.dp)
                     .size(dimensionResource(id = R.dimen.icon_size))
                     .clickable {
-                        if(inStock) onAddToBasket(product.id)
+                        if (inStock) onAddToBasket(product.id)
                     }
                     .align(Alignment.TopEnd)
                     .background(

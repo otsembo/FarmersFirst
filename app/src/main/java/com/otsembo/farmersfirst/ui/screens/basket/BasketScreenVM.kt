@@ -180,7 +180,7 @@ class BasketScreenVM(
 
             // navigate to checkout page
             _basketScreenUiState.update {
-                it.reset().copy(navigateToCheckout = true)
+                it.reset().copy(navigateToCheckout = true, basketItems = emptyList(), recommendedBasketItems = emptyList())
             }
         }
 

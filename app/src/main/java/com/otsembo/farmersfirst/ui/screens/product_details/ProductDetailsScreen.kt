@@ -214,10 +214,17 @@ fun ProductDetailsScreen(
         }
     }
 
-    SnackbarHost(
-        snackbarHostState,
-        modifier = Modifier.fillMaxSize()
-    )
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(bottom = ButtonDefaults.MinHeight * 2)
+    ) {
+        SnackbarHost(
+            snackbarHostState,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+        )
+    }
 
 }
 
