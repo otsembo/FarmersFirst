@@ -1,6 +1,5 @@
 package com.otsembo.farmersfirst.ui.screens.basket
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -17,7 +16,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -33,33 +31,22 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.SheetState
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
-import com.otsembo.farmersfirst.R
-import com.otsembo.farmersfirst.data.database.AppDatabaseHelper
-import com.otsembo.farmersfirst.data.model.Basket
 import com.otsembo.farmersfirst.data.model.BasketItem
-import com.otsembo.farmersfirst.data.model.Product
-import com.otsembo.farmersfirst.data.model.User
 import com.otsembo.farmersfirst.ui.components.AppBar
 import com.otsembo.farmersfirst.ui.components.EmptyEntityMessage
 import com.otsembo.farmersfirst.ui.components.ErrorScreen
@@ -68,6 +55,15 @@ import com.otsembo.farmersfirst.ui.navigation.AppRoutes
 import com.otsembo.farmersfirst.ui.screens.product_details.CartCounter
 import kotlin.math.roundToInt
 
+/**
+ * Composable function to display the basket screen UI.
+ *
+ * @param modifier Modifier for styling the component.
+ * @param isWideScreen Flag indicating if the screen width is wide.
+ * @param viewModel ViewModel for managing the basket screen data.
+ * @param navController NavHostController for navigation within the application.
+ * @param userId The ID of the current user.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BasketScreen(
@@ -333,7 +329,14 @@ fun BasketScreen(
 
 }
 
-
+/**
+ * Composable function to display a single item in the basket.
+ *
+ * @param disableUpdates Flag to disable updates for the basket item.
+ * @param basketItem The basket item to be displayed.
+ * @param onUpdateItemCount Callback to update the item count.
+ * @param onDeleteItemFromBasket Callback to delete the item from the basket.
+ */
 @Composable
 fun BasketItemUi(
     disableUpdates: Boolean = false,
@@ -443,7 +446,14 @@ fun BasketItemUi(
 
 }
 
-
+/**
+ * Composable function to display a summary in the checkout screen.
+ *
+ * @param modifier Modifier for styling the component.
+ * @param isSubSummary Flag indicating if the summary is a sub-summary.
+ * @param startText The text to be displayed at the start of the summary.
+ * @param endText The text to be displayed at the end of the summary.
+ */
 @Composable
 fun CheckoutSummary(
     modifier: Modifier = Modifier,
@@ -487,6 +497,17 @@ fun CheckoutSummary(
     }
 }
 
+/**
+ * Composable function to display the checkout recommender modal bottom sheet.
+ *
+ * @param modifier The modifier to be applied to the layout.
+ * @param recommenderSheetState The state of the bottom sheet.
+ * @param recommendedBasketItems The list of recommended basket items.
+ * @param onRecommenderClose Callback to close the recommender sheet.
+ * @param navController The NavHostController for navigation.
+ * @param onCheckOut Callback to trigger the checkout action.
+ * @param onDeleteItemFromRecommendedBasket Callback to delete an item from the recommended basket.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CheckoutRecommender(
