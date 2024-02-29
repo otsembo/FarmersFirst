@@ -29,6 +29,11 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.otsembo.farmersfirst.ui.navigation.AppRoutes
 
+/**
+ * Composable function to display the checkout screen.
+ *
+ * @param navController NavHostController to handle navigation within the app.
+ */
 @Composable
 fun CheckoutScreen(
     navController: NavHostController,
@@ -76,14 +81,6 @@ fun CheckoutScreen(
         ) {
             Text(text = "Back to Home")
         }
-    }
-}
-
-@Composable
-@Preview(showSystemUi = true)
-fun CheckoutScreenPreview() {
-    MaterialTheme {
-        CheckoutScreen(rememberNavController())
     }
 }
 
