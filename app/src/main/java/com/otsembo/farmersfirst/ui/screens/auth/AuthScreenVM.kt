@@ -19,9 +19,8 @@ import kotlinx.coroutines.launch
  */
 class AuthScreenVM(
     application: Application,
-    private val authRepository: IAuthRepository
+    private val authRepository: IAuthRepository,
 ) : AndroidViewModel(application) {
-
     // Mutable state flow to represent the authentication UI state
     private val _authUiState: MutableStateFlow<AuthUiState> = MutableStateFlow(AuthUiState())
 
@@ -70,14 +69,13 @@ class AuthScreenVM(
     }
 }
 
-
 /**
  * Data class representing the state of the authentication UI.
  *
  * @property isSignedIn Boolean indicating whether the user is signed in or not.
  */
 data class AuthUiState(
-    val isSignedIn: Boolean = false
+    val isSignedIn: Boolean = false,
 )
 
 /**
@@ -85,6 +83,8 @@ data class AuthUiState(
  */
 sealed class AuthActions {
     data object RequestSignIn : AuthActions()
+
     data object SignInComplete : AuthActions()
+
     data object CheckIfSignedIn : AuthActions()
 }

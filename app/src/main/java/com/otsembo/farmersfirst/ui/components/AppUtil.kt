@@ -30,9 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.otsembo.farmersfirst.ui.theme.FarmersFirstTheme
 import kotlinx.coroutines.delay
 
 /**
@@ -41,9 +39,7 @@ import kotlinx.coroutines.delay
  * @param modifier Modifier for configuring the layout behavior of this component.
  */
 @Composable
-fun LoadingScreen(
-    modifier: Modifier = Modifier
-) {
+fun LoadingScreen(modifier: Modifier = Modifier) {
     // Mutable state variable to track progress of the loading indicator
     var progress by remember { mutableFloatStateOf(0.0f) }
 
@@ -54,19 +50,21 @@ fun LoadingScreen(
     LaunchedEffect(Unit) {
         animatedColor.animateTo(
             targetValue = Color.Red,
-            animationSpec = repeatable(
-                iterations = Int.MAX_VALUE,
-                animation = tween(durationMillis = 1000, easing = LinearEasing)
-            )
+            animationSpec =
+                repeatable(
+                    iterations = Int.MAX_VALUE,
+                    animation = tween(durationMillis = 1000, easing = LinearEasing),
+                ),
         )
     }
 
     // Box composable to contain the loading indicator and text message
     Box(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(8.dp),
-        contentAlignment = Alignment.Center
+        modifier =
+            modifier
+                .fillMaxSize()
+                .padding(8.dp),
+        contentAlignment = Alignment.Center,
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             // Circular progress indicator
@@ -82,7 +80,7 @@ fun LoadingScreen(
                 style = MaterialTheme.typography.headlineSmall,
                 modifier = Modifier.padding(top = 8.dp),
                 fontWeight = FontWeight.ExtraBold,
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
             )
         }
     }
@@ -105,23 +103,22 @@ fun LoadingScreen(
  * @param errorMessage The error message to be displayed.
  */
 @Composable
-fun ErrorScreen(
-    errorMessage: String
-) {
+fun ErrorScreen(errorMessage: String) {
     // Column composable to display the error icon and message vertically centered
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp),
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         // Error icon
         Icon(
             imageVector = Icons.Default.ErrorOutline,
             contentDescription = null,
             modifier = Modifier.size(50.dp),
-            tint = MaterialTheme.colorScheme.error
+            tint = MaterialTheme.colorScheme.error,
         )
         // Error message below the error icon
         Text(
@@ -130,7 +127,7 @@ fun ErrorScreen(
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.error,
             fontWeight = FontWeight.SemiBold,
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
         )
     }
 }
@@ -145,21 +142,22 @@ fun ErrorScreen(
 fun EmptyEntityMessage(
     modifier: Modifier = Modifier,
     message: String,
-    icon: @Composable () -> Unit  = {
+    icon: @Composable () -> Unit = {
         Icon(
             imageVector = Icons.Default.HourglassEmpty,
             contentDescription = message,
             modifier = Modifier.size(50.dp),
-            tint = MaterialTheme.colorScheme.onSurface
+            tint = MaterialTheme.colorScheme.onSurface,
         )
-    }
+    },
 ) {
     Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(16.dp),
+        modifier =
+            modifier
+                .fillMaxSize()
+                .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Center,
     ) {
         icon()
         Spacer(modifier = Modifier.height(16.dp))
@@ -167,7 +165,7 @@ fun EmptyEntityMessage(
             text = message,
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurface,
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
         )
     }
 }

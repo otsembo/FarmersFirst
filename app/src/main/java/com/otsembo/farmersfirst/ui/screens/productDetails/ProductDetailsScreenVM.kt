@@ -1,4 +1,4 @@
-package com.otsembo.farmersfirst.ui.screens.product_details
+package com.otsembo.farmersfirst.ui.screens.productDetails
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -26,19 +26,17 @@ class ProductDetailsScreenVM(
     private val userPrefRepository: IUserPrefRepository,
     private val basketRepository: IBasketRepository,
 ) : ViewModel() {
-
     private val _productDetailsUiState: MutableStateFlow<ProductDetailsUiState> =
         MutableStateFlow(ProductDetailsUiState())
     val productDetailsUiState: StateFlow<ProductDetailsUiState> = _productDetailsUiState
-
 
     /**
      * Function to handle different actions related to product details.
      *
      * @param actions The product details action to be handled.
      */
-    fun handleActions(actions: ProductDetailsActions){
-        when(actions){
+    fun handleActions(actions: ProductDetailsActions) {
+        when (actions) {
             is ProductDetailsActions.CartCountChange ->
                 _productDetailsUiState.update { it.reset().copy(cartCount = actions.cartCount) }
 
@@ -47,12 +45,11 @@ class ProductDetailsScreenVM(
         }
     }
 
-
-    private fun loadProduct(productId: Int){
+    private fun loadProduct(productId: Int) {
         viewModelScope.launch {
             productRepository.find(productId).collect { res ->
                 _productDetailsUiState.update {
-                    when(res){
+                    when (res) {
                         is AppResource.Error -> it.setError(res.info)
                         is AppResource.Loading -> it.setLoading()
                         is AppResource.Success ->
@@ -65,24 +62,28 @@ class ProductDetailsScreenVM(
 
     private fun addItemToCart(productId: Int) {
         viewModelScope.launch {
-            val userIdRes = userPrefRepository
-                .fetchId()
-                .last()
+            val userIdRes =
+                userPrefRepository
+                    .fetchId()
+                    .last()
 
-            val basketRes = basketRepository
-                .fetchLatestBasket(userId = userIdRes.data ?: 0)
-                .last()
+            val basketRes =
+                basketRepository
+                    .fetchLatestBasket(userId = userIdRes.data ?: 0)
+                    .last()
 
-            when(basketRes){
+            when (basketRes) {
                 is AppResource.Success -> {
-                    val basketItemsRes = basketRepository.addItemToBasket(
-                        userIdRes.data ?: 0,
-                        basketRes.result!!,
-                        productId = productId,
-                        qty = _productDetailsUiState.value.cartCount).last()
+                    val basketItemsRes =
+                        basketRepository.addItemToBasket(
+                            userIdRes.data ?: 0,
+                            basketRes.result!!,
+                            productId = productId,
+                            qty = _productDetailsUiState.value.cartCount,
+                        ).last()
 
                     _productDetailsUiState.update {
-                        when(basketItemsRes){
+                        when (basketItemsRes) {
                             is AppResource.Error -> it.setError(basketItemsRes.info)
                             is AppResource.Loading -> it.setLoading()
                             is AppResource.Success -> it.copy()
@@ -90,15 +91,14 @@ class ProductDetailsScreenVM(
                     }
                 }
                 is AppResource.Loading -> _productDetailsUiState.update { it.setLoading() }
-                is AppResource.Error -> _productDetailsUiState.update {
-                    it.setError("An unexpected error has occurred")
-                }
+                is AppResource.Error ->
+                    _productDetailsUiState.update {
+                        it.setError("An unexpected error has occurred")
+                    }
             }
         }
     }
-
 }
-
 
 /**
  * Sealed class representing actions related to product details screen.
@@ -116,7 +116,7 @@ sealed class ProductDetailsActions {
      *
      * @param cartCount The new cart count.
      */
-    data class CartCountChange(val cartCount: Int): ProductDetailsActions()
+    data class CartCountChange(val cartCount: Int) : ProductDetailsActions()
 
     /**
      * Action to add a product to the cart for the specified user.
@@ -124,9 +124,8 @@ sealed class ProductDetailsActions {
      * @param userId The ID of the user.
      * @param productId The ID of the product to add to the cart.
      */
-    data class AddToCart(val userId: Int, val productId: Int): ProductDetailsActions()
+    data class AddToCart(val userId: Int, val productId: Int) : ProductDetailsActions()
 }
-
 
 /**
  * Data class representing the UI state of product details screen.
@@ -142,9 +141,8 @@ data class ProductDetailsUiState(
     val product: Product? = null,
     val isLoading: Boolean = false,
     val errorOccurred: Boolean = false,
-    val errorMessage: String = ""
-): AppUiState<ProductDetailsUiState>{
-
+    val errorMessage: String = "",
+) : AppUiState<ProductDetailsUiState> {
     /**
      * Resets the UI state.
      *
@@ -153,7 +151,7 @@ data class ProductDetailsUiState(
     override fun reset(): ProductDetailsUiState =
         ProductDetailsUiState(
             cartCount = cartCount,
-            product = product
+            product = product,
         )
 
     /**
@@ -175,4 +173,3 @@ data class ProductDetailsUiState(
         return reset().copy(isLoading = true)
     }
 }
-

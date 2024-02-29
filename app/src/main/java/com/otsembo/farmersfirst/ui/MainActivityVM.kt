@@ -19,7 +19,6 @@ import kotlinx.coroutines.launch
 class MainActivityVM(
     private val authRepository: IAuthRepository,
 ) : ViewModel() {
-
     // MutableStateFlow to hold the UI state
     private val _mainActivityUiState = MutableStateFlow(MainActivityUiState())
 
@@ -39,7 +38,7 @@ class MainActivityVM(
      * @param action The action to handle.
      */
     fun handleActions(action: MainActivityActions) {
-        when(action){
+        when (action) {
             MainActivityActions.CheckIsSignedIn -> checkSignInStatus()
             is MainActivityActions.SetWideScreenState -> setWideScreen(action.isWideScreen)
         }
@@ -49,19 +48,22 @@ class MainActivityVM(
      * Checks if the user is signed in.
      * Updates the UI state accordingly.
      */
-    private fun checkSignInStatus(){
+    private fun checkSignInStatus() {
         viewModelScope.launch {
             _mainActivityUiState.update { it.setLoading() }
-            when(val signInRes = authRepository.checkIfSignedIn().last()){
-                is AppResource.Success -> _mainActivityUiState.update {
-                    it.reset().copy(isUserSignedIn = true)
-                }
-                is AppResource.Error -> _mainActivityUiState.update {
-                    it.setError(signInRes.info)
-                }
-                is AppResource.Loading -> _mainActivityUiState.update {
-                    it.setLoading()
-                }
+            when (val signInRes = authRepository.checkIfSignedIn().last()) {
+                is AppResource.Success ->
+                    _mainActivityUiState.update {
+                        it.reset().copy(isUserSignedIn = true)
+                    }
+                is AppResource.Error ->
+                    _mainActivityUiState.update {
+                        it.setError(signInRes.info)
+                    }
+                is AppResource.Loading ->
+                    _mainActivityUiState.update {
+                        it.setLoading()
+                    }
             }
         }
     }
@@ -71,12 +73,11 @@ class MainActivityVM(
      *
      * @param isWideScreen Boolean indicating if the screen is wide.
      */
-    private fun setWideScreen(isWideScreen: Boolean){
+    private fun setWideScreen(isWideScreen: Boolean) {
         _mainActivityUiState.update {
             it.copy(isWideScreen = isWideScreen)
         }
     }
-
 }
 
 /**
@@ -84,7 +85,8 @@ class MainActivityVM(
  */
 sealed class MainActivityActions {
     data object CheckIsSignedIn : MainActivityActions()
-    data class SetWideScreenState(val isWideScreen: Boolean): MainActivityActions()
+
+    data class SetWideScreenState(val isWideScreen: Boolean) : MainActivityActions()
 }
 
 /**
@@ -101,15 +103,15 @@ data class MainActivityUiState(
     val isWideScreen: Boolean = false,
     val isLoading: Boolean = false,
     val errorOccurred: Boolean = false,
-    val errorMessage: String = ""
-): AppUiState<MainActivityUiState> {
-
+    val errorMessage: String = "",
+) : AppUiState<MainActivityUiState> {
     /**
      * Resets the UI state.
      */
     override fun reset(): MainActivityUiState {
         return MainActivityUiState(
-            isUserSignedIn, isWideScreen
+            isUserSignedIn,
+            isWideScreen,
         )
     }
 
@@ -126,6 +128,6 @@ data class MainActivityUiState(
      * Sets the loading state in the UI.
      */
     override fun setLoading(): MainActivityUiState {
-        return reset().copy(isLoading =  true)
+        return reset().copy(isLoading = true)
     }
 }

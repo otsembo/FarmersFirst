@@ -8,21 +8,16 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.FindInPage
-import androidx.compose.material.icons.filled.SavedSearch
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.TravelExplore
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -45,11 +40,11 @@ fun SearchField(
     label: String,
     text: String,
     onTextChange: (String) -> Unit = { },
-    onSubmitSearch: (String) -> Unit = { }
+    onSubmitSearch: (String) -> Unit = { },
 ) {
     Row(
         modifier = modifier.fillMaxWidth().height(TextFieldDefaults.MinHeight),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         // Search TextField
         TextField(
@@ -66,24 +61,25 @@ fun SearchField(
                 Icon(
                     imageVector = Icons.Default.TravelExplore,
                     contentDescription = "Search Icon",
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(24.dp),
                 )
-            }
+            },
         )
 
         // Search Button
         Button(
-            modifier = Modifier.align(Alignment.CenterVertically)
-                .padding(start = 6.dp)
-                .weight(1f)
-                .height(TextFieldDefaults.MinHeight),
+            modifier =
+                Modifier.align(Alignment.CenterVertically)
+                    .padding(start = 6.dp)
+                    .weight(1f)
+                    .height(TextFieldDefaults.MinHeight),
             shape = RoundedCornerShape(10.dp),
             onClick = { onSubmitSearch(text) },
         ) {
             Icon(
                 modifier = Modifier.size(dimensionResource(id = R.dimen.icon_size)),
                 imageVector = Icons.Default.Search,
-                contentDescription = "Search Item"
+                contentDescription = "Search Item",
             )
         }
     }

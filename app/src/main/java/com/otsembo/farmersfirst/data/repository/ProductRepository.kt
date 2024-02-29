@@ -13,7 +13,6 @@ import kotlinx.coroutines.flow.last
  * Interface for the product repository, defining methods for managing product data.
  */
 interface IProductRepository {
-
     /**
      * Adds a new product to the repository.
      * @param product The product to be added.
@@ -57,7 +56,10 @@ interface IProductRepository {
      *         The flow emits a list of Product objects that match the specified IDs,
      *         or an error if the operation fails.
      */
-    suspend fun findProducts(id1: Int, id2: Int): Flow<AppResource<List<Product>>>
+    suspend fun findProducts(
+        id1: Int,
+        id2: Int,
+    ): Flow<AppResource<List<Product>>>
 
     /**
      * Updates the stock of a product in the repository after a certain number of items are bought.
@@ -66,51 +68,66 @@ interface IProductRepository {
      * @return A flow of AppResource representing the result of the operation.
      *         The flow emits a Boolean value indicating whether the stock update was successful (true) or not (false).
      */
-    suspend fun updateProductStock(product: Product, itemsBought: Int): Flow<AppResource<Boolean>>
+    suspend fun updateProductStock(
+        product: Product,
+        itemsBought: Int,
+    ): Flow<AppResource<Boolean>>
 }
 
-
-
 class ProductRepository(
-    private val productDao: ProductDao
-): IProductRepository, BaseRepository() {
+    private val productDao: ProductDao,
+) : IProductRepository, BaseRepository() {
     override suspend fun addProduct(product: Product): Flow<AppResource<Product?>> =
-        dbTransact(productDao.create(product))
+        dbTransact(
+            productDao.create(product),
+        )
 
     override suspend fun showAllProducts(): Flow<AppResource<List<Product>>> =
-        dbTransact(productDao.findAll())
+        dbTransact(
+            productDao.findAll(),
+        )
 
     override suspend fun searchProduct(searchTerm: String): Flow<AppResource<List<Product>>> =
         dbTransact(
             productDao.queryWhere(
                 """
-                    ${AppDatabaseHelper.PRODUCT_NAME} LIKE ? OR ${AppDatabaseHelper.PRODUCT_DESC} LIKE ?
+                ${AppDatabaseHelper.PRODUCT_NAME} LIKE ? OR ${AppDatabaseHelper.PRODUCT_DESC} LIKE ?
                 """.trimIndent(),
-            params = arrayOf("%$searchTerm%", "%$searchTerm%")
-        ))
+                params = arrayOf("%$searchTerm%", "%$searchTerm%"),
+            ),
+        )
 
     override suspend fun find(id: Int): Flow<AppResource<Product?>> =
-        dbTransact(productDao.find(id))
-
-    override suspend fun findProducts(id1: Int, id2: Int): Flow<AppResource<List<Product>>> =
         dbTransact(
-            productDao.queryWhere("""
+            productDao.find(id),
+        )
+
+    override suspend fun findProducts(
+        id1: Int,
+        id2: Int,
+    ): Flow<AppResource<List<Product>>> =
+        dbTransact(
+            productDao.queryWhere(
+                """
                 ${AppDatabaseHelper.PRODUCT_ID} = ? OR ${AppDatabaseHelper.PRODUCT_ID} = ?
-            """.trimIndent(),
-                params = arrayOf(id1.toString(), id2.toString())
-            ))
+                """.trimIndent(),
+                params = arrayOf(id1.toString(), id2.toString()),
+            ),
+        )
 
     override suspend fun updateProductStock(
         product: Product,
-        itemsBought: Int
-    ): Flow<AppResource<Boolean>> = dbTransact(flow<Boolean>{
-        var stock = product.stock - itemsBought
-        if(stock < 0){
-            stock = 0
-        }
-        val updatedProduct = product.copy(stock = stock)
-        productDao.update(updatedProduct, updatedProduct.id).last()
-        emit(true)
-    }.catch { emit(false) })
-
+        itemsBought: Int,
+    ): Flow<AppResource<Boolean>> =
+        dbTransact(
+            flow<Boolean> {
+                var stock = product.stock - itemsBought
+                if (stock < 0) {
+                    stock = 0
+                }
+                val updatedProduct = product.copy(stock = stock)
+                productDao.update(updatedProduct, updatedProduct.id).last()
+                emit(true)
+            }.catch { emit(false) },
+        )
 }

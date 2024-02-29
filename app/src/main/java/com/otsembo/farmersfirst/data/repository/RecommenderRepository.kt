@@ -18,14 +18,14 @@ import kotlinx.coroutines.flow.last
  * @param T The type of recommendation result.
  */
 abstract class BaseRecommenderRepository<T> {
-
     /**
      * Generative model used for recommendations.
      */
-    val recommenderModel = GenerativeModel(
-        modelName = "gemini-pro",
-        apiKey = BuildConfig.GeminiApiKey
-    )
+    val recommenderModel =
+        GenerativeModel(
+            modelName = "gemini-pro",
+            apiKey = BuildConfig.GeminiApiKey,
+        )
 
     /**
      * Makes text-based recommendations using the generative model.
@@ -37,47 +37,51 @@ abstract class BaseRecommenderRepository<T> {
     abstract suspend fun textRecommend(input: String): Flow<AppResource<T>>
 }
 
-
 class BasketItemsRecommenderRepository(
     private val productRepository: IProductRepository,
     private val basketRepository: IBasketRepository,
     private val userPrefRepository: IUserPrefRepository,
-
 ) : BaseRecommenderRepository<List<BasketItem>>() {
     override suspend fun textRecommend(input: String): Flow<AppResource<List<BasketItem>>> =
         flow {
             emit(AppResource.Loading())
             val response = recommenderModel.generateContent(input)
             println("RecommenderRepository: ${response.text}")
-            if (response.text.notNull()){
-                val ids = response
-                    .text
-                    ?.replace("[", "")
-                    ?.replace("]", "")
-                    ?.split(", ")
-                    ?.map { it.toInt() } ?: listOf(1, 7)
+            if (response.text.notNull()) {
+                val ids =
+                    response
+                        .text
+                        ?.replace("[", "")
+                        ?.replace("]", "")
+                        ?.split(", ")
+                        ?.map { it.toInt() } ?: listOf(1, 7)
 
-                when(val productsRes = productRepository.findProducts(ids.first(), ids.last()).last()){
+                when (val productsRes = productRepository.findProducts(ids.first(), ids.last()).last()) {
                     is AppResource.Success -> {
                         val userId = userPrefRepository.fetchId().last().data ?: 0
-                        val userBasket = basketRepository
-                            .fetchLatestBasket(userId)
-                            .last()
-                            .data ?: Basket(user = User(email = ""), status = AppDatabaseHelper.BasketStatusPending)
-                        val basketItems = productsRes.result.map {
-                            BasketItem(
-                                id = 0,
-                                basket = userBasket,
-                                quantity = 1,
-                                product = it
+                        val userBasket =
+                            basketRepository
+                                .fetchLatestBasket(userId)
+                                .last()
+                                .data ?: Basket(
+                                user = User(email = ""),
+                                status = AppDatabaseHelper.BasketStatusPending,
                             )
-                        }
+                        val basketItems =
+                            productsRes.result.map {
+                                BasketItem(
+                                    id = 0,
+                                    basket = userBasket,
+                                    quantity = 1,
+                                    product = it,
+                                )
+                            }
                         emit(AppResource.Success(result = basketItems))
                     }
                     is AppResource.Error -> throw Exception(productsRes.info)
                     is AppResource.Loading -> emit(AppResource.Loading())
                 }
-            }else{
+            } else {
                 emit(AppResource.Success(result = emptyList()))
             }
         }.catch { emit(AppResource.Error(info = it.message ?: "Could not fetch recommendations")) }

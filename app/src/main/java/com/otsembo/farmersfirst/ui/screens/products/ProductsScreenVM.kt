@@ -6,7 +6,6 @@ import com.otsembo.farmersfirst.common.AppResource
 import com.otsembo.farmersfirst.common.AppUiState
 import com.otsembo.farmersfirst.data.model.BasketItem
 import com.otsembo.farmersfirst.data.model.Product
-import com.otsembo.farmersfirst.data.repository.BasketItemsRecommenderRepository
 import com.otsembo.farmersfirst.data.repository.IAuthRepository
 import com.otsembo.farmersfirst.data.repository.IBasketRepository
 import com.otsembo.farmersfirst.data.repository.IProductRepository
@@ -15,8 +14,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.last
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -32,8 +29,7 @@ class ProductsScreenVM(
     private val basketRepository: IBasketRepository,
     private val userPrefRepository: IUserPrefRepository,
     private val authRepository: IAuthRepository,
-): ViewModel() {
-
+) : ViewModel() {
     // Mutable state flow to represent the products UI state
     private val _productsUiState: MutableStateFlow<ProductsUiState> =
         MutableStateFlow(ProductsUiState())
@@ -54,10 +50,13 @@ class ProductsScreenVM(
      *
      * @param actions The action to handle.
      */
-    fun handleActions(actions: ProductsActions){
-        when(actions){
+    fun handleActions(actions: ProductsActions) {
+        when (actions) {
             ProductsActions.LoadAllProducts -> fetchAllProducts()
-            is ProductsActions.SearchTermChange -> _productsUiState.update { it.copy(searchTerm = actions.newTerm) }
+            is ProductsActions.SearchTermChange ->
+                _productsUiState.update {
+                    it.copy(searchTerm = actions.newTerm)
+                }
             is ProductsActions.AddItemToBasket -> addItemToBasket(actions.productId)
             ProductsActions.SubmitSearch -> searchProduct()
             ProductsActions.LoadBasketItems -> fetchUserBasketItems()
@@ -68,12 +67,11 @@ class ProductsScreenVM(
     /**
      * Fetches all products.
      */
-    private fun fetchAllProducts(){
+    private fun fetchAllProducts() {
         viewModelScope.launch {
             productRepository
                 .showAllProducts()
                 .collect { res -> res.modelProductsUiState() }
-
         }
     }
 
@@ -81,20 +79,25 @@ class ProductsScreenVM(
      * Searches for products based on the current search term.
      * If the search term is empty, fetches all products.
      */
-    private fun searchProduct(){
+    private fun searchProduct() {
         viewModelScope.launch {
             val searchTerm = _productsUiState.value.searchTerm
-            if(searchTerm.isNotBlank()) {
+            if (searchTerm.isNotBlank()) {
                 productRepository
                     .searchProduct(searchTerm)
                     .collect { res -> res.modelProductsUiState() }
+            } else {
+                fetchAllProducts()
             }
-            else fetchAllProducts()
             _productsUiState.update {
                 it.reset()
                     .copy(
-                        productsHeading = if(searchTerm.isNotBlank()) " '$searchTerm' items "
-                        else "Best Selling"
+                        productsHeading =
+                            if (searchTerm.isNotBlank()) {
+                                " '$searchTerm' items "
+                            } else {
+                                "Best Selling"
+                            },
                     )
             }
         }
@@ -103,15 +106,16 @@ class ProductsScreenVM(
     /**
      * Fetches basket items for the current user.
      */
-    private fun fetchUserBasketItems(){
+    private fun fetchUserBasketItems() {
         viewModelScope.launch {
             userPrefRepository.fetchId().collectLatest { uidRes ->
-                when(uidRes){
+                when (uidRes) {
                     is AppResource.Error -> _productsUiState.update { it.setError(uidRes.info) }
                     is AppResource.Loading -> _productsUiState.update { it.setLoading() }
-                    is AppResource.Success -> basketRepository
-                        .fetchLatestBasketItems(uidRes.result)
-                        .collect { res -> res.modelBasketItemsAsProductsUiState() }
+                    is AppResource.Success ->
+                        basketRepository
+                            .fetchLatestBasketItems(uidRes.result)
+                            .collect { res -> res.modelBasketItemsAsProductsUiState() }
                 }
             }
         }
@@ -122,32 +126,50 @@ class ProductsScreenVM(
      *
      * @param productId The ID of the product to add.
      */
-    private fun addItemToBasket(productId: Int){
+    private fun addItemToBasket(productId: Int) {
         viewModelScope.launch {
-            when(val uidRes = userPrefRepository.fetchId().last()){
+            when (val uidRes = userPrefRepository.fetchId().last()) {
                 is AppResource.Error -> _productsUiState.update { it.setError(uidRes.info) }
                 is AppResource.Loading -> _productsUiState.update { it.setLoading() }
                 is AppResource.Success -> {
-                    when(val basketRes = basketRepository.fetchLatestBasket(uidRes.result).last()){
-                        is AppResource.Error -> _productsUiState.update { it.setError(basketRes.info) }
+                    when (val basketRes = basketRepository.fetchLatestBasket(uidRes.result).last()) {
+                        is AppResource.Error ->
+                            _productsUiState.update {
+                                it.setError(basketRes.info)
+                            }
                         is AppResource.Loading -> _productsUiState.update { it.setLoading() }
                         is AppResource.Success -> {
                             when {
                                 basketRes.result != null -> {
-                                    val basketItemsRes = basketRepository.addItemToBasket(
-                                        userId = uidRes.result, productId = productId,
-                                        qty = 1, basket = basketRes.result).last()
+                                    val basketItemsRes =
+                                        basketRepository.addItemToBasket(
+                                            userId = uidRes.result,
+                                            productId = productId,
+                                            qty = 1,
+                                            basket = basketRes.result,
+                                        ).last()
 
-                                    when(basketItemsRes){
-                                        is AppResource.Error -> _productsUiState.update { it.setError(basketItemsRes.info) }
-                                        is AppResource.Loading -> _productsUiState.update { it.setLoading() }
-                                        is AppResource.Success -> _productsUiState.update {
-                                            it.reset().copy(basketItems = basketItemsRes.result)
-                                        }
+                                    when (basketItemsRes) {
+                                        is AppResource.Error ->
+                                            _productsUiState.update {
+                                                it.setError(basketItemsRes.info)
+                                            }
+                                        is AppResource.Loading ->
+                                            _productsUiState.update {
+                                                it.setLoading()
+                                            }
+                                        is AppResource.Success ->
+                                            _productsUiState.update {
+                                                it.reset().copy(basketItems = basketItemsRes.result)
+                                            }
                                     }
                                 }
                                 else -> {
-                                    _productsUiState.update { it.setError("Something went wrong, please restart your app.") }
+                                    _productsUiState.update {
+                                        it.setError(
+                                            "Something went wrong, please restart your app.",
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -161,10 +183,10 @@ class ProductsScreenVM(
      * Signs out the currently signed-in user.
      * Observes the sign-out operation from the authentication repository and updates the UI state accordingly.
      */
-    private fun signOutUser(){
+    private fun signOutUser() {
         viewModelScope.launch {
             authRepository.signOutUser().collect { signOutRes ->
-                when(signOutRes){
+                when (signOutRes) {
                     is AppResource.Error -> _productsUiState.update { it.setError(signOutRes.info) }
                     is AppResource.Loading -> _productsUiState.update { it.setLoading() }
                     is AppResource.Success -> {
@@ -180,30 +202,30 @@ class ProductsScreenVM(
     /**
      * Models the UI state based on the success or failure of fetching products.
      */
-    private fun AppResource<List<Product>>.modelProductsUiState(){
+    private fun AppResource<List<Product>>.modelProductsUiState() {
         flattenProductsUiState { uiState ->
             uiState
                 .reset()
-                .copy(productsList = (this as AppResource.Success).result )
+                .copy(productsList = (this as AppResource.Success).result)
         }
     }
 
     /**
      * Models the UI state based on the success or failure of fetching basket items.
      */
-    private fun AppResource<List<BasketItem>>.modelBasketItemsAsProductsUiState(){
+    private fun AppResource<List<BasketItem>>.modelBasketItemsAsProductsUiState() {
         flattenProductsUiState { uiState ->
             uiState
                 .reset()
-                .copy(basketItems = (this as AppResource.Success).result )
+                .copy(basketItems = (this as AppResource.Success).result)
         }
     }
 
     /**
      * Flattens the UI state based on the result of a network call.
      */
-    private fun <T> AppResource<T>.flattenProductsUiState(successAction: (ProductsUiState) -> ProductsUiState ){
-        when(this){
+    private fun <T> AppResource<T>.flattenProductsUiState(successAction: (ProductsUiState) -> ProductsUiState) {
+        when (this) {
             is AppResource.Error -> _productsUiState.update { it.setError(info) }
             is AppResource.Loading -> _productsUiState.update { it.setLoading() }
             is AppResource.Success -> _productsUiState.update { successAction(it) }
@@ -215,12 +237,17 @@ class ProductsScreenVM(
  * Sealed class representing actions related to products.
  */
 sealed class ProductsActions {
-    data class SearchTermChange(val newTerm: String): ProductsActions()
-    data object SubmitSearch: ProductsActions()
-    data object LoadAllProducts: ProductsActions()
-    data object LoadBasketItems: ProductsActions()
-    data class AddItemToBasket(val productId: Int): ProductsActions()
-    data object SignOutUser: ProductsActions()
+    data class SearchTermChange(val newTerm: String) : ProductsActions()
+
+    data object SubmitSearch : ProductsActions()
+
+    data object LoadAllProducts : ProductsActions()
+
+    data object LoadBasketItems : ProductsActions()
+
+    data class AddItemToBasket(val productId: Int) : ProductsActions()
+
+    data object SignOutUser : ProductsActions()
 }
 
 /**
@@ -242,14 +269,17 @@ data class ProductsUiState(
     val errorOccurred: Boolean = false,
     val isLoading: Boolean = false,
     val errorMessage: String = "",
-): AppUiState<ProductsUiState>{
+) : AppUiState<ProductsUiState> {
     /**
      * Resets the UI state.
      */
     override fun reset(): ProductsUiState =
         ProductsUiState(
-            searchTerm, productsHeading, productsList,
-            basketItems, isSignedIn
+            searchTerm,
+            productsHeading,
+            productsList,
+            basketItems,
+            isSignedIn,
         )
 
     /**

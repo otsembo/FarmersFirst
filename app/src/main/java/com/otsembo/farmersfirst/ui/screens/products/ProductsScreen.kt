@@ -79,138 +79,156 @@ import kotlin.math.roundToInt
  */
 @Composable
 fun ProductsScreen(
-    modifier: Modifier =  Modifier,
+    modifier: Modifier = Modifier,
     isWideScreen: Boolean = false,
     navController: NavHostController,
     viewModel: ProductsScreenVM,
-    ) {
-
+) {
     val uiState: ProductsUiState by viewModel.productsUiState.collectAsState()
     val snackbarHostState by remember { mutableStateOf(SnackbarHostState()) }
     val scope = rememberCoroutineScope()
 
-    LaunchedEffect(key1 = uiState.isSignedIn){
-        if(!uiState.isSignedIn) {
+    LaunchedEffect(key1 = uiState.isSignedIn) {
+        if (!uiState.isSignedIn) {
             navController.popBackStack(AppRoutes.AppAuth, false)
         }
     }
 
-    LaunchedEffect(key1 = uiState.basketItems){
+    LaunchedEffect(key1 = uiState.basketItems) {
         viewModel.handleActions(ProductsActions.LoadBasketItems)
         viewModel.handleActions(ProductsActions.LoadAllProducts)
     }
 
-
-    if(isWideScreen){
-
+    if (isWideScreen) {
         Row(
-            modifier = modifier.fillMaxSize()
+            modifier = modifier.fillMaxSize(),
         ) {
-
             AppNavRail(
-                navRailOptions = listOf(
-                    NavRailOption("Home", icon = { Icon(imageVector = Icons.Default.Home, contentDescription = "Home") }),
-                    NavRailOption("Basket",  onClick = { navController.navigate(AppRoutes.Home.Basket) }, icon = {
-                        Box(modifier = Modifier){
-                            AppBarIcon(icon = Icons.Default.ShoppingCart,)
-                            if(uiState.basketItems.isEmpty()) {
-                                DotWithText(
-                                    modifier = Modifier.align(Alignment.TopEnd),
-                                    "0",
-                                    color = MaterialTheme.colorScheme.error
-                                )
-                            } else {
-                                DotWithText(
-                                    modifier = Modifier.align(Alignment.TopStart),
-                                    text = uiState.basketItems.size.toString(),
-                                    color = MaterialTheme.colorScheme.secondary
-                                )
+                navRailOptions =
+                    listOf(
+                        NavRailOption("Home", icon = {
+                            Icon(imageVector = Icons.Default.Home, contentDescription = "Home")
+                        }),
+                        NavRailOption("Basket", onClick = {
+                            navController.navigate(AppRoutes.Home.Basket)
+                        }, icon = {
+                            Box(modifier = Modifier) {
+                                AppBarIcon(icon = Icons.Default.ShoppingCart)
+                                if (uiState.basketItems.isEmpty()) {
+                                    DotWithText(
+                                        modifier = Modifier.align(Alignment.TopEnd),
+                                        "0",
+                                        color = MaterialTheme.colorScheme.error,
+                                    )
+                                } else {
+                                    DotWithText(
+                                        modifier = Modifier.align(Alignment.TopStart),
+                                        text = uiState.basketItems.size.toString(),
+                                        color = MaterialTheme.colorScheme.secondary,
+                                    )
+                                }
                             }
-                        }
-                    }),
-                    NavRailOption( "Logout", onClick = { viewModel.handleActions(ProductsActions.SignOutUser) }, icon = { Icon(
-                        imageVector = Icons.AutoMirrored.Default.Logout,
-                        contentDescription = "Logout"
-                    )})
-
-                )
+                        }),
+                        NavRailOption("Logout", onClick = {
+                            viewModel.handleActions(ProductsActions.SignOutUser)
+                        }, icon = {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Default.Logout,
+                                contentDescription = "Logout",
+                            )
+                        }),
+                    ),
             )
 
-            Column (
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-
+            Column(
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
-
                     Text(
-                        modifier = Modifier
-                            .weight(4f),
+                        modifier =
+                            Modifier
+                                .weight(4f),
                         text = "FarmersFirst",
                         style = MaterialTheme.typography.headlineSmall,
                         letterSpacing = 2.sp,
-                        fontWeight = FontWeight.SemiBold
+                        fontWeight = FontWeight.SemiBold,
                     )
 
                     SearchField(
                         label = "SEARCH",
-                        modifier = Modifier
-                            .weight(6f),
+                        modifier =
+                            Modifier
+                                .weight(6f),
                         text = uiState.searchTerm,
-                        onTextChange = { text -> viewModel.handleActions(ProductsActions.SearchTermChange(text)) },
+                        onTextChange = { text ->
+                            viewModel.handleActions(
+                                ProductsActions.SearchTermChange(text),
+                            )
+                        },
                     )
                 }
 
-
-
                 AppHeading(
-                    modifier = Modifier
-                        .align(Alignment.Start)
-                        .padding(top = 16.dp, bottom = 8.dp, start = 16.dp),
-                    text = uiState.productsHeading
+                    modifier =
+                        Modifier
+                            .align(Alignment.Start)
+                            .padding(top = 16.dp, bottom = 8.dp, start = 16.dp),
+                    text = uiState.productsHeading,
                 )
 
                 // conditional rendering
                 when {
                     uiState.isLoading -> LoadingScreen()
                     uiState.errorOccurred -> ErrorScreen(errorMessage = uiState.errorMessage)
-                    uiState.productsList.isEmpty() -> EmptyEntityMessage(message = "No items found!")
+                    uiState.productsList.isEmpty() ->
+                        EmptyEntityMessage(
+                            message = "No items found!",
+                        )
                     else -> {
                         LazyVerticalGrid(
                             horizontalArrangement = Arrangement.spacedBy(8.dp),
                             verticalArrangement = Arrangement.spacedBy(8.dp),
-                            columns = GridCells.Fixed(4),){
-                            items(uiState.productsList){
+                            columns = GridCells.Fixed(4),
+                        ) {
+                            items(uiState.productsList) {
                                 ProductItem(
                                     product = it,
                                     onClick = { index ->
-                                        navController.navigate(AppRoutes.Home.productDetails(index)) },
+                                        navController.navigate(
+                                            AppRoutes.Home.productDetails(index),
+                                        )
+                                    },
                                     onAddToBasket = { productId ->
-                                        scope.launch { snackbarHostState.showSnackbar("Added ${it.name} to basket") }
-                                        viewModel.handleActions(ProductsActions.AddItemToBasket(productId))
-                                    }
+                                        scope.launch {
+                                            snackbarHostState.showSnackbar(
+                                                "Added ${it.name} to basket",
+                                            )
+                                        }
+                                        viewModel.handleActions(
+                                            ProductsActions.AddItemToBasket(productId),
+                                        )
+                                    },
                                 )
                             }
                         }
                     }
                 }
-
             }
-
         }
-
     } else {
-
         Column(
-            modifier = modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp, vertical = 8.dp)
+            modifier =
+                modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
         ) {
             AppBar(
                 endIcon = {
@@ -219,56 +237,61 @@ fun ProductsScreen(
                     })
                 },
                 startIcon = {
-                    Box(modifier = Modifier){
-                        AppBarIcon(icon = Icons.Default.ShoppingCart, onClick = { navController.navigate(AppRoutes.Home.Basket) })
-                        if(uiState.basketItems.isEmpty()) {
+                    Box(modifier = Modifier) {
+                        AppBarIcon(icon = Icons.Default.ShoppingCart, onClick = {
+                            navController.navigate(AppRoutes.Home.Basket)
+                        })
+                        if (uiState.basketItems.isEmpty()) {
                             DotWithText(
                                 modifier = Modifier.align(Alignment.TopEnd),
                                 "0",
-                                color = MaterialTheme.colorScheme.error
+                                color = MaterialTheme.colorScheme.error,
                             )
                         } else {
                             DotWithText(
                                 modifier = Modifier.align(Alignment.TopStart),
                                 text = uiState.basketItems.size.toString(),
-                                color = MaterialTheme.colorScheme.secondary
+                                color = MaterialTheme.colorScheme.secondary,
                             )
                         }
                     }
                 },
-                title =  {
+                title = {
                     Text(
                         text = "FarmersFirst",
                         style = MaterialTheme.typography.headlineSmall,
                         letterSpacing = 2.sp,
-                        fontWeight = FontWeight.SemiBold
+                        fontWeight = FontWeight.SemiBold,
                     )
-                }
+                },
             )
 
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp)
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp),
             ) {
-
             }
 
             SearchField(
                 label = "SEARCH",
                 modifier = Modifier.fillMaxWidth(),
                 text = uiState.searchTerm,
-                onTextChange = { text -> viewModel.handleActions(ProductsActions.SearchTermChange(text)) },
-                onSubmitSearch =  { viewModel.handleActions(ProductsActions.SubmitSearch) }
-                )
-
-
+                onTextChange = { text ->
+                    viewModel.handleActions(
+                        ProductsActions.SearchTermChange(text),
+                    )
+                },
+                onSubmitSearch = { viewModel.handleActions(ProductsActions.SubmitSearch) },
+            )
 
             AppHeading(
-                modifier = Modifier
-                    .align(Alignment.Start)
-                    .padding(top = 24.dp, bottom = 8.dp, start = 8.dp),
-                text = uiState.productsHeading
+                modifier =
+                    Modifier
+                        .align(Alignment.Start)
+                        .padding(top = 24.dp, bottom = 8.dp, start = 8.dp),
+                text = uiState.productsHeading,
             )
 
             when {
@@ -280,16 +303,21 @@ fun ProductsScreen(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                         columns = GridCells.Fixed(2),
-                        ){
-                        items(uiState.productsList){
+                    ) {
+                        items(uiState.productsList) {
                             ProductItem(
                                 product = it,
                                 onClick = { index ->
-                                    navController.navigate(AppRoutes.Home.productDetails(index)) },
+                                    navController.navigate(AppRoutes.Home.productDetails(index))
+                                },
                                 onAddToBasket = { productId ->
-                                    scope.launch { snackbarHostState.showSnackbar("Added ${it.name} to basket") }
-                                    viewModel.handleActions(ProductsActions.AddItemToBasket(productId))
-                                }
+                                    scope.launch {
+                                        snackbarHostState.showSnackbar("Added ${it.name} to basket")
+                                    }
+                                    viewModel.handleActions(
+                                        ProductsActions.AddItemToBasket(productId),
+                                    )
+                                },
                             )
                         }
                     }
@@ -299,16 +327,17 @@ fun ProductsScreen(
     }
 
     Box(
-        modifier = Modifier
-            .fillMaxSize()
+        modifier =
+            Modifier
+                .fillMaxSize(),
     ) {
         SnackbarHost(
             snackbarHostState,
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
+            modifier =
+                Modifier
+                    .align(Alignment.BottomCenter),
         )
     }
-
 }
 
 /**
@@ -324,86 +353,93 @@ fun ProductItem(
     onAddToBasket: (Int) -> Unit,
     onClick: (Int) -> Unit = {},
 ) {
-
     val inStock = product.stock > 0
 
     ElevatedCard(
-        modifier = Modifier
-            .width(200.dp)
-            .clickable { onClick(product.id) },
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 4.dp,
-        ),
-        shape = RoundedCornerShape(8.dp)
+        modifier =
+            Modifier
+                .width(200.dp)
+                .clickable { onClick(product.id) },
+        elevation =
+            CardDefaults.cardElevation(
+                defaultElevation = 4.dp,
+            ),
+        shape = RoundedCornerShape(8.dp),
     ) {
-
-        Box(modifier = Modifier
-            .fillMaxWidth()
-            .height(155.dp)){
-
-            AsyncImage(
-                modifier = Modifier
+        Box(
+            modifier =
+                Modifier
                     .fillMaxWidth()
-                    .fillMaxHeight(),
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(product.image)
-                    .crossfade(true)
-                    .build(), contentDescription = product.name,
+                    .height(155.dp),
+        ) {
+            AsyncImage(
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight(),
+                model =
+                    ImageRequest.Builder(LocalContext.current)
+                        .data(product.image)
+                        .crossfade(true)
+                        .build(),
+                contentDescription = product.name,
                 contentScale = ContentScale.Crop,
-                colorFilter = ColorFilter.tint(Color(0x69000000), BlendMode.SrcAtop)
+                colorFilter = ColorFilter.tint(Color(0x69000000), BlendMode.SrcAtop),
             )
 
             Icon(
-                modifier = Modifier
-                    .padding(8.dp)
-                    .size(dimensionResource(id = R.dimen.icon_size))
-                    .clickable {
-                        if (inStock) onAddToBasket(product.id)
-                    }
-                    .align(Alignment.TopEnd)
-                    .background(
-                        color = MaterialTheme.colorScheme.primaryContainer,
-                        shape = CircleShape
-                    )
-                    .padding(8.dp)
-                ,
-                imageVector = Icons.Default.AddShoppingCart, contentDescription = "Add to shopping card")
+                modifier =
+                    Modifier
+                        .padding(8.dp)
+                        .size(dimensionResource(id = R.dimen.icon_size))
+                        .clickable {
+                            if (inStock) onAddToBasket(product.id)
+                        }
+                        .align(Alignment.TopEnd)
+                        .background(
+                            color = MaterialTheme.colorScheme.primaryContainer,
+                            shape = CircleShape,
+                        )
+                        .padding(8.dp),
+                imageVector = Icons.Default.AddShoppingCart,
+                contentDescription = "Add to shopping card",
+            )
 
-
-            if(!inStock){
+            if (!inStock) {
                 OutOfStockProduct()
             }
         }
 
         HorizontalDivider(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 2.dp, start = 4.dp, end = 4.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(top = 2.dp, start = 4.dp, end = 4.dp),
             thickness = 1.dp,
         )
 
-        Row (
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
+        Row(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ){
-
-            Column() {
-
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Column {
                 Text(
                     text = product.name,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onPrimaryContainer,
-                    fontWeight = FontWeight.SemiBold)
+                    fontWeight = FontWeight.SemiBold,
+                )
 
                 Text(
                     text = "${product.stock} items left.",
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onPrimaryContainer,
                     fontStyle = FontStyle.Normal,
-                    fontWeight = FontWeight.Light
+                    fontWeight = FontWeight.Light,
                 )
             }
 
@@ -411,14 +447,11 @@ fun ProductItem(
                 text = "$${product.price.roundToInt()}",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.secondary,
-                fontWeight = FontWeight.ExtraBold
-                )
-
+                fontWeight = FontWeight.ExtraBold,
+            )
         }
     }
-
 }
-
 
 /**
  * Composable function for rendering a circular dot with text inside.
@@ -432,20 +465,21 @@ fun DotWithText(
     modifier: Modifier = Modifier,
     text: String,
     color: Color,
-    ) {
-        Box(
-            modifier = modifier
+) {
+    Box(
+        modifier =
+            modifier
                 .size(16.dp)
                 .background(color = color, shape = CircleShape)
                 .padding(1.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = text,
-                color = Color.White,
-                style = MaterialTheme.typography.labelSmall,
-            )
-        }
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = text,
+            color = Color.White,
+            style = MaterialTheme.typography.labelSmall,
+        )
+    }
 }
 
 /**
@@ -454,28 +488,27 @@ fun DotWithText(
 @Composable
 fun OutOfStockProduct() {
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(color = Color(0xA9000000))
-            .height(155.dp),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .background(color = Color(0xA9000000))
+                .height(155.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ){
-
+        verticalArrangement = Arrangement.Center,
+    ) {
         Icon(
-            modifier = Modifier
-                .size(100.dp),
+            modifier =
+                Modifier
+                    .size(100.dp),
             imageVector = Icons.Default.Block,
             contentDescription = "Out of stock",
-            tint = Color.White
+            tint = Color.White,
         )
 
         Text(
             text = "Out of stock",
             style = MaterialTheme.typography.bodyLarge,
-            color = Color.White
+            color = Color.White,
         )
-
     }
 }
-

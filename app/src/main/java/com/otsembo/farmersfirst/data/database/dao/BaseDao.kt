@@ -16,8 +16,8 @@ import kotlinx.coroutines.flow.flow
  */
 abstract class BaseDao<T>(
     private val db: SQLiteDatabase,
-    private val tableName: String, ){
-
+    private val tableName: String,
+) {
     /**
      * Abstract method to build an entity from a cursor.
      */
@@ -31,7 +31,10 @@ abstract class BaseDao<T>(
     /**
      * Abstract method to set the ID of an entity.
      */
-    abstract fun setEntityId(item: T, id: Int)
+    abstract fun setEntityId(
+        item: T,
+        id: Int,
+    )
 
     /**
      * Inserts a new item into the database.
@@ -40,15 +43,18 @@ abstract class BaseDao<T>(
      */
     suspend fun create(item: T): Flow<T?> =
         flow {
-            val insertId = db.insertOrThrow(
-                tableName,
-                null,
-                getContentValues(item)
-            )
-            if(insertId > 0) {
+            val insertId =
+                db.insertOrThrow(
+                    tableName,
+                    null,
+                    getContentValues(item),
+                )
+            if (insertId > 0) {
                 setEntityId(item, insertId.toInt())
                 emit(item)
-            } else { emit(null) }
+            } else {
+                emit(null)
+            }
         }.catch { emit(null) }
 
     /**
@@ -58,10 +64,12 @@ abstract class BaseDao<T>(
      */
     suspend fun delete(id: Int): Flow<Boolean> =
         flow {
-            val deletedRows = db.delete(
-                tableName, "id = ?",
-                arrayOf(id.toString())
-            )
+            val deletedRows =
+                db.delete(
+                    tableName,
+                    "id = ?",
+                    arrayOf(id.toString()),
+                )
             emit(deletedRows > 0)
         }.catch { emit(false) }
 
@@ -71,16 +79,20 @@ abstract class BaseDao<T>(
      * @param id The ID of the item to be updated.
      * @return A Flow emitting the updated item if successful, or null otherwise.
      */
-    suspend fun update(item: T, id: Int): Flow<T?> =
+    suspend fun update(
+        item: T,
+        id: Int,
+    ): Flow<T?> =
         flow {
-            val updatedRows = db.update(
-                tableName,
-                getContentValues(item),
-                "id = ?",
-                arrayOf(id.toString())
-            )
+            val updatedRows =
+                db.update(
+                    tableName,
+                    getContentValues(item),
+                    "id = ?",
+                    arrayOf(id.toString()),
+                )
 
-            if(updatedRows == 1) emitAll(find(id)) else emit(null)
+            if (updatedRows == 1) emitAll(find(id)) else emit(null)
         }.catch { emit(null) }
 
     /**
@@ -90,10 +102,11 @@ abstract class BaseDao<T>(
      */
     suspend fun find(id: Int): Flow<T?> =
         flow {
-            val userCursor = db.rawQuery(
-                "SELECT * FROM $tableName WHERE id = ? limit 1",
-                arrayOf(id.toString())
-            )
+            val userCursor =
+                db.rawQuery(
+                    "SELECT * FROM $tableName WHERE id = ? limit 1",
+                    arrayOf(id.toString()),
+                )
             if (userCursor.count < 1) {
                 emit(null)
                 userCursor.close()
@@ -112,10 +125,11 @@ abstract class BaseDao<T>(
     suspend fun findAll(): Flow<List<T>> =
         flow {
             val users = mutableListOf<T>()
-            val usersCursor = db.rawQuery(
-                "SELECT * FROM $tableName",
-                null
-            )
+            val usersCursor =
+                db.rawQuery(
+                    "SELECT * FROM $tableName",
+                    null,
+                )
             while (usersCursor.moveToNext()) {
                 users.add(usersCursor.buildEntity())
             }
@@ -129,7 +143,10 @@ abstract class BaseDao<T>(
      * @param params The array of parameter values to be substituted into the query.
      * @return A flow emitting a list of query results.
      */
-    suspend fun queryWhere(whereClause: String, params: Array<String>): Flow<List<T>> =
+    suspend fun queryWhere(
+        whereClause: String,
+        params: Array<String>,
+    ): Flow<List<T>> =
         flow {
             val resultList = mutableListOf<T>()
             val cursor = db.rawQuery("SELECT * FROM $tableName WHERE $whereClause", params)
@@ -148,10 +165,12 @@ abstract class BaseDao<T>(
      * @param params The parameters to be used in the WHERE clause.
      * @return A flow emitting a boolean value indicating the success or failure of the deletion operation.
      */
-    suspend fun deleteWhere(whereClause: String, params: Array<String>): Flow<Boolean> =
+    suspend fun deleteWhere(
+        whereClause: String,
+        params: Array<String>,
+    ): Flow<Boolean> =
         flow {
             val affected = db.delete(tableName, whereClause, params)
             emit(affected > 0)
         }.catch { emit(false) }
-
 }

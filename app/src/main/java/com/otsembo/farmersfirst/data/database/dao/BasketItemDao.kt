@@ -18,9 +18,8 @@ import kotlinx.coroutines.flow.last
 class BasketItemDao(
     db: SQLiteDatabase,
     private val basketDao: BasketDao,
-    private val productDao: ProductDao
+    private val productDao: ProductDao,
 ) : BaseDao<BasketItem>(db, AppDatabaseHelper.TABLE_BASKET_ITEMS) {
-
     /**
      * Constructs a BasketItem object from the current cursor position.
      */
@@ -31,7 +30,7 @@ class BasketItemDao(
             id = getInt(0),
             basket = basket,
             product = product,
-            quantity = getInt(3)
+            quantity = getInt(3),
         )
     }
 
@@ -49,7 +48,10 @@ class BasketItemDao(
     /**
      * Sets the ID of the BasketItem object.
      */
-    override fun setEntityId(item: BasketItem, id: Int) {
+    override fun setEntityId(
+        item: BasketItem,
+        id: Int,
+    ) {
         item.id = id
     }
 }

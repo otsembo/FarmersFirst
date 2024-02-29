@@ -17,9 +17,8 @@ import kotlinx.coroutines.withContext
  */
 class DbSeedWorker(
     private val context: Context,
-    workerParams: WorkerParameters
+    workerParams: WorkerParameters,
 ) : CoroutineWorker(context, workerParams) {
-
     /**
      * Performs the work of seeding the database with initial data.
      * @return The result of the work.

@@ -1,6 +1,5 @@
 package com.otsembo.farmersfirst.ui.components
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -16,17 +15,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.otsembo.farmersfirst.common.notNull
-import com.otsembo.farmersfirst.ui.theme.FarmersFirstTheme
 
 /**
  * A customizable app bar composable.
@@ -40,14 +36,15 @@ fun AppBar(
     modifier: Modifier = Modifier,
     startIcon: @Composable () -> Unit = {},
     endIcon: @Composable () -> Unit = {},
-    title: @Composable () ->  Unit = {}
+    title: @Composable () -> Unit = {},
 ) {
     Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         startIcon()
         title()
@@ -68,10 +65,11 @@ fun AppNavRail(
     var selectedItem by remember { mutableIntStateOf(0) }
 
     NavigationRail(
-        modifier = modifier
-            .fillMaxHeight(),
+        modifier =
+            modifier
+                .fillMaxHeight(),
         containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-        contentColor = MaterialTheme.colorScheme.onTertiaryContainer
+        contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
     ) {
         navRailOptions.forEachIndexed { index, option ->
             NavigationRailItem(
@@ -79,10 +77,11 @@ fun AppNavRail(
                 selected = selectedItem == index,
                 onClick = {
                     selectedItem = index
-                    option.onClick() },
+                    option.onClick()
+                },
                 icon = { option.icon() },
                 label = { Text(text = option.title) },
-                alwaysShowLabel = false
+                alwaysShowLabel = false,
             )
         }
     }
@@ -97,24 +96,26 @@ fun AppNavRail(
 fun AppBarIcon(
     icon: ImageVector,
     tint: Color = Color.Transparent,
-    onClick: (() -> Unit)? = null
+    onClick: (() -> Unit)? = null,
 ) {
-    if(onClick.notNull()){
+    if (onClick.notNull()) {
         Icon(
             imageVector = icon,
             contentDescription = "Menu drawer",
-            modifier = Modifier
-                .size(30.dp)
-                .clickable { onClick!!() },
-            tint = if(tint == Color.Transparent) MaterialTheme.colorScheme.surfaceTint else tint
+            modifier =
+                Modifier
+                    .size(30.dp)
+                    .clickable { onClick!!() },
+            tint = if (tint == Color.Transparent) MaterialTheme.colorScheme.surfaceTint else tint,
         )
     } else {
         Icon(
             imageVector = icon,
             contentDescription = "Menu drawer",
-            modifier = Modifier
-                .size(30.dp),
-            tint = if(tint == Color.Transparent) MaterialTheme.colorScheme.surfaceTint else tint
+            modifier =
+                Modifier
+                    .size(30.dp),
+            tint = if (tint == Color.Transparent) MaterialTheme.colorScheme.surfaceTint else tint,
         )
     }
 }

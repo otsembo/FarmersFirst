@@ -58,46 +58,55 @@ fun AuthScreen(
 
     // Main container for the authentication screen
     Box(
-        modifier = modifier
+        modifier = modifier,
     ) {
         // Background image
         Image(
             painter = painterResource(id = R.drawable.auth_background),
             contentDescription = "A farmer looking into a tablet",
-            modifier = Modifier
-                .fillMaxSize(),
-            contentScale = ContentScale.Crop
+            modifier =
+                Modifier
+                    .fillMaxSize(),
+            contentScale = ContentScale.Crop,
         )
 
         // Displaying authentication card based on screen width
         if (isWideScreen) {
             // Auth card for wide screens
             ElevatedCard(
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .fillMaxWidth(0.4f)
-                    .fillMaxHeight(),
+                modifier =
+                    Modifier
+                        .align(Alignment.TopEnd)
+                        .fillMaxWidth(0.4f)
+                        .fillMaxHeight(),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                shape = RoundedCornerShape(
-                    topStart = dimensionResource(id = R.dimen.banner_card_radius),
-                ),
+                shape =
+                    RoundedCornerShape(
+                        topStart = dimensionResource(id = R.dimen.banner_card_radius),
+                    ),
             ) {
-                AuthCardUi(true, onOAuthSignInRequest = { viewModel.handleActions(AuthActions.RequestSignIn) })
+                AuthCardUi(true, onOAuthSignInRequest = {
+                    viewModel.handleActions(AuthActions.RequestSignIn)
+                })
             }
         } else {
             // Auth card for other screen sizes
             ElevatedCard(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .fillMaxWidth()
-                    .fillMaxHeight(0.4f),
+                modifier =
+                    Modifier
+                        .align(Alignment.BottomCenter)
+                        .fillMaxWidth()
+                        .fillMaxHeight(0.4f),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                shape = RoundedCornerShape(
-                    topStart = dimensionResource(id = R.dimen.banner_card_radius),
-                    topEnd = dimensionResource(id = R.dimen.banner_card_radius)
-                ),
+                shape =
+                    RoundedCornerShape(
+                        topStart = dimensionResource(id = R.dimen.banner_card_radius),
+                        topEnd = dimensionResource(id = R.dimen.banner_card_radius),
+                    ),
             ) {
-                AuthCardUi(false, onOAuthSignInRequest = { viewModel.handleActions(AuthActions.RequestSignIn) })
+                AuthCardUi(false, onOAuthSignInRequest = {
+                    viewModel.handleActions(AuthActions.RequestSignIn)
+                })
             }
         }
     }
@@ -117,18 +126,19 @@ fun AuthCardUi(
     // Column composable for arranging UI elements vertically
     Column {
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(all = 24.dp),
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(all = 24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.Center,
         ) {
             // Title text
             Text(
                 text = "The next generation of farming",
                 style = if (isWideScreen) MaterialTheme.typography.headlineLarge else MaterialTheme.typography.headlineMedium,
                 textAlign = TextAlign.Center,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
             )
             // Subtitle text
             Text(
@@ -136,24 +146,26 @@ fun AuthCardUi(
                 text = "We are safe heaven for your supplies and agricultural tech.",
                 style = if (isWideScreen) MaterialTheme.typography.headlineSmall else MaterialTheme.typography.bodyLarge,
                 textAlign = TextAlign.Center,
-                fontWeight = FontWeight.SemiBold
+                fontWeight = FontWeight.SemiBold,
             )
             // Sign-in button
             ElevatedButton(
-                modifier = Modifier
-                    .padding(top = if (isWideScreen) 40.dp else 20.dp),
+                modifier =
+                    Modifier
+                        .padding(top = if (isWideScreen) 40.dp else 20.dp),
                 onClick = { onOAuthSignInRequest() },
-                colors = ButtonDefaults.buttonColors()
+                colors = ButtonDefaults.buttonColors(),
             ) {
                 // Button text
-                Text(text = "Sign In", style = MaterialTheme.typography.bodyLarge )
+                Text(text = "Sign In", style = MaterialTheme.typography.bodyLarge)
                 // Icon for OAuth sign-in
                 Icon(
-                    modifier = Modifier
-                        .size(dimensionResource(id = R.dimen.icon_size))
-                        .padding(start = 8.dp),
+                    modifier =
+                        Modifier
+                            .size(dimensionResource(id = R.dimen.icon_size))
+                            .padding(start = 8.dp),
                     painter = painterResource(id = R.drawable.ic_google),
-                    contentDescription = "Google Sign In BUTTON"
+                    contentDescription = "Google Sign In BUTTON",
                 )
             }
         }

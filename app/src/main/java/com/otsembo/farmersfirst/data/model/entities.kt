@@ -37,7 +37,7 @@ data class Product(
 data class Basket(
     var id: Int = 0,
     val user: User,
-    val status: String
+    val status: String,
 )
 
 /**
@@ -51,5 +51,5 @@ data class BasketItem(
     var id: Int = 0,
     val basket: Basket,
     val product: Product,
-    val quantity: Int
+    val quantity: Int,
 )

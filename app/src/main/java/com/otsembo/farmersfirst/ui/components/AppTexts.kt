@@ -13,24 +13,29 @@ import androidx.compose.ui.text.withStyle
 @Composable
 fun AppHeading(
     modifier: Modifier = Modifier,
-    text: String = "Popular"
+    text: String = "Popular",
 ) {
     Text(
         modifier = modifier,
-        text = buildAnnotatedString {
-            withStyle(
-                SpanStyle(brush = Brush.linearGradient(
-                colors = listOf(
-                    MaterialTheme.colorScheme.primary,
-                    MaterialTheme.colorScheme.secondary,
-                    MaterialTheme.colorScheme.tertiary
-                )
-            ))
-            ){
-                append(text)
-            }
-        },
+        text =
+            buildAnnotatedString {
+                withStyle(
+                    SpanStyle(
+                        brush =
+                            Brush.linearGradient(
+                                colors =
+                                    listOf(
+                                        MaterialTheme.colorScheme.primary,
+                                        MaterialTheme.colorScheme.secondary,
+                                        MaterialTheme.colorScheme.tertiary,
+                                    ),
+                            ),
+                    ),
+                ) {
+                    append(text)
+                }
+            },
         style = MaterialTheme.typography.titleLarge,
-        fontWeight = FontWeight.Bold
+        fontWeight = FontWeight.Bold,
     )
 }

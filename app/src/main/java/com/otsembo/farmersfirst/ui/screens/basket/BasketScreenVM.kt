@@ -17,7 +17,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.last
-import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -28,7 +27,6 @@ class BasketScreenVM(
     private val recommenderRepository: BasketItemsRecommenderRepository,
     private val productsRepository: IProductRepository,
 ) : ViewModel() {
-
     private val _basketScreenUiState = MutableStateFlow(BasketScreenUiState())
     val basketScreenUiState: StateFlow<BasketScreenUiState> = _basketScreenUiState
 
@@ -39,28 +37,35 @@ class BasketScreenVM(
      *
      * @param action The action to be handled.
      */
-    fun handleActions(action: BasketScreenActions){
-        when(action){
+    fun handleActions(action: BasketScreenActions) {
+        when (action) {
             is BasketScreenActions.LoadBasketItems -> loadBasketItems(action.userId)
             is BasketScreenActions.CalculateBasketTotals -> {
                 var totalCost = 0f
                 action.basketItems.forEach { basketItem -> totalCost += (basketItem.product.price * basketItem.quantity) }
                 _basketScreenUiState.update { it.reset().copy(totalBasketCost = totalCost) }
             }
-            is BasketScreenActions.UpdateBasketItemCount -> updateBasketItemCount(action.basketItem, action.direction)
+            is BasketScreenActions.UpdateBasketItemCount ->
+                updateBasketItemCount(
+                    action.basketItem,
+                    action.direction,
+                )
             is BasketScreenActions.ToggleRecommendedProducts -> {
-                _basketScreenUiState.update { it.reset().copy( showRecommender = action.show ) }
+                _basketScreenUiState.update { it.reset().copy(showRecommender = action.show) }
             }
             is BasketScreenActions.MakeRecommendations -> makeRecommendation()
             is BasketScreenActions.CheckoutItems -> checkoutItems()
             is BasketScreenActions.DeleteBasketItem -> deleteBasketItem(action.basketItem)
-            is BasketScreenActions.DeleteRecommendedItem -> deleteRecommendedBasketItem(action.index)
-            is BasketScreenActions.OnCheckoutNavigationComplete -> _basketScreenUiState.update {
-                it.reset().copy(navigateToCheckout = false)
-            }
+            is BasketScreenActions.DeleteRecommendedItem ->
+                deleteRecommendedBasketItem(
+                    action.index,
+                )
+            is BasketScreenActions.OnCheckoutNavigationComplete ->
+                _basketScreenUiState.update {
+                    it.reset().copy(navigateToCheckout = false)
+                }
         }
     }
-
 
     /**
      * Loads the basket items for the specified [userId] from the repository.
@@ -69,19 +74,28 @@ class BasketScreenVM(
      *
      * @param userId The ID of the user whose basket items to load.
      */
-    private fun loadBasketItems(userId: Int){
+    private fun loadBasketItems(userId: Int) {
         viewModelScope.launch {
             basketRepository
-                .fetchLatestBasketItems(if(userId == 0) fetchUid() else userId)
+                .fetchLatestBasketItems(if (userId == 0) fetchUid() else userId)
                 .collectLatest { basketItemsRes ->
-                    when(basketItemsRes){
-                        is AppResource.Error -> _basketScreenUiState.update { it.setError(basketItemsRes.info) }
+                    when (basketItemsRes) {
+                        is AppResource.Error ->
+                            _basketScreenUiState.update {
+                                it.setError(basketItemsRes.info)
+                            }
                         is AppResource.Loading -> _basketScreenUiState.update { it.setLoading() }
-                        is AppResource.Success -> _basketScreenUiState.update {
-                            val aggregatedBasket = aggregateBasketProducts(basketItemsRes.result)
-                            handleActions(BasketScreenActions.CalculateBasketTotals(aggregatedBasket))
-                            it.reset().copy(basketItems = aggregatedBasket)
-                        }
+                        is AppResource.Success ->
+                            _basketScreenUiState.update {
+                                val aggregatedBasket =
+                                    aggregateBasketProducts(
+                                        basketItemsRes.result,
+                                    )
+                                handleActions(
+                                    BasketScreenActions.CalculateBasketTotals(aggregatedBasket),
+                                )
+                                it.reset().copy(basketItems = aggregatedBasket)
+                            }
                     }
                 }
         }
@@ -96,22 +110,34 @@ class BasketScreenVM(
      * @param basketItem The basket item to update.
      * @param direction The direction of the update (UP for increase, DOWN for decrease).
      */
-    private fun updateBasketItemCount(basketItem: BasketItem, direction: BasketScreenActions.BasketUpdateDirection){
+    private fun updateBasketItemCount(
+        basketItem: BasketItem,
+        direction: BasketScreenActions.BasketUpdateDirection,
+    ) {
         viewModelScope.launch {
-            val updateBasketRes = basketRepository
-                .updateBasketItem(
-                    basketItem.copy(
-                        quantity = if(direction == BasketScreenActions.BasketUpdateDirection.UP)
-                            basketItem.quantity + 1
-                        else
-                            basketItem.quantity - 1
-                    )
-                ).last()
+            val updateBasketRes =
+                basketRepository
+                    .updateBasketItem(
+                        basketItem.copy(
+                            quantity =
+                                if (direction == BasketScreenActions.BasketUpdateDirection.UP) {
+                                    basketItem.quantity + 1
+                                } else {
+                                    basketItem.quantity - 1
+                                },
+                        ),
+                    ).last()
 
-            when(updateBasketRes){
-                is AppResource.Error -> _basketScreenUiState.update { it.setError(updateBasketRes.info)}
+            when (updateBasketRes) {
+                is AppResource.Error ->
+                    _basketScreenUiState.update {
+                        it.setError(updateBasketRes.info)
+                    }
                 is AppResource.Loading -> _basketScreenUiState.update { it.setLoading() }
-                is AppResource.Success -> handleActions(BasketScreenActions.LoadBasketItems(userId = fetchUid()))
+                is AppResource.Success ->
+                    handleActions(
+                        BasketScreenActions.LoadBasketItems(userId = fetchUid()),
+                    )
             }
         }
     }
@@ -122,27 +148,34 @@ class BasketScreenVM(
      * This method retrieves the list of products in the basket, requests recommendations from
      * the recommender repository, and updates the UI state with the recommended products.
      */
-    private fun makeRecommendation(){
+    private fun makeRecommendation() {
         val productsInBasket = _basketScreenUiState.value.basketItems.map { basketItem -> basketItem.product }
         viewModelScope.launch {
             val products = productsRepository.showAllProducts().last().data ?: emptyList()
             recommenderRepository
                 .textRecommend(
                     """
-                        given the following items: $products
-                        suggest two items for someone who has already shopped the following: ${productsInBasket}.
-                        provide the answer in this format [id1, id2]
-                    """.trimIndent()).collect { recommendedBasketRes ->
-                    when(recommendedBasketRes){
-                        is AppResource.Error -> _basketScreenUiState.update {
-                            handleActions(BasketScreenActions.ToggleRecommendedProducts(true))
-                            it.reset()
-                        }
-                        is AppResource.Loading -> _basketScreenUiState.update {
-                            it.setLoading()
-                        }
+                    given the following items: $products
+                    suggest two items for someone who has already shopped the following: $productsInBasket.
+                    provide the answer in this format [id1, id2]
+                    """.trimIndent(),
+                ).collect { recommendedBasketRes ->
+                    when (recommendedBasketRes) {
+                        is AppResource.Error ->
+                            _basketScreenUiState.update {
+                                handleActions(BasketScreenActions.ToggleRecommendedProducts(true))
+                                it.reset()
+                            }
+                        is AppResource.Loading ->
+                            _basketScreenUiState.update {
+                                it.setLoading()
+                            }
                         is AppResource.Success -> {
-                            _basketScreenUiState.update { it.reset().copy(recommendedBasketItems = recommendedBasketRes.result) }
+                            _basketScreenUiState.update {
+                                it.reset().copy(
+                                    recommendedBasketItems = recommendedBasketRes.result,
+                                )
+                            }
                             handleActions(BasketScreenActions.ToggleRecommendedProducts(true))
                         }
                     }
@@ -156,7 +189,7 @@ class BasketScreenVM(
      * This method finalizes the user's basket by updating its status, creating a new basket for future
      * purchases, and resetting the stock of items in the database.
      */
-    private fun checkoutItems(){
+    private fun checkoutItems() {
         handleActions(BasketScreenActions.ToggleRecommendedProducts(show = false))
         _basketScreenUiState.update {
             it.setLoading()
@@ -164,14 +197,21 @@ class BasketScreenVM(
         viewModelScope.launch {
             // update user basket and create new one for future
             val userId = fetchUid()
-            val userBasket = basketRepository
-                .fetchLatestBasket(userId)
-                .last().data ?: Basket(0, User(userId, "email"), AppDatabaseHelper.BasketStatusPending)
-            basketRepository.updateBasket(userBasket.copy(status = AppDatabaseHelper.BasketStatusChecked)).last()
+            val userBasket =
+                basketRepository
+                    .fetchLatestBasket(userId)
+                    .last().data ?: Basket(
+                    0,
+                    User(userId, "email"),
+                    AppDatabaseHelper.BasketStatusPending,
+                )
+            basketRepository.updateBasket(
+                userBasket.copy(status = AppDatabaseHelper.BasketStatusChecked),
+            ).last()
             basketRepository.createBasket(userBasket).last()
 
             // reset db items
-            for (item in _basketScreenUiState.value.basketItems){
+            for (item in _basketScreenUiState.value.basketItems) {
                 productsRepository.updateProductStock(item.product, item.quantity).last()
             }
 
@@ -180,10 +220,13 @@ class BasketScreenVM(
 
             // navigate to checkout page
             _basketScreenUiState.update {
-                it.reset().copy(navigateToCheckout = true, basketItems = emptyList(), recommendedBasketItems = emptyList())
+                it.reset().copy(
+                    navigateToCheckout = true,
+                    basketItems = emptyList(),
+                    recommendedBasketItems = emptyList(),
+                )
             }
         }
-
     }
 
     /**
@@ -192,14 +235,17 @@ class BasketScreenVM(
      */
     private fun deleteBasketItem(basketItem: BasketItem) {
         viewModelScope.launch {
-            val deletedBasketItem = basketRepository
-                .removeItemFromBasket(basketItem)
-                .last()
+            val deletedBasketItem =
+                basketRepository
+                    .removeItemFromBasket(basketItem)
+                    .last()
             if (deletedBasketItem.data == true) {
                 handleActions(BasketScreenActions.LoadBasketItems(fetchUid()))
             } else {
                 _basketScreenUiState.update {
-                    it.reset().setError(message = "An error occurred when deleting the item from basket")
+                    it.reset().setError(
+                        message = "An error occurred when deleting the item from basket",
+                    )
                 }
             }
         }
@@ -211,14 +257,14 @@ class BasketScreenVM(
      */
     private fun deleteRecommendedBasketItem(itemIndex: Int) {
         _basketScreenUiState.update { screenState ->
-            val updatedRecommendedList = screenState
-                .recommendedBasketItems
-                .toMutableList()
+            val updatedRecommendedList =
+                screenState
+                    .recommendedBasketItems
+                    .toMutableList()
             updatedRecommendedList.removeAt(itemIndex)
             screenState.copy(recommendedBasketItems = updatedRecommendedList)
         }
     }
-
 
     /**
      * Fetches the user ID from the user preferences repository.
@@ -242,17 +288,21 @@ class BasketScreenVM(
      * @return The aggregated list of basket items.
      */
     private fun aggregateBasketProducts(basketItems: List<BasketItem>): List<BasketItem> {
-        val aggregatedBasketItems = basketItems
-            .groupBy { basketItem -> basketItem.product }
-            .map { groupEntry ->
-                val mergedBasketItem = groupEntry.value
-                    .reduce { acc, basketItem -> basketItem.copy(quantity = acc.quantity + basketItem.quantity) }
-                mergedBasketItem
-            }
+        val aggregatedBasketItems =
+            basketItems
+                .groupBy { basketItem -> basketItem.product }
+                .map { groupEntry ->
+                    val mergedBasketItem =
+                        groupEntry.value
+                            .reduce { acc, basketItem ->
+                                basketItem.copy(
+                                    quantity = acc.quantity + basketItem.quantity,
+                                )
+                            }
+                    mergedBasketItem
+                }
         return aggregatedBasketItems
     }
-
-
 }
 
 /**
@@ -281,9 +331,8 @@ data class BasketScreenUiState(
     val navigateToCheckout: Boolean = false,
     val isLoading: Boolean = false,
     val errorOccurred: Boolean = false,
-    val errorMessage: String = ""
+    val errorMessage: String = "",
 ) : AppUiState<BasketScreenUiState> {
-
     /**
      * Resets the UI state to its initial values.
      *
@@ -299,7 +348,7 @@ data class BasketScreenUiState(
             totalBasketCost = totalBasketCost,
             totalBasketDiscount = totalBasketDiscount,
             showRecommender = showRecommender,
-            navigateToCheckout = navigateToCheckout
+            navigateToCheckout = navigateToCheckout,
         )
     }
 
@@ -337,20 +386,19 @@ data class BasketScreenUiState(
  * toggling recommended products, making recommendations, and checking out items.
  */
 sealed class BasketScreenActions {
-
     /**
      * Action to load basket items for the specified [userId].
      *
      * @property userId The ID of the user for whom basket items are to be loaded.
      */
-    data class LoadBasketItems(val userId: Int): BasketScreenActions()
+    data class LoadBasketItems(val userId: Int) : BasketScreenActions()
 
     /**
      * Action to calculate basket totals based on the provided [basketItems].
      *
      * @property basketItems The list of basket items for which totals are to be calculated.
      */
-    data class CalculateBasketTotals(val basketItems: List<BasketItem>): BasketScreenActions()
+    data class CalculateBasketTotals(val basketItems: List<BasketItem>) : BasketScreenActions()
 
     /**
      * Action to update the count of a specific [basketItem] in the basket, based on the specified [direction].
@@ -358,14 +406,17 @@ sealed class BasketScreenActions {
      * @property basketItem The basket item to be updated.
      * @property direction The direction of the update (UP or DOWN).
      */
-    data class UpdateBasketItemCount(val basketItem: BasketItem, val direction: BasketUpdateDirection): BasketScreenActions()
+    data class UpdateBasketItemCount(
+        val basketItem: BasketItem,
+        val direction: BasketUpdateDirection,
+    ) : BasketScreenActions()
 
     /**
      * Action to toggle the visibility of recommended products.
      *
      * @property show Flag indicating whether to show recommended products.
      */
-    data class ToggleRecommendedProducts(val show: Boolean): BasketScreenActions()
+    data class ToggleRecommendedProducts(val show: Boolean) : BasketScreenActions()
 
     /**
      * Action to make recommendations based on the current basket items.
@@ -375,29 +426,30 @@ sealed class BasketScreenActions {
     /**
      * Action to check out items in the basket.
      */
-    data object CheckoutItems: BasketScreenActions()
+    data object CheckoutItems : BasketScreenActions()
 
     /**
      * Represents an action to delete a recommended item from the list.
      * @property index The index of the recommended item to be deleted.
      */
-    data class DeleteRecommendedItem(val index: Int): BasketScreenActions()
+    data class DeleteRecommendedItem(val index: Int) : BasketScreenActions()
 
     /**
      * Represents an action to delete a basket item.
      * @property basketItem The basket item to be deleted.
      */
-    data class DeleteBasketItem(val basketItem: BasketItem): BasketScreenActions()
+    data class DeleteBasketItem(val basketItem: BasketItem) : BasketScreenActions()
 
     /**
      * Represents an action indicating that the checkout navigation has been completed.
      */
-    data object OnCheckoutNavigationComplete: BasketScreenActions()
+    data object OnCheckoutNavigationComplete : BasketScreenActions()
 
     /**
      * Enumeration representing the direction of basket item count update (UP or DOWN).
      */
     enum class BasketUpdateDirection {
-        UP, DOWN
+        UP,
+        DOWN,
     }
 }

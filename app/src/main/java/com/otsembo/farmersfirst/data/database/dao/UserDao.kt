@@ -5,10 +5,6 @@ import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import com.otsembo.farmersfirst.data.database.AppDatabaseHelper
 import com.otsembo.farmersfirst.data.model.User
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.emitAll
-import kotlinx.coroutines.flow.flow
 
 /**
  * Data access object (DAO) for performing CRUD operations on the user table in the SQLite database.
@@ -18,7 +14,6 @@ import kotlinx.coroutines.flow.flow
  */
 class UserDao(db: SQLiteDatabase) :
     BaseDao<User>(db, AppDatabaseHelper.TABLE_USERS) {
-
     /**
      * Constructs a User object from the current cursor position.
      */
@@ -31,7 +26,10 @@ class UserDao(db: SQLiteDatabase) :
     /**
      * Sets the ID of the User object.
      */
-    override fun setEntityId(item: User, id: Int) {
+    override fun setEntityId(
+        item: User,
+        id: Int,
+    ) {
         item.id = id
     }
 
@@ -43,5 +41,3 @@ class UserDao(db: SQLiteDatabase) :
             put(AppDatabaseHelper.USER_EMAIL, item.email)
         }
 }
-
-

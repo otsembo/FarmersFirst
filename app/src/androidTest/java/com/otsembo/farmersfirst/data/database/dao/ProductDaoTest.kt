@@ -11,8 +11,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-class ProductDaoTest: DBTest() {
-
+class ProductDaoTest : DBTest() {
     private lateinit var productDao: ProductDao
 
     private suspend fun addProduct() = productDao.create(testProduct).first()
@@ -24,55 +23,53 @@ class ProductDaoTest: DBTest() {
     }
 
     @Test
-    fun testCreateProduct_SuccessfullyAddsProductToDatabase() = runTest {
-        val addedProduct = addProduct()
-        addedProduct?.let { product ->
-            val results = productDao.find(product.id).first()
-            assert(results != null) { "Could not add product to database" }
+    fun testCreateProduct_SuccessfullyAddsProductToDatabase() =
+        runTest {
+            val addedProduct = addProduct()
+            addedProduct?.let { product ->
+                val results = productDao.find(product.id).first()
+                assert(results != null) { "Could not add product to database" }
+            }
         }
-    }
 
     @Test
-    fun testDeleteProduct_SuccessfullyDeletesProductFromDatabase() = runTest {
-        val addedProduct = addProduct()
-        addedProduct?.let { product ->
-            val deleted = productDao.delete(product.id).first()
-            val results = productDao.find(product.id).first()
-            assert(results == null && deleted){ "Could not remove product from database" }
+    fun testDeleteProduct_SuccessfullyDeletesProductFromDatabase() =
+        runTest {
+            val addedProduct = addProduct()
+            addedProduct?.let { product ->
+                val deleted = productDao.delete(product.id).first()
+                val results = productDao.find(product.id).first()
+                assert(results == null && deleted) { "Could not remove product from database" }
+            }
         }
-    }
 
     @Test
-    fun testUpdateProduct_SuccessfullyUpdatesProductInDatabase() = runTest {
-        val addedProduct = addProduct()
-        val updatedName = "Mower"
-        addedProduct?.let { product ->
-            val updated = productDao.update(product.copy(name = updatedName), product.id).first()
-            val results = productDao.find(product.id).first()
-            assert( updated != null && results != null && results.name == updatedName )
+    fun testUpdateProduct_SuccessfullyUpdatesProductInDatabase() =
+        runTest {
+            val addedProduct = addProduct()
+            val updatedName = "Mower"
+            addedProduct?.let { product ->
+                val updated = productDao.update(product.copy(name = updatedName), product.id).first()
+                val results = productDao.find(product.id).first()
+                assert(updated != null && results != null && results.name == updatedName)
+            }
         }
-    }
 
     @Test
-    fun testFind_SuccessfullyRetrievesProductInDatabase() = runTest {
-        val addedProduct = addProduct()
-        addedProduct?.let { product ->
-            val results = productDao.find(product.id).first()
-            assert( results != null ) { "Could not find product in database" }
+    fun testFind_SuccessfullyRetrievesProductInDatabase() =
+        runTest {
+            val addedProduct = addProduct()
+            addedProduct?.let { product ->
+                val results = productDao.find(product.id).first()
+                assert(results != null) { "Could not find product in database" }
+            }
         }
-    }
 
     @Test
-    fun testFindAll_SuccessfullyRetrievesAllProductsInDatabase() = runTest {
-        addProduct()
-        val results = productDao.findAll().last()
-        assert(results.isNotEmpty()){ "Could not find all the products in the database" }
-    }
-
+    fun testFindAll_SuccessfullyRetrievesAllProductsInDatabase() =
+        runTest {
+            addProduct()
+            val results = productDao.findAll().last()
+            assert(results.isNotEmpty()) { "Could not find all the products in the database" }
+        }
 }
-
-
-
-
-
-

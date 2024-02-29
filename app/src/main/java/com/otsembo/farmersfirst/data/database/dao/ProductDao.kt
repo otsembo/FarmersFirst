@@ -12,7 +12,6 @@ import com.otsembo.farmersfirst.data.model.Product
  */
 class ProductDao(db: SQLiteDatabase) :
     BaseDao<Product>(db, AppDatabaseHelper.TABLE_PRODUCTS) {
-
     /**
      * Builds a Product entity from the current cursor position.
      */
@@ -23,7 +22,7 @@ class ProductDao(db: SQLiteDatabase) :
             description = getString(2),
             stock = getInt(3),
             price = getFloat(4),
-            image = getString(5)
+            image = getString(5),
         )
 
     /**
@@ -41,7 +40,10 @@ class ProductDao(db: SQLiteDatabase) :
     /**
      * Sets the ID of the Product entity.
      */
-    override fun setEntityId(item: Product, id: Int) {
+    override fun setEntityId(
+        item: Product,
+        id: Int,
+    ) {
         item.id = id
     }
 }

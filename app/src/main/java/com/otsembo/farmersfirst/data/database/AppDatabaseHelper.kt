@@ -3,9 +3,6 @@ package com.otsembo.farmersfirst.data.database
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
 
 /**
  * Helper class for managing the SQLite database in the application.
@@ -16,9 +13,8 @@ import kotlinx.coroutines.withContext
 class AppDatabaseHelper(
     context: Context,
     factory: SQLiteDatabase.CursorFactory? = null,
-    dbName: String = DATABASE_NAME
+    dbName: String = DATABASE_NAME,
 ) : SQLiteOpenHelper(context, dbName, factory, DATABASE_VERSION) {
-
     /**
      * Called when the database is created for the first time.
      * @param db The SQLiteDatabase instance representing the database.
@@ -39,7 +35,11 @@ class AppDatabaseHelper(
      * @param oldVersion The old database version.
      * @param newVersion The new database version.
      */
-    override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
+    override fun onUpgrade(
+        db: SQLiteDatabase?,
+        oldVersion: Int,
+        newVersion: Int,
+    ) {
         // Drop existing tables and recreate them
         refresh(db)
     }
@@ -79,7 +79,7 @@ class AppDatabaseHelper(
         const val PRODUCT_IMAGE = "image_url"
 
         // Column names for users table
-        const val USER_ID = "id"
+        private const val USER_ID = "id"
         const val USER_EMAIL = "email_address"
 
         // Column names for basket table
@@ -90,13 +90,14 @@ class AppDatabaseHelper(
         const val BasketStatusChecked = "checked"
 
         // Column names for basket items table
-        const val BASKET_ITEM_ID = "id"
+        private const val BASKET_ITEM_ID = "id"
         const val BASKET_ITEM_BASKET = "basket_id"
         const val BASKET_ITEM_PRODUCT = "product_id"
         const val BASKET_ITEM_QTY = "quantity"
 
         // SQL queries to create tables
-        private val createProductTableQuery = """
+        private val createProductTableQuery =
+            """
             CREATE TABLE IF NOT EXISTS $TABLE_PRODUCTS (
                 $PRODUCT_ID INTEGER PRIMARY KEY AUTOINCREMENT,
                 $PRODUCT_NAME TEXT NOT NULL,
@@ -105,25 +106,28 @@ class AppDatabaseHelper(
                 $PRODUCT_PRICE REAL NOT NULL,
                 $PRODUCT_IMAGE TEXT NOT NULL
             )
-        """.trimIndent()
+            """.trimIndent()
 
-        private val createUsersTableQuery = """
+        private val createUsersTableQuery =
+            """
             CREATE TABLE IF NOT EXISTS $TABLE_USERS (
                 $USER_ID INTEGER PRIMARY KEY AUTOINCREMENT,
                 $USER_EMAIL TEXT NOT NULL UNIQUE
             )
-        """.trimIndent()
+            """.trimIndent()
 
-        private val createBasketTableQuery = """
+        private val createBasketTableQuery =
+            """
             CREATE TABLE IF NOT EXISTS $TABLE_BASKET (
                 $BASKET_ID INTEGER PRIMARY KEY AUTOINCREMENT,
                 $BASKET_USER INTEGER NOT NULL,
                 $BASKET_STATUS TEXT NOT NULL,
                 FOREIGN KEY ($BASKET_USER) REFERENCES $TABLE_USERS($USER_ID)
             )
-        """.trimIndent()
+            """.trimIndent()
 
-        private val createBasketItemsTableQuery = """
+        private val createBasketItemsTableQuery =
+            """
             CREATE TABLE IF NOT EXISTS $TABLE_BASKET_ITEMS (
                 $BASKET_ITEM_ID INTEGER PRIMARY KEY AUTOINCREMENT,
                 $BASKET_ITEM_BASKET INTEGER NOT NULL,
@@ -132,7 +136,7 @@ class AppDatabaseHelper(
                 FOREIGN KEY ($BASKET_ITEM_BASKET) REFERENCES $TABLE_BASKET($BASKET_ID),
                 FOREIGN KEY ($BASKET_ITEM_PRODUCT) REFERENCES $TABLE_PRODUCTS($PRODUCT_ID)
             )
-        """.trimIndent()
+            """.trimIndent()
 
         // SQL queries to drop tables
         private const val dropProductsTableQuery = "DROP TABLE IF EXISTS $TABLE_PRODUCTS;"

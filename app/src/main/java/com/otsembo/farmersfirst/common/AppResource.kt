@@ -6,7 +6,6 @@ package com.otsembo.farmersfirst.common
  * @param message The optional message associated with the state.
  */
 sealed class AppResource<T>(val data: T? = null, private val message: String? = null) {
-
     /**
      * Represents the success state of an operation.
      * @param result The result data associated with the success state.
@@ -26,7 +25,6 @@ sealed class AppResource<T>(val data: T? = null, private val message: String? = 
      */
     data class Loading<T>(val result: T? = null) : AppResource<T>(result)
 }
-
 
 /**
  * Extension function for AppResource, used to coerce the type of the resource
@@ -58,12 +56,12 @@ interface AppUiState<out T> {
      * @return The updated UI state after reset.
      */
     fun reset(): T
+
     fun setError(message: String): T
+
     fun setLoading(): T
 }
 
-
 fun Any?.izNull(): Boolean = this == null
+
 fun Any?.notNull(): Boolean = this != null
-
-

@@ -15,7 +15,6 @@ import java.util.concurrent.TimeUnit
  * Application class for FarmersFirst application.
  */
 class FarmersFirst : Application() {
-
     /**
      * Called when the application is starting.
      */
@@ -40,9 +39,10 @@ class FarmersFirst : Application() {
      * Initializes the database and enqueues a periodic worker for database seeding.
      */
     private fun initDB() {
-        val initDBWorker = PeriodicWorkRequestBuilder<DbSeedWorker>(2, TimeUnit.DAYS)
-            .setInitialDelay(0, TimeUnit.MILLISECONDS)
-            .build()
+        val initDBWorker =
+            PeriodicWorkRequestBuilder<DbSeedWorker>(2, TimeUnit.DAYS)
+                .setInitialDelay(0, TimeUnit.MILLISECONDS)
+                .build()
 
         WorkManager.getInstance(applicationContext)
             .enqueueUniquePeriodicWork("dbInit", ExistingPeriodicWorkPolicy.KEEP, initDBWorker)

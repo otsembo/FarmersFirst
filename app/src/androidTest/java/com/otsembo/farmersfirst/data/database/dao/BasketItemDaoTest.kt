@@ -14,16 +14,18 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-class BasketItemDaoTest: DBTest() {
-
+class BasketItemDaoTest : DBTest() {
     private lateinit var basketItemDao: BasketItemDao
     private lateinit var basketDao: BasketDao
     private lateinit var productDao: ProductDao
     private lateinit var userDao: UserDao
 
     private suspend fun addUser() = userDao.create(testUser).first()
+
     private suspend fun addBasketItem() = basketItemDao.create(testBasketItem).first()
+
     private suspend fun addProduct() = productDao.create(testProduct).first()
+
     private suspend fun addBasket() = basketDao.create(testBasket).first()
 
     @Before
@@ -36,65 +38,74 @@ class BasketItemDaoTest: DBTest() {
     }
 
     @Test
-    fun testCreateBasketItem_SuccessfullyAddsBasketItemToDatabase() = runTest {
-        addUser()
-        addProduct()
-        addBasket()
-        val addedBasketItem = addBasketItem()
-        addedBasketItem?.let { basketItem ->
-            val results = basketItemDao.find(basketItem.id).first()
-            assert(results != null) { "Could not add basketItem to database" }
+    fun testCreateBasketItem_SuccessfullyAddsBasketItemToDatabase() =
+        runTest {
+            addUser()
+            addProduct()
+            addBasket()
+            val addedBasketItem = addBasketItem()
+            addedBasketItem?.let { basketItem ->
+                val results = basketItemDao.find(basketItem.id).first()
+                assert(results != null) { "Could not add basketItem to database" }
+            }
         }
-    }
 
     @Test
-    fun testDeleteBasketItem_SuccessfullyDeletesBasketItemFromDatabase() = runTest {
-        addUser()
-        addProduct()
-        addBasket()
-        val addedBasketItem = addBasketItem()
-        addedBasketItem?.let { basketItem ->
-            val deleted = basketItemDao.delete(basketItem.id).first()
-            val results = basketItemDao.find(basketItem.id).first()
-            assert(results == null && deleted){ "Could not remove basketItem from database" }
+    fun testDeleteBasketItem_SuccessfullyDeletesBasketItemFromDatabase() =
+        runTest {
+            addUser()
+            addProduct()
+            addBasket()
+            val addedBasketItem = addBasketItem()
+            addedBasketItem?.let { basketItem ->
+                val deleted = basketItemDao.delete(basketItem.id).first()
+                val results = basketItemDao.find(basketItem.id).first()
+                assert(results == null && deleted) { "Could not remove basketItem from database" }
+            }
         }
-    }
 
     @Test
-    fun testUpdateBasketItem_SuccessfullyUpdatesBasketItemInDatabase() = runTest {
-        addUser()
-        addProduct()
-        addBasket()
-        val addedBasketItem = addBasketItem()
-        val updatedQty = 4
-        addedBasketItem?.let { basketItem ->
-            val updated = basketItemDao.update(basketItem.copy(quantity = updatedQty), basketItem.id).first()
-            val results = basketItemDao.find(basketItem.id).first()
-            assert( updated != null && results != null && results.quantity == updatedQty ){ "Could not update basket item in database" }
+    fun testUpdateBasketItem_SuccessfullyUpdatesBasketItemInDatabase() =
+        runTest {
+            addUser()
+            addProduct()
+            addBasket()
+            val addedBasketItem = addBasketItem()
+            val updatedQty = 4
+            addedBasketItem?.let { basketItem ->
+                val updated =
+                    basketItemDao.update(
+                        basketItem.copy(quantity = updatedQty),
+                        basketItem.id,
+                    ).first()
+                val results = basketItemDao.find(basketItem.id).first()
+                assert(updated != null && results != null && results.quantity == updatedQty) {
+                    "Could not update basket item in database"
+                }
+            }
         }
-    }
 
     @Test
-    fun testFind_SuccessfullyRetrievesBasketItemInDatabase() = runTest {
-        addUser()
-        addProduct()
-        addBasket()
-        val addedBasketItem = addBasketItem()
-        addedBasketItem?.let { basketItem ->
-            val results = basketItemDao.find(basketItem.id).first()
-            assert( results != null ) { "Could not find basket item in database" }
+    fun testFind_SuccessfullyRetrievesBasketItemInDatabase() =
+        runTest {
+            addUser()
+            addProduct()
+            addBasket()
+            val addedBasketItem = addBasketItem()
+            addedBasketItem?.let { basketItem ->
+                val results = basketItemDao.find(basketItem.id).first()
+                assert(results != null) { "Could not find basket item in database" }
+            }
         }
-    }
 
     @Test
-    fun testFindAll_SuccessfullyRetrievesAllBasketItemsInDatabase() = runTest {
-        addUser()
-        addProduct()
-        addBasket()
-        addBasketItem()
-        val results = basketItemDao.findAll().last()
-        assert(results.isNotEmpty()){ "Could not find all the basket items in the database" }
-    }
-
-
+    fun testFindAll_SuccessfullyRetrievesAllBasketItemsInDatabase() =
+        runTest {
+            addUser()
+            addProduct()
+            addBasket()
+            addBasketItem()
+            val results = basketItemDao.findAll().last()
+            assert(results.isNotEmpty()) { "Could not find all the basket items in the database" }
+        }
 }

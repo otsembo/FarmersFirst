@@ -20,13 +20,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.otsembo.farmersfirst.ui.navigation.AppRoutes
 
 /**
@@ -35,22 +32,21 @@ import com.otsembo.farmersfirst.ui.navigation.AppRoutes
  * @param navController NavHostController to handle navigation within the app.
  */
 @Composable
-fun CheckoutScreen(
-    navController: NavHostController,
-) {
+fun CheckoutScreen(navController: NavHostController) {
     Column(
-        modifier = Modifier
-            .background(color = MaterialTheme.colorScheme.surface)
-            .fillMaxSize()
-            .padding(16.dp),
+        modifier =
+            Modifier
+                .background(color = MaterialTheme.colorScheme.surface)
+                .fillMaxSize()
+                .padding(16.dp),
         verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Icon(
             imageVector = Icons.Default.CheckCircle,
             contentDescription = "Checkout Success",
             modifier = Modifier.size(100.dp),
-            tint = Color.Green
+            tint = Color.Green,
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
@@ -64,7 +60,7 @@ fun CheckoutScreen(
             style = MaterialTheme.typography.bodyLarge,
             text = "Please have the total amount ready when delivery happens in the next two days.",
             textAlign = TextAlign.Center,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
@@ -72,15 +68,14 @@ fun CheckoutScreen(
             text = "One of our agents will call you for confirmation of the order.",
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth(),
-            fontWeight = FontWeight.Light
+            fontWeight = FontWeight.Light,
         )
         Spacer(modifier = Modifier.height(24.dp))
         ElevatedButton(
             onClick = { navController.navigate(AppRoutes.AppHome) },
-            colors = ButtonDefaults.buttonColors()
+            colors = ButtonDefaults.buttonColors(),
         ) {
             Text(text = "Back to Home")
         }
     }
 }
-

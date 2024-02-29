@@ -52,7 +52,7 @@ import com.otsembo.farmersfirst.ui.components.EmptyEntityMessage
 import com.otsembo.farmersfirst.ui.components.ErrorScreen
 import com.otsembo.farmersfirst.ui.components.LoadingScreen
 import com.otsembo.farmersfirst.ui.navigation.AppRoutes
-import com.otsembo.farmersfirst.ui.screens.product_details.CartCounter
+import com.otsembo.farmersfirst.ui.screens.productDetails.CartCounter
 import kotlin.math.roundToInt
 
 /**
@@ -73,108 +73,119 @@ fun BasketScreen(
     navController: NavHostController,
     userId: Int = 0,
 ) {
-
     val basketScreenUiState: BasketScreenUiState by viewModel.basketScreenUiState.collectAsState()
     val bottomSheetState = rememberModalBottomSheetState()
 
-    LaunchedEffect(key1 = basketScreenUiState.basketItems){
+    LaunchedEffect(key1 = basketScreenUiState.basketItems) {
         viewModel.handleActions(BasketScreenActions.LoadBasketItems(userId))
     }
 
     LaunchedEffect(basketScreenUiState.navigateToCheckout, block = {
-        if(basketScreenUiState.navigateToCheckout) {
+        if (basketScreenUiState.navigateToCheckout) {
             navController.navigate(AppRoutes.Home.Checkout)
             viewModel.handleActions(BasketScreenActions.OnCheckoutNavigationComplete)
         }
     })
 
     Column(
-        modifier = modifier
-            .fillMaxSize()
-            .background(color = MaterialTheme.colorScheme.surfaceVariant)
+        modifier =
+            modifier
+                .fillMaxSize()
+                .background(color = MaterialTheme.colorScheme.surfaceVariant),
     ) {
-
         AppBar(
             modifier = Modifier.padding(top = 8.dp),
             startIcon = {
                 Icon(
                     modifier = Modifier.clickable { navController.popBackStack() },
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Back"
+                    contentDescription = "Back",
                 )
             },
             title = {
                 Text(text = "Your Basket")
-            }
+            },
         )
 
         when {
             basketScreenUiState.basketItems.isEmpty() -> {
                 EmptyEntityMessage(
-                    modifier = Modifier
-                        .fillMaxHeight(0.68f)
-                        .fillMaxSize(),
-                    message = "Your cart is currently empty"
+                    modifier =
+                        Modifier
+                            .fillMaxHeight(0.68f)
+                            .fillMaxSize(),
+                    message = "Your cart is currently empty",
                 )
             }
             basketScreenUiState.isLoading -> LoadingScreen()
-            basketScreenUiState.errorOccurred -> ErrorScreen(errorMessage = basketScreenUiState.errorMessage)
+            basketScreenUiState.errorOccurred ->
+                ErrorScreen(
+                    errorMessage = basketScreenUiState.errorMessage,
+                )
             else -> {
-
-                if(isWideScreen){
-
+                if (isWideScreen) {
                     Row {
                         LazyColumn(
-                            modifier = Modifier
-                                .fillMaxHeight()
-                                .fillMaxWidth(0.68f)
-                                .padding(top = 8.dp)
-                                .padding(start = 16.dp, end = 8.dp),
-                            verticalArrangement = Arrangement.spacedBy(6.dp)
+                            modifier =
+                                Modifier
+                                    .fillMaxHeight()
+                                    .fillMaxWidth(0.68f)
+                                    .padding(top = 8.dp)
+                                    .padding(start = 16.dp, end = 8.dp),
+                            verticalArrangement = Arrangement.spacedBy(6.dp),
                         ) {
-
-                            items(basketScreenUiState.basketItems){ item ->
+                            items(basketScreenUiState.basketItems) { item ->
                                 BasketItemUi(
                                     basketItem = item,
                                     onUpdateItemCount = { direction ->
-                                        viewModel.handleActions(BasketScreenActions.UpdateBasketItemCount(
-                                            basketItem = item, direction
-                                        ))
+                                        viewModel.handleActions(
+                                            BasketScreenActions.UpdateBasketItemCount(
+                                                basketItem = item,
+                                                direction,
+                                            ),
+                                        )
                                     },
-                                    onDeleteItemFromBasket = { viewModel.handleActions(BasketScreenActions.DeleteBasketItem(it)) }
+                                    onDeleteItemFromBasket = {
+                                        viewModel.handleActions(
+                                            BasketScreenActions.DeleteBasketItem(it),
+                                        )
+                                    },
                                 )
                             }
                         }
 
                         ElevatedCard(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(8.dp),
-                            colors = CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.surface,
-                                contentColor = MaterialTheme.colorScheme.onSurface
-                            ),
-                            shape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp)
+                            modifier =
+                                Modifier
+                                    .fillMaxSize()
+                                    .padding(8.dp),
+                            colors =
+                                CardDefaults.cardColors(
+                                    containerColor = MaterialTheme.colorScheme.surface,
+                                    contentColor = MaterialTheme.colorScheme.onSurface,
+                                ),
+                            shape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp),
                         ) {
-
-                            Box(modifier = Modifier
-                                .fillMaxSize()) {
-
-
+                            Box(
+                                modifier =
+                                    Modifier
+                                        .fillMaxSize(),
+                            ) {
                                 Column(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(16.dp)
+                                    modifier =
+                                        Modifier
+                                            .fillMaxWidth()
+                                            .padding(16.dp),
                                 ) {
                                     CheckoutSummary(
                                         modifier = Modifier.padding(vertical = 4.dp),
                                         startText = "Total Cost:",
-                                        endText = "$${basketScreenUiState.totalBasketCost}"
+                                        endText = "$${basketScreenUiState.totalBasketCost}",
                                     )
                                     CheckoutSummary(
                                         modifier = Modifier.padding(vertical = 8.dp),
                                         startText = "Discount:",
-                                        endText = "$${basketScreenUiState.totalBasketDiscount}"
+                                        endText = "$${basketScreenUiState.totalBasketDiscount}",
                                     )
 
                                     HorizontalDivider()
@@ -187,92 +198,96 @@ fun BasketScreen(
                                     )
                                 }
 
-
-
                                 Button(
-                                    onClick = { viewModel.handleActions(BasketScreenActions.MakeRecommendations) },
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .align(Alignment.BottomStart)
-                                        .padding(horizontal = 16.dp)
-                                        .padding(bottom = 8.dp),
+                                    onClick = {
+                                        viewModel.handleActions(
+                                            BasketScreenActions.MakeRecommendations,
+                                        )
+                                    },
+                                    modifier =
+                                        Modifier
+                                            .fillMaxWidth()
+                                            .align(Alignment.BottomStart)
+                                            .padding(horizontal = 16.dp)
+                                            .padding(bottom = 8.dp),
                                     shape = RoundedCornerShape(10.dp),
-                                    enabled = basketScreenUiState.basketItems.isNotEmpty()
+                                    enabled = basketScreenUiState.basketItems.isNotEmpty(),
                                 ) {
-
                                     Text(
                                         text = "Checkout",
                                         modifier = Modifier.padding(8.dp),
                                         style = MaterialTheme.typography.bodyLarge,
-                                        fontWeight = FontWeight.SemiBold
+                                        fontWeight = FontWeight.SemiBold,
                                     )
-
                                 }
-
                             }
-
                         }
                     }
-
-                }else{
+                } else {
                     LazyColumn(
-                        modifier = Modifier
-                            .fillMaxHeight(0.6f)
-                            .fillMaxWidth()
-                            .padding(top = 8.dp, bottom = 4.dp)
-                            .padding(horizontal = 16.dp),
-                        verticalArrangement = Arrangement.spacedBy(6.dp)
+                        modifier =
+                            Modifier
+                                .fillMaxHeight(0.6f)
+                                .fillMaxWidth()
+                                .padding(top = 8.dp, bottom = 4.dp)
+                                .padding(horizontal = 16.dp),
+                        verticalArrangement = Arrangement.spacedBy(6.dp),
                     ) {
-
-                        items(basketScreenUiState.basketItems){ basketItem ->
+                        items(basketScreenUiState.basketItems) { basketItem ->
                             BasketItemUi(
                                 basketItem = basketItem,
                                 onUpdateItemCount = { direction ->
-                                    viewModel.handleActions(BasketScreenActions.UpdateBasketItemCount(
-                                        basketItem = basketItem, direction
-                                    ))
+                                    viewModel.handleActions(
+                                        BasketScreenActions.UpdateBasketItemCount(
+                                            basketItem = basketItem,
+                                            direction,
+                                        ),
+                                    )
                                 },
-                                onDeleteItemFromBasket = { viewModel.handleActions(BasketScreenActions.DeleteBasketItem(it)) }
+                                onDeleteItemFromBasket = {
+                                    viewModel.handleActions(
+                                        BasketScreenActions.DeleteBasketItem(it),
+                                    )
+                                },
                             )
                         }
                     }
                 }
-
-
             }
         }
 
-
-
-        if(!isWideScreen)
+        if (!isWideScreen) {
             ElevatedCard(
-                modifier = Modifier
-                    .fillMaxSize(),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surface,
-                    contentColor = MaterialTheme.colorScheme.onSurface
-                ),
-                shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)
+                modifier =
+                    Modifier
+                        .fillMaxSize(),
+                colors =
+                    CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surface,
+                        contentColor = MaterialTheme.colorScheme.onSurface,
+                    ),
+                shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
             ) {
-
-                Box(modifier = Modifier
-                    .fillMaxSize()) {
-
-
+                Box(
+                    modifier =
+                        Modifier
+                            .fillMaxSize(),
+                ) {
                     Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp)
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
                     ) {
                         CheckoutSummary(
                             modifier = Modifier.padding(vertical = 4.dp),
                             startText = "Total Cost:",
-                            endText = "$${basketScreenUiState.totalBasketCost}"
+                            endText = "$${basketScreenUiState.totalBasketCost}",
                         )
                         CheckoutSummary(
                             modifier = Modifier.padding(vertical = 8.dp),
                             startText = "Discount:",
-                            endText = "$${basketScreenUiState.totalBasketDiscount}"
+                            endText = "$${basketScreenUiState.totalBasketDiscount}",
                         )
 
                         HorizontalDivider()
@@ -285,48 +300,48 @@ fun BasketScreen(
                         )
                     }
 
-
-
                     Button(
-                        onClick = { viewModel.handleActions(BasketScreenActions.MakeRecommendations) },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .align(Alignment.BottomStart)
-                            .padding(horizontal = 16.dp)
-                            .padding(bottom = 8.dp),
+                        onClick = {
+                            viewModel.handleActions(BasketScreenActions.MakeRecommendations)
+                        },
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .align(Alignment.BottomStart)
+                                .padding(horizontal = 16.dp)
+                                .padding(bottom = 8.dp),
                         shape = RoundedCornerShape(10.dp),
                         enabled = basketScreenUiState.basketItems.isNotEmpty(),
                     ) {
-
                         Text(
                             text = "Checkout",
                             modifier = Modifier.padding(8.dp),
                             style = MaterialTheme.typography.bodyLarge,
-                            fontWeight = FontWeight.SemiBold
+                            fontWeight = FontWeight.SemiBold,
                         )
-
                     }
-
                 }
-
             }
-
+        }
     }
 
-
-    if(basketScreenUiState.showRecommender){
+    if (basketScreenUiState.showRecommender) {
         CheckoutRecommender(
-            modifier = Modifier.fillMaxHeight(if(isWideScreen) 1f else 0.5f),
+            modifier = Modifier.fillMaxHeight(if (isWideScreen) 1f else 0.5f),
             recommenderSheetState = bottomSheetState,
-            onRecommenderClose = { viewModel.handleActions(BasketScreenActions.ToggleRecommendedProducts(false)) },
+            onRecommenderClose = {
+                viewModel.handleActions(BasketScreenActions.ToggleRecommendedProducts(false))
+            },
             recommendedBasketItems = basketScreenUiState.recommendedBasketItems,
             navController = navController,
             onCheckOut = {
-                viewModel.handleActions(BasketScreenActions.CheckoutItems) },
-            onDeleteItemFromRecommendedBasket = { viewModel.handleActions(BasketScreenActions.DeleteRecommendedItem(0)) }
+                viewModel.handleActions(BasketScreenActions.CheckoutItems)
+            },
+            onDeleteItemFromRecommendedBasket = {
+                viewModel.handleActions(BasketScreenActions.DeleteRecommendedItem(0))
+            },
         )
     }
-
 }
 
 /**
@@ -344,35 +359,36 @@ fun BasketItemUi(
     onUpdateItemCount: (BasketScreenActions.BasketUpdateDirection) -> Unit,
     onDeleteItemFromBasket: (BasketItem) -> Unit,
 ) {
-
     ElevatedCard(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(125.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface,
-            contentColor = MaterialTheme.colorScheme.onSurface
-        )
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .height(125.dp),
+        colors =
+            CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surface,
+                contentColor = MaterialTheme.colorScheme.onSurface,
+            ),
     ) {
-
         Row(
-            modifier = Modifier
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
+            modifier =
+                Modifier
+                    .fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
         ) {
-
             AsyncImage(
                 modifier = Modifier.weight(1f),
                 model = basketItem.product.image,
                 contentDescription = null,
-                contentScale = ContentScale.Crop
+                contentScale = ContentScale.Crop,
             )
 
             Column(
-                modifier = Modifier
-                    .weight(1.2f)
-                    .fillMaxHeight()
-                    .padding(start = 8.dp),
+                modifier =
+                    Modifier
+                        .weight(1.2f)
+                        .fillMaxHeight()
+                        .padding(start = 8.dp),
                 verticalArrangement = Arrangement.Center,
             ) {
                 Text(
@@ -385,26 +401,25 @@ fun BasketItemUi(
                     modifier = Modifier.fillMaxWidth(),
                     text = "${basketItem.product.stock} remaining",
                     style = MaterialTheme.typography.bodySmall,
-                    fontWeight = FontWeight.Light
+                    fontWeight = FontWeight.Light,
                 )
             }
 
-
             Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxHeight()
-                    .padding(end = 8.dp),
+                modifier =
+                    Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .padding(end = 8.dp),
                 verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.Start
+                horizontalAlignment = Alignment.Start,
             ) {
-
-
                 // show counter if updates are not disable
-                if(!disableUpdates) {
+                if (!disableUpdates) {
                     CartCounter(
-                        modifier = Modifier
-                            .fillMaxWidth(),
+                        modifier =
+                            Modifier
+                                .fillMaxWidth(),
                         actionModifier = Modifier.size(30.dp),
                         inputModifier = Modifier.width(30.dp),
                         inputShape = RoundedCornerShape(20),
@@ -412,38 +427,36 @@ fun BasketItemUi(
                         productStock = basketItem.product.stock,
                         updateCount = { _, isIncrease ->
                             onUpdateItemCount(
-                                if (isIncrease) BasketScreenActions.BasketUpdateDirection.UP else BasketScreenActions.BasketUpdateDirection.DOWN
+                                if (isIncrease) BasketScreenActions.BasketUpdateDirection.UP else BasketScreenActions.BasketUpdateDirection.DOWN,
                             )
-                        }
+                        },
                     )
                 }
 
                 Text(
                     text = "$${(basketItem.product.price * basketItem.quantity).roundToInt()}",
-                    modifier = Modifier
-                        .align(if (disableUpdates) Alignment.End else Alignment.Start)
-                        .padding(top = 4.dp),
+                    modifier =
+                        Modifier
+                            .align(if (disableUpdates) Alignment.End else Alignment.Start)
+                            .padding(top = 4.dp),
                     style = MaterialTheme.typography.headlineSmall,
                     color = MaterialTheme.colorScheme.onSurface,
                     fontWeight = FontWeight.ExtraBold,
-                    letterSpacing = 1.sp
+                    letterSpacing = 1.sp,
                 )
 
                 Icon(
                     imageVector = Icons.Default.DeleteForever,
                     contentDescription = "Delete Item",
-                    modifier = Modifier
-                        .align(Alignment.End)
-                        .clickable { onDeleteItemFromBasket(basketItem) },
-                    tint = MaterialTheme.colorScheme.error
+                    modifier =
+                        Modifier
+                            .align(Alignment.End)
+                            .clickable { onDeleteItemFromBasket(basketItem) },
+                    tint = MaterialTheme.colorScheme.error,
                 )
-
             }
-
         }
-
     }
-
 }
 
 /**
@@ -462,14 +475,14 @@ fun CheckoutSummary(
     endText: String,
 ) {
     Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp),
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .padding(vertical = 4.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
-
-        if(isSubSummary){
+        if (isSubSummary) {
             Text(
                 text = startText,
                 style = MaterialTheme.typography.bodyLarge,
@@ -479,19 +492,19 @@ fun CheckoutSummary(
                 text = endText,
                 style = MaterialTheme.typography.bodyLarge,
             )
-        }else{
+        } else {
             Text(
                 text = startText,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
-                letterSpacing = 1.sp
+                letterSpacing = 1.sp,
             )
 
             Text(
                 text = endText,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
-                letterSpacing = 1.sp
+                letterSpacing = 1.sp,
             )
         }
     }
@@ -519,33 +532,33 @@ fun CheckoutRecommender(
     onCheckOut: () -> Unit = {},
     onDeleteItemFromRecommendedBasket: (Int) -> Unit,
 ) {
-
     ModalBottomSheet(
         modifier = modifier.fillMaxSize(),
         sheetState = recommenderSheetState,
         onDismissRequest = { onRecommenderClose() },
         containerColor = MaterialTheme.colorScheme.tertiaryContainer,
         contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
-        dragHandle = {}
+        dragHandle = {},
     ) {
-
-        if(recommendedBasketItems.isNotEmpty()) {
+        if (recommendedBasketItems.isNotEmpty()) {
             Box(
-                modifier = Modifier
-                    .padding(16.dp)
-                    .fillMaxSize()
+                modifier =
+                    Modifier
+                        .padding(16.dp)
+                        .fillMaxSize(),
             ) {
                 Button(
                     onClick = {
                         onCheckOut()
                     },
-                    modifier = Modifier
-                        .align(Alignment.BottomStart),
-                    shape = RoundedCornerShape(10.dp)
+                    modifier =
+                        Modifier
+                            .align(Alignment.BottomStart),
+                    shape = RoundedCornerShape(10.dp),
                 ) {
                     Text(
                         text = "Add to basket\nand checkout",
-                        style = MaterialTheme.typography.bodyLarge
+                        style = MaterialTheme.typography.bodyLarge,
                     )
                 }
 
@@ -554,17 +567,19 @@ fun CheckoutRecommender(
                         onCheckOut()
                         navController.navigate(AppRoutes.Home.Checkout)
                     },
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd),
-                    shape = RoundedCornerShape(10.dp)
+                    modifier =
+                        Modifier
+                            .align(Alignment.BottomEnd),
+                    shape = RoundedCornerShape(10.dp),
                 ) {
                     Text(text = "Just Checkout", style = MaterialTheme.typography.bodyLarge)
                 }
 
                 LazyColumn(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                    modifier =
+                        Modifier
+                            .fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     item {
                         Text(
@@ -572,7 +587,7 @@ fun CheckoutRecommender(
                             text = "The following items are usually purchased together.",
                             style = MaterialTheme.typography.bodyLarge,
                             fontWeight = FontWeight.SemiBold,
-                            textAlign = TextAlign.Start
+                            textAlign = TextAlign.Start,
                         )
                     }
 
@@ -581,36 +596,37 @@ fun CheckoutRecommender(
                             disableUpdates = true,
                             onUpdateItemCount = { },
                             basketItem = basketItem,
-                            onDeleteItemFromBasket = { onDeleteItemFromRecommendedBasket(index) })
+                            onDeleteItemFromBasket = { onDeleteItemFromRecommendedBasket(index) },
+                        )
                     }
                 }
             }
         } else {
-
             Column(
-                modifier = Modifier
-                    .fillMaxSize(),
-                verticalArrangement = Arrangement.Center
+                modifier =
+                    Modifier
+                        .fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
             ) {
-
-                EmptyEntityMessage(modifier = Modifier.weight(1f), message = "We have no recommendations for you.")
+                EmptyEntityMessage(
+                    modifier = Modifier.weight(1f),
+                    message = "We have no recommendations for you.",
+                )
                 Button(
                     onClick = {
                         onCheckOut()
                         navController.navigate(AppRoutes.Home.Checkout)
                     },
-                    modifier = Modifier
-                        .height(ButtonDefaults.MinHeight + 8.dp)
-                        .fillMaxWidth()
-                        .padding(bottom = 8.dp, start = 16.dp, end = 16.dp),
-                    shape = RoundedCornerShape(10.dp)
+                    modifier =
+                        Modifier
+                            .height(ButtonDefaults.MinHeight + 8.dp)
+                            .fillMaxWidth()
+                            .padding(bottom = 8.dp, start = 16.dp, end = 16.dp),
+                    shape = RoundedCornerShape(10.dp),
                 ) {
                     Text(text = "Checkout Now", style = MaterialTheme.typography.bodyLarge)
                 }
-
             }
-
         }
     }
 }
-

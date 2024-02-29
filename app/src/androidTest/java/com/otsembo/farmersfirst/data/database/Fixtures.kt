@@ -14,10 +14,9 @@ val testBasket = Basket(id = 1, user = testUser, status = "pending")
 val testBasketItem = BasketItem(id = 1, basket = testBasket, product = testProduct, 2)
 
 abstract class DBTest {
-
     lateinit var dbHelper: AppDatabaseHelper
 
-    fun initDB(){
+    fun initDB() {
         val context = ApplicationProvider.getApplicationContext<Context>()
         dbHelper = AppDatabaseHelper(context, null, "farmers_first_test")
     }
