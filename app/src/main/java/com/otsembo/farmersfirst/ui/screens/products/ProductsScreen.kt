@@ -22,6 +22,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.AddShoppingCart
+import androidx.compose.material.icons.filled.Block
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.Menu
@@ -52,6 +53,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -322,6 +324,8 @@ fun ProductItem(
     onClick: (Int) -> Unit = {},
 ) {
 
+    val inStock = product.stock > 0
+
     ElevatedCard(
         modifier = Modifier
             .width(200.dp)
@@ -336,7 +340,6 @@ fun ProductItem(
             .fillMaxWidth()
             .height(155.dp)){
 
-            
             AsyncImage(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -354,7 +357,7 @@ fun ProductItem(
                     .padding(8.dp)
                     .size(dimensionResource(id = R.dimen.icon_size))
                     .clickable {
-                        onAddToBasket(product.id)
+                        if(inStock) onAddToBasket(product.id)
                     }
                     .align(Alignment.TopEnd)
                     .background(
@@ -365,6 +368,10 @@ fun ProductItem(
                 ,
                 imageVector = Icons.Default.AddShoppingCart, contentDescription = "Add to shopping card")
 
+
+            if(!inStock){
+                OutOfStockProduct()
+            }
         }
 
         HorizontalDivider(
@@ -438,5 +445,36 @@ fun DotWithText(
                 style = MaterialTheme.typography.labelSmall,
             )
         }
+}
+
+/**
+ * Composable function for displaying an "Out of Stock" product view.
+ */
+@Composable
+fun OutOfStockProduct() {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(color = Color(0xA9000000))
+            .height(155.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ){
+
+        Icon(
+            modifier = Modifier
+                .size(100.dp),
+            imageVector = Icons.Default.Block,
+            contentDescription = "Out of stock",
+            tint = Color.White
+        )
+
+        Text(
+            text = "Out of stock",
+            style = MaterialTheme.typography.bodyLarge,
+            color = Color.White
+        )
+
+    }
 }
 
