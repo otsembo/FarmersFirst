@@ -3,8 +3,6 @@ package com.otsembo.farmersfirst.data.database.dao
 import android.content.ContentValues
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
-import com.otsembo.farmersfirst.data.database.AppDatabaseHelper
-import com.otsembo.farmersfirst.data.model.User
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.emitAll
@@ -127,14 +125,14 @@ abstract class BaseDao<T>(
 
     /**
      * Executes a SQL query with a WHERE clause using the provided query string and parameters.
-     * @param query The SQL query string with placeholders for parameters.
+     * @param whereClause The WHERE clause to apply for the query.
      * @param params The array of parameter values to be substituted into the query.
      * @return A flow emitting a list of query results.
      */
-    suspend fun queryWhere(query: String, params: Array<String>): Flow<List<T>> =
+    suspend fun queryWhere(whereClause: String, params: Array<String>): Flow<List<T>> =
         flow {
             val resultList = mutableListOf<T>()
-            val cursor = db.rawQuery("SELECT * FROM $tableName WHERE $query", params)
+            val cursor = db.rawQuery("SELECT * FROM $tableName WHERE $whereClause", params)
             while (cursor.moveToNext()) {
                 resultList.add(cursor.buildEntity())
             }
@@ -144,5 +142,16 @@ abstract class BaseDao<T>(
             emit(mutableListOf()) // Emit empty list if an error occurs
         }
 
+    /**
+     * Deletes rows from the database table based on the specified WHERE clause and parameters.
+     * @param whereClause The WHERE clause to apply for the deletion.
+     * @param params The parameters to be used in the WHERE clause.
+     * @return A flow emitting a boolean value indicating the success or failure of the deletion operation.
+     */
+    suspend fun deleteWhere(whereClause: String, params: Array<String>): Flow<Boolean> =
+        flow {
+            val affected = db.delete(tableName, whereClause, params)
+            emit(affected > 0)
+        }.catch { emit(false) }
 
 }

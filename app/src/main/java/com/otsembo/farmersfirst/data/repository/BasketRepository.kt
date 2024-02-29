@@ -1,7 +1,6 @@
 package com.otsembo.farmersfirst.data.repository
 
 import com.otsembo.farmersfirst.common.AppResource
-import com.otsembo.farmersfirst.common.izNull
 import com.otsembo.farmersfirst.common.notNull
 import com.otsembo.farmersfirst.data.database.AppDatabaseHelper
 import com.otsembo.farmersfirst.data.database.dao.BasketDao
@@ -9,13 +8,11 @@ import com.otsembo.farmersfirst.data.database.dao.BasketItemDao
 import com.otsembo.farmersfirst.data.database.dao.ProductDao
 import com.otsembo.farmersfirst.data.model.Basket
 import com.otsembo.farmersfirst.data.model.BasketItem
-import com.otsembo.farmersfirst.data.model.Product
 import com.otsembo.farmersfirst.data.model.User
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.map
 
@@ -73,12 +70,11 @@ interface IBasketRepository {
     suspend fun addItemToBasket(userId: Int, basket: Basket, productId: Int, qty: Int): Flow<AppResource<List<BasketItem>>>
 
     /**
-     * Removes an item from the basket.
-     * @param basketItemId The ID of the basket item to be removed.
-     * @return A flow of AppResource representing the result of the operation.
-     *         The flow emits a Boolean value indicating whether the removal was successful (true) or not (false).
+     * Removes the specified item from the basket.
+     * @param basketItem The basket item to be removed.
+     * @return A flow of AppResource<Boolean> representing the result of the operation.
      */
-    suspend fun removeItemFromBasket(basketItemId: Int): Flow<AppResource<Boolean>>
+    suspend fun removeItemFromBasket(basketItem: BasketItem): Flow<AppResource<Boolean>>
 
     /**
      * Updates an existing basket item in the repository.
@@ -115,7 +111,7 @@ class BasketRepository(
         dbTransact(
             flow {
                 val baskets = basketDao.queryWhere(
-                    query = """
+                    whereClause = """
                     ${AppDatabaseHelper.BASKET_USER} = ? AND 
                     ${AppDatabaseHelper.BASKET_STATUS} = ? 
                     ORDER BY ${AppDatabaseHelper.BASKET_ID} DESC LIMIT 1
@@ -133,7 +129,7 @@ class BasketRepository(
     override suspend fun fetchLatestBasketItems(userId: Int): Flow<AppResource<List<BasketItem>>> =
         dbTransact(flow{
             val baskets = basketDao.queryWhere(
-                query = """
+                whereClause = """
                 ${AppDatabaseHelper.BASKET_USER} = ? AND 
                 ${AppDatabaseHelper.BASKET_STATUS} = ? 
                 ORDER BY ${AppDatabaseHelper.BASKET_ID} DESC LIMIT 1
@@ -153,7 +149,7 @@ class BasketRepository(
                 else {
                     val basketId = it.last().id
                     val basketItemsList = basketItemDao.queryWhere(
-                        query = """
+                        whereClause = """
                             ${AppDatabaseHelper.BASKET_ITEM_BASKET} = ?
                         """.trimIndent(),
                         params = arrayOf("$basketId")
@@ -179,8 +175,15 @@ class BasketRepository(
                 )
             })
 
-    override suspend fun removeItemFromBasket(basketItemId: Int): Flow<AppResource<Boolean>> =
-        dbTransact(basketItemDao.delete(basketItemId))
+    override suspend fun removeItemFromBasket(basketItem: BasketItem): Flow<AppResource<Boolean>> =
+        dbTransact(flow {
+            val isDeleted = basketItemDao.deleteWhere(
+                whereClause = "${AppDatabaseHelper.BASKET_ITEM_PRODUCT} = ? AND ${AppDatabaseHelper.BASKET_ITEM_BASKET} = ?",
+                params = arrayOf(basketItem.product.id.toString(), basketItem.basket.id.toString())
+            ).last()
+            emit(isDeleted)
+        }.catch { emit(false) })
+
 
     override suspend fun updateBasketItem(basketItem: BasketItem): Flow<AppResource<BasketItem?>> =
         dbTransact(basketItemDao.update(basketItem, basketItem.id))

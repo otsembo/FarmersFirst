@@ -12,6 +12,7 @@ import com.otsembo.farmersfirst.data.repository.BasketItemsRecommenderRepository
 import com.otsembo.farmersfirst.data.repository.IBasketRepository
 import com.otsembo.farmersfirst.data.repository.IProductRepository
 import com.otsembo.farmersfirst.data.repository.IUserPrefRepository
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -52,6 +53,11 @@ class BasketScreenVM(
             }
             is BasketScreenActions.MakeRecommendations -> makeRecommendation()
             is BasketScreenActions.CheckoutItems -> checkoutItems()
+            is BasketScreenActions.DeleteBasketItem -> deleteBasketItem(action.basketItem)
+            is BasketScreenActions.DeleteRecommendedItem -> deleteRecommendedBasketItem(action.index)
+            is BasketScreenActions.OnCheckoutNavigationComplete -> _basketScreenUiState.update {
+                it.reset().copy(navigateToCheckout = false)
+            }
         }
     }
 
@@ -123,14 +129,14 @@ class BasketScreenVM(
             recommenderRepository
                 .textRecommend(
                     """
-                                given the following items: $products
-                                suggest two items for someone who has already shopped the following: ${productsInBasket}.
-                                provide the answer in this format [id1, id2]
-                            """.trimIndent()).collect { recommendedBasketRes ->
+                        given the following items: $products
+                        suggest two items for someone who has already shopped the following: ${productsInBasket}.
+                        provide the answer in this format [id1, id2]
+                    """.trimIndent()).collect { recommendedBasketRes ->
                     when(recommendedBasketRes){
                         is AppResource.Error -> _basketScreenUiState.update {
-                            handleActions(BasketScreenActions.CheckoutItems)
-                            it.setError(recommendedBasketRes.info)
+                            handleActions(BasketScreenActions.ToggleRecommendedProducts(true))
+                            it.reset()
                         }
                         is AppResource.Loading -> _basketScreenUiState.update {
                             it.setLoading()
@@ -151,6 +157,10 @@ class BasketScreenVM(
      * purchases, and resetting the stock of items in the database.
      */
     private fun checkoutItems(){
+        handleActions(BasketScreenActions.ToggleRecommendedProducts(show = false))
+        _basketScreenUiState.update {
+            it.setLoading()
+        }
         viewModelScope.launch {
             // update user basket and create new one for future
             val userId = fetchUid()
@@ -164,6 +174,48 @@ class BasketScreenVM(
             for (item in _basketScreenUiState.value.basketItems){
                 productsRepository.updateProductStock(item.product, item.quantity).last()
             }
+
+            // manual delay to simulate checking out
+            delay(2000)
+
+            // navigate to checkout page
+            _basketScreenUiState.update {
+                it.reset().copy(navigateToCheckout = true)
+            }
+        }
+
+    }
+
+    /**
+     * Deletes the specified basket item from the repository and updates the UI accordingly.
+     * @param basketItem The basket item to be deleted.
+     */
+    private fun deleteBasketItem(basketItem: BasketItem) {
+        viewModelScope.launch {
+            val deletedBasketItem = basketRepository
+                .removeItemFromBasket(basketItem)
+                .last()
+            if (deletedBasketItem.data == true) {
+                handleActions(BasketScreenActions.LoadBasketItems(fetchUid()))
+            } else {
+                _basketScreenUiState.update {
+                    it.reset().setError(message = "An error occurred when deleting the item from basket")
+                }
+            }
+        }
+    }
+
+    /**
+     * Deletes the recommended basket item at the specified index from the UI state.
+     * @param itemIndex The index of the recommended basket item to be deleted.
+     */
+    private fun deleteRecommendedBasketItem(itemIndex: Int) {
+        _basketScreenUiState.update { screenState ->
+            val updatedRecommendedList = screenState
+                .recommendedBasketItems
+                .toMutableList()
+            updatedRecommendedList.removeAt(itemIndex)
+            screenState.copy(recommendedBasketItems = updatedRecommendedList)
         }
     }
 
@@ -215,6 +267,7 @@ class BasketScreenVM(
  * @property totalBasketDiscount The total discount applied to the basket.
  * @property showRecommender Flag indicating whether the recommender section is visible.
  * @property recommendedBasketItems The list of recommended basket items.
+ * @property navigateToCheckout Flag indicating whether we should navigate to checkout page
  * @property isLoading Flag indicating whether data is being loaded.
  * @property errorOccurred Flag indicating whether an error occurred.
  * @property errorMessage The error message if an error occurred.
@@ -225,6 +278,7 @@ data class BasketScreenUiState(
     val totalBasketDiscount: Float = 0.0f,
     val showRecommender: Boolean = false,
     val recommendedBasketItems: List<BasketItem> = emptyList(),
+    val navigateToCheckout: Boolean = false,
     val isLoading: Boolean = false,
     val errorOccurred: Boolean = false,
     val errorMessage: String = ""
@@ -244,7 +298,8 @@ data class BasketScreenUiState(
             recommendedBasketItems = recommendedBasketItems,
             totalBasketCost = totalBasketCost,
             totalBasketDiscount = totalBasketDiscount,
-            showRecommender = showRecommender
+            showRecommender = showRecommender,
+            navigateToCheckout = navigateToCheckout
         )
     }
 
@@ -321,6 +376,23 @@ sealed class BasketScreenActions {
      * Action to check out items in the basket.
      */
     data object CheckoutItems: BasketScreenActions()
+
+    /**
+     * Represents an action to delete a recommended item from the list.
+     * @property index The index of the recommended item to be deleted.
+     */
+    data class DeleteRecommendedItem(val index: Int): BasketScreenActions()
+
+    /**
+     * Represents an action to delete a basket item.
+     * @property basketItem The basket item to be deleted.
+     */
+    data class DeleteBasketItem(val basketItem: BasketItem): BasketScreenActions()
+
+    /**
+     * Represents an action indicating that the checkout navigation has been completed.
+     */
+    data object OnCheckoutNavigationComplete: BasketScreenActions()
 
     /**
      * Enumeration representing the direction of basket item count update (UP or DOWN).

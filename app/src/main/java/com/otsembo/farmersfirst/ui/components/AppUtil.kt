@@ -135,7 +135,12 @@ fun ErrorScreen(
     }
 }
 
-
+/**
+ * Composable function to display an empty entity message with an optional icon.
+ * @param modifier Modifier to be applied to the composable.
+ * @param message The message to be displayed.
+ * @param icon Lambda function to display the icon. Defaults to an hourglass empty icon.
+ */
 @Composable
 fun EmptyEntityMessage(
     modifier: Modifier = Modifier,
@@ -144,7 +149,8 @@ fun EmptyEntityMessage(
         Icon(
             imageVector = Icons.Default.HourglassEmpty,
             contentDescription = message,
-            modifier = Modifier.size(50.dp)
+            modifier = Modifier.size(50.dp),
+            tint = MaterialTheme.colorScheme.onSurface
         )
     }
 ) {
@@ -160,7 +166,7 @@ fun EmptyEntityMessage(
         Text(
             text = message,
             style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.primaryContainer,
+            color = MaterialTheme.colorScheme.onSurface,
             textAlign = TextAlign.Center
         )
     }
